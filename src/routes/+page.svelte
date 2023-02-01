@@ -46,7 +46,7 @@
         <ul class="list-disc">
             {#each $searchStore.filtered as stop}
             <li>
-                <a href="/stop/{stop.name}">{stop.caption}</a>
+                <a class="hover:underline" href="/stop/{stop.name}">{stop.caption}</a>
             </li>
             {/each}
         </ul>
