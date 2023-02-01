@@ -2,11 +2,7 @@
     import "../app.css"
 </script>
 
-<div class="max-w-2xl mx-auto p-8">
-    
-    <div class="flex flex-col items-center">
-        <a href="/" class="font-bold text-3xl mb-5">NUS Next Bus</a>
-    </div>
-
+<div class="max-w-2xl mx-auto p-8 flex flex-col justify-center items-center">
+    <h1 class="font-bold text-3xl mb-5"><a href="/">NNext Bus</a></h1>
     <slot />
 </div>
