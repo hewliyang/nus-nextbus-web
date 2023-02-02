@@ -23,7 +23,7 @@
       <tbody>
         {#each shuttles as {name, arrivalTime, nextArrivalTime}}
         <tr>
-            <td>{name}</td>
+            <td><a class="font-semibold text-gray-400" href="/busroutes#{name}">{name}</a></td>
             <td>{arrivalTime} <span class="text-xs">mins</span></td>
             <td>{nextArrivalTime} <span class="text-xs">mins</span></td>
           </tr>
