@@ -1,20 +1,22 @@
 <script lang="ts">
 	import { onDestroy } from "svelte";
 	import { createSearchStore, searchHandler } from "../lib/stores/search";
-    import type { PageData } from "./$types";
-    export let data: PageData;
+    import busStops from "$lib/data/bus_stops.json";
+
+    // export let data: PageData;
+    // static import instead because the main page data is static anyways
 
     type Product = {
-        caption: "string"
-        name: "string"
-        LongName: "string"
-        ShortName: "string"
-        latitude: "float"
-        longitude: "float"
-        searchTerms: "string"
+        caption: string
+        name: string
+        LongName: string
+        ShortName: string
+        latitude: number
+        longitude: number
+        searchTerms: string
     }
 
-    const searchStops: Product[] = data.busStops.busstops.map((stop: Product) => ({
+    const searchStops: Product[] = busStops.BusStopsResult.busstops.map((stop) => ({
         ...stop,
         searchTerms: `${stop.caption} ${stop.name} ${stop.ShortName} ${stop.LongName}`,
     }));
@@ -55,18 +57,5 @@
             </li>
             {/each}
           </ul>
-    </div>
-</div>
-
-<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-<div tabindex="0" class="collapse collapse-plus border border-base-300 bg-base-100 rounded-box rounded-xl">
-    <div class="collapse-title text-xl font-medium">
-      About
-    </div>
-    <div class="collapse-content"> 
-      <p class="font-semibold text-md">
-        Because the NextBus app is way too bloated and slow. I got on the wrong bus because I couldn't 
-        check the route in time the other day 😢
-      </p>
     </div>
 </div>
