@@ -53,7 +53,7 @@
         <ul class="grid grid-cols-3 menu menu-compact bg-gray-300 dark:bg-gray-900 rounded-xl items-center">
             {#each $searchStore.filtered as stop}
             <li>
-                <a class="hover:underline hover:border rounded-xl" href="/stop/{stop.name}">{stop.caption}</a>
+                <a class="hover:underline hover:border rounded-xl" href="/stop/{stop.name}" data-sveltekit-reload>{stop.caption}</a>
             </li>
             {/each}
           </ul>
