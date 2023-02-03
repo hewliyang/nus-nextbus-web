@@ -16,7 +16,7 @@
 <div class="max-w-2xl mx-auto p-6 flex flex-col justify-center items-center">
     <div class="navbar">
         <div class="flex-1">
-            <h1 class="font-bold text-3xl"><a href="/">BetterNextBus</a></h1>
+            <h1 class="font-bold text-2xl"><a href="/">BetterNextBus</a></h1>
         </div>
         <div>
             <ul class="menu menu-horizontal px-1 z-50">
@@ -39,7 +39,7 @@
         </div>
     </div> 
     <div class="flex justify-center items-center space-x-5 p-5">
-        <a class="btn btn-info rounded-xl" href="/stops">Stops</a>
+        <a class="btn btn-info rounded-xl" href="/">Stops</a>
         <a class="btn btn-success rounded-xl" href="/busroutes">Routes</a>
     </div>
     <slot />
