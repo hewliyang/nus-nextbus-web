@@ -15,7 +15,7 @@
 </script>
 
 <div class="flex flex-col justify-center items-center mb-3">
-    <div class="dark:bg-gray-800 bg-gray-300 p-4 rounded-xl">
+    <div class="p-4">
         <ul class="steps steps-vertical lg:steps-horizontal lg:overflow-x-auto lg:space-x-3">
             <li class="step step-primary">{firstStop?.stop_name}</li>
             {#each stopsCopy as stop}

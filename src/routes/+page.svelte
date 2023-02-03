@@ -47,13 +47,13 @@
 
 <!-- <pre>{JSON.stringify($searchStore.filtered, null, 2)}</pre> -->
 
-<div class="p-5 flex flex-col justify-center items-center">
-    <h2 class="text-2xl font-semibold">Where u at</h2>
+<div class="flex flex-col justify-center items-center mt-3">
+    <h2 class="text-2xl font-semibold">Bus Stops</h2>
     <div class="mt-5">
-        <ul class="grid grid-cols-3 menu menu-compact bg-gray-300 dark:bg-gray-900 rounded-xl items-center">
+        <ul class="grid grid-cols-3 menu menu-compact bg-base-300 dark:bg-gray-900 rounded-xl items-center p-2">
             {#each $searchStore.filtered as stop}
             <li>
-                <a class="hover:underline hover:border rounded-xl" href="/stop/{stop.name}" data-sveltekit-reload>{stop.caption}</a>
+                <a class="hover:underline hover:border" href="/stop/{stop.name}" data-sveltekit-reload>{stop.caption}</a>
             </li>
             {/each}
           </ul>
