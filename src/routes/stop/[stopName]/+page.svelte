@@ -1,8 +1,28 @@
 <script lang="ts">
+    import { addBookmark } from "$lib/bookmarks/bookmark";
+
     export let data;
     const result = data.times
-    const { TimeStamp, shuttles, caption } = result
+    const { TimeStamp, name, shuttles, caption } = result
     const ts = new Date(TimeStamp)
+
+    // type Bookmark = {
+    //   caption: string,
+    //   name: string
+    // }
+
+    // const addBookmark = () => {
+    //   const bookmarks = localStorage.getItem('bookmarks');
+    //   let arr : Bookmark[] = [];
+
+    //   if (bookmarks) {
+    //     arr = JSON.parse(bookmarks) as Bookmark[]
+    //   }
+    //   const newBookmark = {caption: caption, name: name}
+    //   const updatedArr = [...arr, newBookmark]
+    //   localStorage.setItem('bookmarks', JSON.stringify(updatedArr))
+    // }
+
 </script>
 
 <h2 class="text-semibold text-2xl justify-center">{caption}</h2>
@@ -31,3 +51,7 @@
       </tbody>
     </table>
   </div>
+
+  <button class="mt-3 btn btn-outline btn-warning" on:click={() => addBookmark(caption, name)}>
+    Bookmark
+  </button>

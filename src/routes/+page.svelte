@@ -1,7 +1,10 @@
 <script lang="ts">
-	import { onDestroy } from "svelte";
+	import { onMount, onDestroy } from "svelte";
 	import { createSearchStore, searchHandler } from "../lib/stores/search";
+    import type { Bookmark } from "$lib/bookmarks/bookmark";
+    import { getBookmark, deleteBookmark } from "$lib/bookmarks/bookmark";
     import busStops from "$lib/data/bus_stops.json";
+
 
     // export let data: PageData;
     // static import instead because the main page data is static anyways
@@ -29,6 +32,16 @@
         unsubscribe();
     })
 
+    // load bookmarks from window.LocalStorage
+    let bookmarks: Bookmark[] = [];
+
+    onMount(() => {
+        const store = getBookmark();
+        if (store) {
+            bookmarks = store;
+        }
+    });
+
 </script>
 
 <div class="flex justify-end text-xs">
@@ -40,12 +53,26 @@
       <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
       <span>Still a <b>WIP</b>, but usable</span>
     </div>
-  </div>
+</div>
+
+{#if bookmarks.length > 0}
+    <div class="mt-3 flex flex-col justify-center items-center">
+        <h2 class="text-xl font-semibold"> Your Bookmarks </h2>
+        <ul class="grid grid-cols-2 bg-base-200 mt-3 items-center px-2 py-1 rounded-xl">
+            {#each bookmarks as fav}
+                <li class="flex flex-row justify-between items-center space-x-6 mb-2 mt-2 hover:bg-base-300 hover:border p-2 rounded-xl">
+                    <a class="hover:underline text-sm" href="/stop/{fav.name}" data-sveltekit-reload>{fav.caption}</a>
+                    <button class="btn btn-xs btn-square btn-outline" on:click={() => deleteBookmark(fav.name)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </li>
+            {/each}
+        </ul>
+    </div>
+{/if}
 
 <input type="search" placeholder="Search..." bind:value={$searchStore.search} class="input-md border-2 border-cyan-600 border-solid rounded-lg mt-5">
  
-
-<!-- <pre>{JSON.stringify($searchStore.filtered, null, 2)}</pre> -->
 
 <div class="flex flex-col justify-center items-center mt-3">
     <h2 class="text-2xl font-semibold">Bus Stops</h2>

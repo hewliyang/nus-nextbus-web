@@ -12,11 +12,16 @@ export const handle = (async ({ event, resolve }) => {
         theme = cookieTheme;
     }
 
+    if (event.request.url.endsWith("__data.json")) {
+        return new Response("Uh oh!", { status: 404 });
+    }
+
     if (theme) {
         return await resolve(event, {
             transformPageChunk: ({ html }) => 
                 html.replace('data-theme=""', `data-theme="${theme}"`)
         });
     }
+
     return await resolve(event)
 }) satisfies Handle;
