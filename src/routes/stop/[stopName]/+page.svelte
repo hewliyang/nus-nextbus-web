@@ -37,7 +37,7 @@
   </div>
 
   <form action="?/addBookmark&id={name}&caption={caption}" method="POST" use:enhance>
-    <button class="mt-3 btn btn-outline btn-warning">
+    <button class="mt-3 btn btn-outline btn-warning mb-3">
       Bookmark
     </button>
   </form>

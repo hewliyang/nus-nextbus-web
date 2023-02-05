@@ -49,7 +49,7 @@
 {#if bookmarks.length > 0}
     <div class="mt-3 flex flex-col justify-center items-center">
         <h2 class="text-xl font-semibold"> Your Bookmarks </h2>
-        <ul class="grid grid-cols-2 bg-base-200 mt-3 items-center px-2 py-1 rounded-xl">
+        <ul class="grid grid-cols-2 bg-base-200 mt-3 items-center px-2 py-1 rounded-xl border-2 border-orange-400">
             {#each bookmarks as fav}
                 <li class="flex flex-row justify-between items-center space-x-6 mb-2 mt-2 hover:bg-base-300 hover:border p-2 rounded-xl">
                     <a class="hover:underline text-sm" href="/stop/{fav.name}" data-sveltekit-reload>{fav.caption}</a>

@@ -7,12 +7,13 @@ type Bookmark = {
     name: string,
 }
 
-export const load: PageServerLoad = ({ fetch, params }) => {
+export const load: PageServerLoad = ({ fetch, params, setHeaders }) => {
 
     const fetchTimes = async (name: string) => {
         const auth = { "Authorization": `Basic ${NEXTBUS_BASIC_AUTH}`}
         const res = await fetch(`${NEXTBUS_API_URL}/ShuttleService?busstopname=${name}`, {headers: auth})
         const data = await res.json()
+        setHeaders({ "cache-control": "max-age-15" })
         return data.ShuttleServiceResult
     }
 

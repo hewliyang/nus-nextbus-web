@@ -48,7 +48,7 @@
     <footer class="footer px-10 py-4 border-t bg-base-200 text-base-content border-base-300 inset-x-0 bottom-0 mt-auto rounded-2xl flex items-center justify-center">
         <div class="flex items-center grid-flow-col">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 15 15"><path fill="currentColor" d="M2 3c0-1.1.9-2 2-2h7c1.1 0 2 .9 2 2v8c0 1-1 1-1 1v1c0 .55-.45 1-1 1s-1-.45-1-1v-1H5v1c0 .55-.45 1-1 1s-1-.45-1-1v-1c-1 0-1-1-1-1V3Zm1.5 1c-.28 0-.5.22-.5.5v3c0 .28.22.5.5.5h8c.28 0 .5-.22.5-.5v-3c0-.28-.22-.5-.5-.5h-8ZM4 9c-.55 0-1 .45-1 1s.45 1 1 1s1-.45 1-1s-.45-1-1-1Zm7 0c-.55 0-1 .45-1 1s.45 1 1 1s1-.45 1-1s-.45-1-1-1ZM4 2.5c0 .28.22.5.5.5h6c.28 0 .5-.22.5-.5s-.22-.5-.5-.5h-6c-.28 0-.5.22-.5.5Z"/></svg>
-          <p>© 2023 <a href="https://hewliyang.tech" class="hover:underline">hewliyang</a><br/>Open Source: <a href="https://github.com/hewliyang/nus-betternextbus" class="hover:underline">GitHub Repo</a></p>
+          <p>© {new Date().getFullYear()} <a href="https://hewliyang.tech" class="hover:underline font-semibold">hewliyang</a><br/>Open Source: <a href="https://github.com/hewliyang/nus-betternextbus" class="hover:underline font-semibold">GitHub Repo</a></p>
         </div> 
     </footer>
 </div>
