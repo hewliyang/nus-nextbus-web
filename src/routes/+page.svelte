@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { onMount, onDestroy } from "svelte";
+	import { onDestroy } from "svelte";
 	import { createSearchStore, searchHandler } from "../lib/stores/search";
-    import type { Bookmark } from "$lib/bookmarks/bookmark";
-    import { getBookmark, deleteBookmark } from "$lib/bookmarks/bookmark";
     import busStops from "$lib/data/bus_stops.json";
+	import type { PageData } from "./$types";
+	import { enhance, type SubmitFunction } from "$app/forms";
 
-
-    // export let data: PageData;
-    // static import instead because the main page data is static anyways
+    // prerender stored cookie data
+    export let data: PageData;
 
     type Product = {
         caption: string
@@ -32,15 +31,7 @@
         unsubscribe();
     })
 
-    // load bookmarks from window.LocalStorage
-    let bookmarks: Bookmark[] = [];
-
-    onMount(() => {
-        const store = getBookmark();
-        if (store) {
-            bookmarks = store;
-        }
-    });
+    $: ({ bookmarks } = data)
 
 </script>
 
@@ -62,20 +53,23 @@
             {#each bookmarks as fav}
                 <li class="flex flex-row justify-between items-center space-x-6 mb-2 mt-2 hover:bg-base-300 hover:border p-2 rounded-xl">
                     <a class="hover:underline text-sm" href="/stop/{fav.name}" data-sveltekit-reload>{fav.caption}</a>
-                    <button class="btn btn-xs btn-square btn-outline" on:click={() => deleteBookmark(fav.name)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
+                    <form action="?/deleteBookmark&id={fav.name}" method="POST" use:enhance>
+                        <button class="btn btn-xs btn-square btn-outline">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </form>
                 </li>
             {/each}
         </ul>
     </div>
 {/if}
 
-<input type="search" placeholder="Search..." bind:value={$searchStore.search} class="input-md border-2 border-cyan-600 border-solid rounded-lg mt-5">
- 
 
 <div class="flex flex-col justify-center items-center mt-3">
     <h2 class="text-2xl font-semibold">Bus Stops</h2>
+
+    <input type="search" placeholder="Search..." bind:value={$searchStore.search} class="input-md border-2 border-cyan-600 border-solid rounded-lg mt-5">
+ 
     <div class="mt-5">
         <ul class="grid grid-cols-3 menu menu-compact bg-base-300 dark:bg-gray-900 rounded-xl items-center p-2">
             {#each $searchStore.filtered as stop}

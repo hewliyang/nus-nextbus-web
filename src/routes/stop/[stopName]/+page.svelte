@@ -1,27 +1,11 @@
 <script lang="ts">
-    import { addBookmark } from "$lib/bookmarks/bookmark";
+	import { enhance } from "$app/forms";
+
 
     export let data;
     const result = data.times
     const { TimeStamp, name, shuttles, caption } = result
     const ts = new Date(TimeStamp)
-
-    // type Bookmark = {
-    //   caption: string,
-    //   name: string
-    // }
-
-    // const addBookmark = () => {
-    //   const bookmarks = localStorage.getItem('bookmarks');
-    //   let arr : Bookmark[] = [];
-
-    //   if (bookmarks) {
-    //     arr = JSON.parse(bookmarks) as Bookmark[]
-    //   }
-    //   const newBookmark = {caption: caption, name: name}
-    //   const updatedArr = [...arr, newBookmark]
-    //   localStorage.setItem('bookmarks', JSON.stringify(updatedArr))
-    // }
 
 </script>
 
@@ -52,6 +36,8 @@
     </table>
   </div>
 
-  <button class="mt-3 btn btn-outline btn-warning" on:click={() => addBookmark(caption, name)}>
-    Bookmark
-  </button>
+  <form action="?/addBookmark&id={name}&caption={caption}" method="POST" use:enhance>
+    <button class="mt-3 btn btn-outline btn-warning">
+      Bookmark
+    </button>
+  </form>
