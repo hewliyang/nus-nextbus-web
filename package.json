@@ -36,6 +36,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"daisyui": "^2.49.0"
+		"daisyui": "^2.49.0",
+		"svelte-geolocation": "^0.3.0"
 	}
 }

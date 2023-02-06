@@ -4,6 +4,7 @@
     import busStops from "$lib/data/bus_stops.json";
 	import type { PageData } from "./$types";
 	import { enhance } from "$app/forms";
+    import Geolocation from "svelte-geolocation";
 
     // prerender stored cookie data
     export let data: PageData;
@@ -16,6 +17,11 @@
         latitude: number
         longitude: number
         searchTerms: string
+    }
+
+    type Location = {
+        latitude?: number
+        longitude?: number
     }
 
     const searchStops: Product[] = busStops.BusStopsResult.busstops.map((stop) => ({
@@ -33,23 +39,18 @@
 
     $: ({ bookmarks } = data)
 
+    let getPosition = false;
+    $: $searchStore.sort = getPosition;
+    let detail: Location = {};
+    $: $searchStore.pos.latitude = detail.latitude;
+    $: $searchStore.pos.longitude = detail.longitude;
+
 </script>
-
-<!-- <div class="flex justify-end text-xs">
-    <p>Made by <a class="font-semibold text-cyan-500 hover:text-red-400" href="https://github.com/hewliyang">@hewliyang</a></p>
-</div> -->
-
-<!-- <div class="alert alert-warning shadow-lg rounded-xl mt-3 md:justify-center">
-    <div>
-      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-      <span>Still a <b>WIP</b>, but usable</span>
-    </div>
-</div> -->
 
 {#if bookmarks.length > 0}
     <div class="mt-3 flex flex-col justify-center items-center">
         <h2 class="text-xl font-semibold"> Your Bookmarks </h2>
-        <ul class="grid grid-cols-2 bg-base-200 mt-3 items-center px-2 py-1 rounded-xl border-2 border-orange-400">
+        <ul class="grid grid-cols-2 bg-base-200 mt-3 items-center px-1 rounded-xl border-2 border-orange-400">
             {#each bookmarks as fav}
                 <li class="flex flex-row justify-between items-center space-x-6 mb-2 mt-2 hover:bg-base-300 hover:border p-2 rounded-xl">
                     <a class="hover:underline text-sm" href="/stop/{fav.name}" data-sveltekit-reload>{fav.caption}</a>
@@ -70,10 +71,20 @@
 
     <div class="flex items-center mt-5 space-x-2">
         <input type="search" placeholder="Search..." bind:value={$searchStore.search} class="input-md border-2 border-cyan-600 border-solid rounded-lg">
-        <button class="btn btn-sm btn-outline btn-round border-orange-600 border-2">
+        <button class="btn btn-sm btn-outline btn-round border-orange-600 border-2" on:click={() => (getPosition = true)}>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4C9.24 4 7 6.24 7 9c0 2.85 2.92 7.21 5 9.88c2.11-2.69 5-7 5-9.88c0-2.76-2.24-5-5-5zm0 7.5a2.5 2.5 0 0 1 0-5a2.5 2.5 0 0 1 0 5z" opacity=".3"/><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 2.88-2.88 7.19-5 9.88C9.92 16.21 7 11.85 7 9z"/><circle cx="12" cy="9" r="2.5" fill="currentColor"/></svg>
         </button>
     </div>
+
+    <Geolocation
+        getPosition = {getPosition}
+        on:position = {(e) => {
+            detail = {
+                latitude: e.detail.coords.latitude,
+                longitude: e.detail.coords.longitude
+            };
+        }}
+    />
 
     <div class="my-5 ">
         <ul class="grid grid-cols-3 menu menu-compact bg-base-300 dark:bg-gray-900 rounded-xl items-center p-2">
