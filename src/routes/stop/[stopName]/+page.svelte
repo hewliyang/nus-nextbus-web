@@ -1,11 +1,35 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import { invalidate, invalidateAll } from "$app/navigation";
 
+  interface Shuttles {
+    name: string,
+    busstopcode: string,
+    arrivalTime: string,
+    nextArrivalTime: string,
+  }
 
-    export let data;
-    const result = data.times
-    const { TimeStamp, name, shuttles, caption } = result
-    const ts = new Date(TimeStamp)
+  export let data;
+  const result = data.times
+  const stopName = data.times.name
+
+  // disambiguate the terminal stations
+  const terminals: string[] = ["KRB", "OTH", "UTOWN", "COM3"]
+  
+  const { TimeStamp, name, shuttles, caption }: { TimeStamp: string; name: string; shuttles: Shuttles[]; caption:string } = result
+
+  let filteredShuttles: Shuttles[];
+
+  if (terminals.includes(stopName)) {
+    filteredShuttles = shuttles.filter(({ busstopcode }) => {
+      const tokens = busstopcode.split("-");
+      return !(tokens.length > 1 && tokens[2] === "E");
+      });
+  } else {
+    filteredShuttles = shuttles;
+  }
+
+  const ts = new Date(TimeStamp)
 
 </script>
 
@@ -25,7 +49,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each shuttles as {name, arrivalTime, nextArrivalTime}}
+        {#each filteredShuttles as {name, arrivalTime, nextArrivalTime}}
         <tr>
             <td><a class="font-semibold text-gray-400" href="/busroutes#{name}">{name}</a></td>
             <td>{arrivalTime} <span class="text-xs">mins</span></td>
@@ -36,8 +60,16 @@
     </table>
   </div>
 
+<div class="flex flex-row space-x-4 items-center justify-between">
   <form action="?/addBookmark&id={name}&caption={caption}" method="POST" use:enhance>
     <button class="mt-3 btn btn-outline btn-warning mb-3">
       Bookmark
     </button>
   </form>
+  <a class="mt-3 btn btn-outline btn-error mb-3" href="/">
+    Home
+  </a>
+  <a class="mt-3 btn btn-outline btn-success mb-3" href="./{stopName}" data-sveltekit-reload>
+    Refresh
+  </a>
+</div>

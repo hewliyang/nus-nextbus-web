@@ -50,18 +50,20 @@
 {#if bookmarks.length > 0}
     <div class="mt-3 flex flex-col justify-center items-center">
         <h2 class="text-xl font-semibold"> Your Bookmarks </h2>
-        <ul class="grid grid-cols-2 bg-base-200 mt-3 items-center px-1 rounded-xl border-2 border-orange-400">
-            {#each bookmarks as fav}
-                <li class="flex flex-row justify-between items-center space-x-6 mb-2 mt-2 hover:bg-base-300 hover:border p-2 rounded-xl">
-                    <a class="hover:underline text-sm" href="/stop/{fav.name}" data-sveltekit-reload>{fav.caption}</a>
-                    <form action="?/deleteBookmark&id={fav.name}" method="POST" use:enhance>
-                        <button class="btn btn-xs btn-square btn-outline">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
-                    </form>
-                </li>
-            {/each}
-        </ul>
+        <div class="bg-gradient-to-r from-purple-600 via-blue-500 to-orange-400 p-0.5 rounded-lg mt-3">
+            <ul class="grid grid-cols-2 bg-base-200 items-center rounded-md p-1">
+                {#each bookmarks as fav}
+                    <li class="flex flex-row justify-between items-center space-x-6 hover:bg-base-300 hover:border p-2 rounded-xl">
+                        <a class="hover:underline text-sm" href="/stop/{fav.name}">{fav.caption}</a>
+                        <form action="?/deleteBookmark&id={fav.name}" method="POST" use:enhance>
+                            <button class="btn btn-xs btn-square btn-outline">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </form>
+                    </li>
+                {/each}
+            </ul>
+        </div>
     </div>
 {/if}
 
@@ -90,7 +92,7 @@
         <ul class="grid grid-cols-3 menu menu-compact bg-base-300 dark:bg-gray-900 rounded-xl items-center p-2">
             {#each $searchStore.filtered as stop}
             <li>
-                <a class="hover:underline hover:border" href="/stop/{stop.name}" data-sveltekit-reload>{stop.caption}</a>
+                <a class="hover:underline hover:border" href="/stop/{stop.name}">{stop.caption}</a>
             </li>
             {/each}
           </ul>
