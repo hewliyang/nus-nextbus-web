@@ -35,7 +35,7 @@
                 <li class="step">{stop_name}</li>
             {/each}
             {#if curStop != firstStop && curStop != lastStop}
-                <li class="step step-secondary">{curStop.stop_name}</li>
+                <li id="current" class="step step-secondary">{curStop.stop_name}</li>
             {/if}
             {#each stopsAfter as { stop_name }}
                 <li class="step step-success">{stop_name}</li>
