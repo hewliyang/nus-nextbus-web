@@ -2,6 +2,7 @@
 	import type { PageData } from "./$types";
     import routes from "$lib/data/routes.json";
     import DecoratedBusRoute from "../../../../../components/DecoratedBusRoute.svelte";
+    import { page } from "$app/stores";
 
     export let data: PageData;
 

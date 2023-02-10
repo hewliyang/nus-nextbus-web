@@ -2,12 +2,9 @@
 	import { onDestroy } from "svelte";
 	import { createSearchStore, searchHandler } from "../lib/stores/search";
     import busStops from "$lib/data/bus_stops.json";
-	import type { PageData } from "./$types";
 	import { enhance } from "$app/forms";
     import Geolocation from "svelte-geolocation";
-
-    // prerender stored cookie data
-    export let data: PageData;
+    import { page } from "$app/stores";
 
     type Product = {
         caption: string
@@ -37,7 +34,7 @@
         unsubscribe();
     })
 
-    $: ({ bookmarks } = data)
+    $: ({ bookmarks } = $page.data)
 
     let getPosition = false;
     $: $searchStore.sort = getPosition;

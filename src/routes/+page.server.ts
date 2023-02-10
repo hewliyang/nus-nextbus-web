@@ -7,12 +7,13 @@ type Bookmark = {
 }
 
 // pass bookmarks array to page.svelte to SSR the stored bookmarks in cookies
-export const load: PageServerLoad = ({ cookies }) => {
-    return {
-        bookmarks: JSON.parse(cookies.get('bookmarks') || "[]"),
-    }
-};
+// export const load: PageServerLoad = ({ cookies }) => {
+//     return {
+//         bookmarks: JSON.parse(cookies.get('bookmarks') || "[]"),
+//     }
+// };
 
+// ^ we already do this in layout. can reaccess using $page.data.bookmarks instead!
 
 export const actions: Actions = {
     setTheme: async ({ url, cookies }) => {

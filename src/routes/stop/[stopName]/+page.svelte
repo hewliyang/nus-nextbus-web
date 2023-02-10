@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+  import { page } from "$app/stores";
 
   interface Shuttles {
     name: string,
@@ -27,6 +28,21 @@
   } else {
     filteredShuttles = shuttles;
   }
+
+  // check if current stop is already in bookmarks
+
+  type Bookmark = {
+    caption: string
+    name: string
+  }
+  
+  let alreadyBookmarked: boolean;
+  let bookmarks: string[];
+  let bookmark_objs: Bookmark[];
+
+  $: bookmark_objs= $page.data.bookmarks;
+  $: bookmarks = bookmark_objs.map(obj => obj.name);
+  $: alreadyBookmarked = bookmarks.includes(stopName);
 
   const ts = new Date(TimeStamp)
 
@@ -61,8 +77,12 @@
 
 <div class="flex flex-row space-x-4 items-center justify-between">
   <form action="?/addBookmark&id={name}&caption={caption}" method="POST" use:enhance>
-    <button class="mt-3 btn btn-outline btn-warning mb-3">
-      Bookmark
+    <button class="mt-3 btn btn-outline btn-warning mb-3" disabled={alreadyBookmarked}>
+      {#if alreadyBookmarked}  
+        Bookmarked!
+      {:else}
+        Bookmark
+      {/if}
     </button>
   </form>
   <a class="mt-3 btn btn-outline btn-error mb-3" href="/">
