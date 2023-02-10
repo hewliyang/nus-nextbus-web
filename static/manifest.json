@@ -1,0 +1,23 @@
+{
+    "id": "nus-betternextbus",
+    "name": "NUS BetterNextBus",
+    "description": "A faster way to get your ISB timings!",
+    "short_name": "NUS NextBus",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "lang": "en",
+    "dir": "ltr",
+    "icons": [
+        {
+            "src": "/192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

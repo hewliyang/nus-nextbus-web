@@ -1,17 +1,18 @@
-<svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<style>
-    path {
-        fill: white;
-    }
-</style>
-<g clip-path="url(#clip0_2_7)">
-<path d="M16.1111 11.4348H17.8889L18.4578 9.22609C18.6711 8.39217 18.6711 7.52 18.4578 6.68696L17.5067 2.97391C17.362 2.40995 17.029 1.90942 16.5603 1.5518C16.0917 1.19418 15.5144 0.999967 14.92 1H2.77778C2.30628 1 1.8541 1.18323 1.5207 1.50938C1.1873 1.83553 1 2.27788 1 2.73913V11.4348H2.77778M11.6667 11.4348H7.22222" stroke="black" stroke-width="2.66667" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M5 14.0435C6.2273 14.0435 7.22222 13.0702 7.22222 11.8696C7.22222 10.6689 6.2273 9.69565 5 9.69565C3.7727 9.69565 2.77778 10.6689 2.77778 11.8696C2.77778 13.0702 3.7727 14.0435 5 14.0435Z" stroke="black" stroke-width="2.66667" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M13.8889 14.0435C15.1162 14.0435 16.1111 13.0702 16.1111 11.8696C16.1111 10.6689 15.1162 9.69565 13.8889 9.69565C12.6616 9.69565 11.6667 10.6689 11.6667 11.8696C11.6667 13.0702 12.6616 14.0435 13.8889 14.0435Z" stroke="black" stroke-width="2.66667" stroke-linecap="round" stroke-linejoin="round"/>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g style="mix-blend-mode:exclusion" filter="url(#filter0_d_5_7)">
+<rect x="4" width="192" height="192" fill="#D76C30"/>
 </g>
+<path d="M137.5 72H62.5V48.5H137.5M128.125 107.25C123.125 107.25 118.75 103.138 118.75 98.4375C118.75 93.7375 123.125 89.625 128.125 89.625C133.125 89.625 137.5 93.7375 137.5 98.4375C137.5 103.138 133.125 107.25 128.125 107.25ZM71.875 107.25C66.875 107.25 62.5 103.138 62.5 98.4375C62.5 93.7375 66.875 89.625 71.875 89.625C76.875 89.625 81.25 93.7375 81.25 98.4375C81.25 103.138 76.875 107.25 71.875 107.25ZM50 101.375C50 106.662 52.5 111.362 56.25 114.3V124.875C56.25 128.4 58.75 130.75 62.5 130.75H68.75C72.5 130.75 75 128.4 75 124.875V119H125V124.875C125 128.4 127.5 130.75 131.25 130.75H137.5C141.25 130.75 143.75 128.4 143.75 124.875V114.3C147.5 111.362 150 106.662 150 101.375V48.5C150 27.9375 127.5 25 100 25C72.5 25 50 27.9375 50 48.5V101.375ZM68.75 148.375H93.75V136.625L131.25 154.25H106.25V166L68.75 148.375Z" fill="black"/>
 <defs>
-<clipPath id="clip0_2_7">
-<rect width="19.6178" height="15.0435" fill="white"/>
-</clipPath>
+<filter id="filter0_d_5_7" x="0" y="0" width="200" height="200" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_5_7"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_5_7" result="shape"/>
+</filter>
 </defs>
 </svg>
