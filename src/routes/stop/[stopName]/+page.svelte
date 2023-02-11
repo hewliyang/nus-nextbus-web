@@ -48,13 +48,13 @@
 
 </script>
 
-<h2 class="text-semibold text-2xl justify-center">{caption}</h2>
+<h2 class="text-semibold text-2xl text-center mb-2">{caption}</h2>
 
 <h3>Last updated at: {ts.toLocaleString("en-SG")}</h3>
 
 
 <div class="overflow-x-auto mt-5">
-    <table class="table table-compact w-full">
+    <table class="table table-compact w-full text-center">
       <!-- head -->
       <thead>
         <tr>
@@ -66,7 +66,7 @@
       <tbody>
         {#each filteredShuttles as {name, arrivalTime, nextArrivalTime}}
         <tr>
-            <td><a class="font-semibold text-info-content underline" href="/stop/{stopName}/route/{name}#current">{name}</a></td>
+            <td><a class="font-semibold text-info-content text-lg" href="/stop/{stopName}/route/{name}#current"><code>{name}</code></a></td>
             <td>{arrivalTime} <span class="text-xs">mins</span></td>
             <td>{nextArrivalTime} <span class="text-xs">mins</span></td>
           </tr>
@@ -75,7 +75,7 @@
     </table>
   </div>
 
-<div class="flex flex-row space-x-4 items-center justify-between">
+<div class="flex flex-row space-x-4 items-center justify-between mt-3">
   <form action="?/addBookmark&id={name}&caption={caption}" method="POST" use:enhance>
     <button class="mt-3 btn btn-outline btn-warning mb-3" disabled={alreadyBookmarked}>
       {#if alreadyBookmarked}  

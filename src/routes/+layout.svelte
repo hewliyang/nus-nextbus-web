@@ -41,7 +41,7 @@
     </div> 
     <div class="flex justify-center items-center space-x-5 p-5">
         <a class="btn btn-info rounded-xl" href="/">Stops</a>
-        <a class="btn btn-success rounded-xl" href="/busroutes">Routes</a>
+        <a class="btn btn-warning rounded-xl" href="/busroutes">All Routes</a>
     </div>
     
     <slot />
