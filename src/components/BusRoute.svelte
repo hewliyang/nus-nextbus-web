@@ -14,7 +14,7 @@
 
 </script>
 
-<div class="flex flex-col justify-center items-center mb-3">
+<div class="mb-3">
     <div class="p-4">
         <ul class="steps steps-vertical lg:steps-horizontal lg:max-w-2xl lg:space-x-5">
             <li class="step step-primary">{firstStop?.stop_name}</li>

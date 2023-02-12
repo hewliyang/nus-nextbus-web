@@ -11,7 +11,7 @@
 
   export let data;
   const result = data.times
-  const stopName = data.times.name
+  const stopName: string = data.times.name
 
   // disambiguate the terminal stations
   const terminals: string[] = ["KRB", "OTH", "UTOWN", "COM3"]
@@ -36,13 +36,11 @@
     name: string
   }
   
-  let alreadyBookmarked: boolean;
-  let bookmarks: string[];
   let bookmark_objs: Bookmark[];
+  let alreadyBookmarked: boolean;
 
   $: bookmark_objs= $page.data.bookmarks;
-  $: bookmarks = bookmark_objs.map(obj => obj.name);
-  $: alreadyBookmarked = bookmarks.includes(stopName);
+  $: alreadyBookmarked = bookmark_objs.map(obj => obj.name).includes(stopName);
 
   const ts = new Date(TimeStamp)
 
@@ -66,7 +64,15 @@
       <tbody>
         {#each filteredShuttles as {name, arrivalTime, nextArrivalTime}}
         <tr>
-            <td><a class="font-semibold text-info-content text-lg" href="/stop/{stopName}/route/{name}#current"><code>{name}</code></a></td>
+            <td>
+              {#if name.slice(0,3) === "PUB"}
+                <code class="font-semibold text-md">{name.slice(4)}</code>
+              {:else}
+                <a class="font-semibold text-content text-md underline underline-offset-4" href="/stop/{stopName}/route/{name}#current">
+                  <code>{name}</code>
+                </a>
+              {/if}
+            </td>
             <td>{arrivalTime} <span class="text-xs">mins</span></td>
             <td>{nextArrivalTime} <span class="text-xs">mins</span></td>
           </tr>
