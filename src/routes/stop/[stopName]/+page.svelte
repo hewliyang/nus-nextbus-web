@@ -66,10 +66,10 @@
         <tr>
             <td>
               {#if name.slice(0,3) === "PUB"}
-                <code class="font-semibold text-md">{name.slice(4)}</code>
+                <span class="font-semibold text-lg">{name.slice(4)}</span>
               {:else}
-                <a class="font-semibold text-content text-md underline underline-offset-4" href="/stop/{stopName}/route/{name}#current">
-                  <code>{name}</code>
+                <a class="font-semibold text-content text-lg font-sans underline underline-offset-4" href="/stop/{stopName}/route/{name}#current">
+                  {name}
                 </a>
               {/if}
             </td>
@@ -81,7 +81,7 @@
     </table>
   </div>
 
-<div class="flex flex-row space-x-4 items-center justify-between mt-3">
+<div class="flex flex-row space-x-4 items-center justify-between my-3">
   <form action="?/addBookmark&id={name}&caption={caption}" method="POST" use:enhance>
     <button class="mt-3 btn btn-outline btn-warning mb-3" disabled={alreadyBookmarked}>
       {#if alreadyBookmarked}  
