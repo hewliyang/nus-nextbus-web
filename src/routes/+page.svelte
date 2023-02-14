@@ -51,7 +51,7 @@
             <ul class="grid grid-cols-2 bg-base-200 items-center rounded-md p-1">
                 {#each bookmarks as fav}
                     <li class="flex flex-row justify-between items-center space-x-6 hover:bg-base-300 hover:border p-2 rounded-xl">
-                        <a class="hover:underline text-sm" href="/stop/{fav.name}">{fav.caption}</a>
+                        <a class="hover:underline text-sm w-full" href="/stop/{fav.name}">{fav.caption}</a>
                         <form action="?/deleteBookmark&id={fav.name}" method="POST" use:enhance>
                             <button class="btn btn-xs btn-square btn-outline" aria-label="delete-bookmark">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
