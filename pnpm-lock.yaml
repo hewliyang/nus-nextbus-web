@@ -6,6 +6,7 @@ specifiers:
   '@sveltejs/kit': ^1.5.0
   '@typescript-eslint/eslint-plugin': ^5.51.0
   '@typescript-eslint/parser': ^5.51.0
+  '@vercel/analytics': ^0.1.8
   autoprefixer: ^10.4.13
   daisyui: ^2.50.0
   eslint: ^8.33.0
@@ -24,6 +25,7 @@ specifiers:
   vitest: ^0.28.4
 
 dependencies:
+  '@vercel/analytics': 0.1.8
   daisyui: 2.50.0_gbtt6ss3tbiz4yjtvdr6fbrj44
   svelte-geolocation: 0.3.0
 
@@ -553,6 +555,12 @@ packages:
       '@typescript-eslint/types': 5.51.0
       eslint-visitor-keys: 3.3.0
     dev: true
+
+  /@vercel/analytics/0.1.8:
+    resolution: {integrity: sha512-PQrOI8BJ9qUiVJuQfnKiJd15eDjDJH9TBKsNeMrtelT4NAk7d9mBVz1CoZkvoFnHQ0OW7Xnqmr1F2nScfAnznQ==}
+    peerDependencies:
+      react: ^16.8||^17||^18
+    dev: false
 
   /@vitest/expect/0.28.4:
     resolution: {integrity: sha512-JqK0NZ4brjvOSL8hXAnIsfi+jxDF7rH/ZWCGCt0FAqRnVFc1hXsfwXksQvEnKqD84avRt3gmeXoK4tNbmkoVsQ==}

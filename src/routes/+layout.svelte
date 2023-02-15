@@ -3,6 +3,10 @@
     import { page } from "$app/stores";
     import SEO from "../components/SEO.svelte";
     import "../app.css"
+    import { dev } from '$app/environment';
+    import { inject } from '@vercel/analytics';
+
+    inject({ mode: dev ? 'development' : 'production' });
 
     const submitUpdateTheme: SubmitFunction = ({action}) => {
         const theme = action.searchParams.get('theme')
