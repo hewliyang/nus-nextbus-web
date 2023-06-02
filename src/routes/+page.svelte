@@ -45,8 +45,8 @@
 </script>
 
 {#if bookmarks.length > 0}
-    <div class="mt-3 flex flex-col justify-center items-center">
-        <h2 class="text-xl font-semibold"> Your Bookmarks </h2>
+    <div class="flex flex-col justify-center items-center rounded-lg shadow-xl">
+        <h2 class="text-2xl font-semibold tracking-tight"> Your Bookmarks </h2>
         <div class="bg-gradient-to-r from-purple-600 via-blue-500 to-orange-400 p-0.5 rounded-lg mt-3">
             <ul class="grid grid-cols-2 bg-base-200 items-center rounded-md p-1">
                 {#each bookmarks as fav}
@@ -65,10 +65,10 @@
 {/if}
 
 
-<div class="flex flex-col justify-center items-center mt-3">
-    <h2 class="text-2xl font-semibold">Bus Stops</h2>
+<div class="flex flex-col justify-center items-center mt-5">
+    <h2 class="text-2xl font-semibold tracking-tight">Bus Stops</h2>
 
-    <div class="flex items-center mt-5 space-x-2">
+    <div class="flex items-center mt-3 space-x-2">
         <input type="search" placeholder="Search..." bind:value={$searchStore.search} class="input-md border-2 border-cyan-600 border-solid rounded-lg">
         <button class="btn btn-sm btn-outline btn-round border-orange-600 border-2" aria-label="get-geolocation" on:click={() => (getPosition = true)}>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4C9.24 4 7 6.24 7 9c0 2.85 2.92 7.21 5 9.88c2.11-2.69 5-7 5-9.88c0-2.76-2.24-5-5-5zm0 7.5a2.5 2.5 0 0 1 0-5a2.5 2.5 0 0 1 0 5z" opacity=".3"/><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 2.88-2.88 7.19-5 9.88C9.92 16.21 7 11.85 7 9z"/><circle cx="12" cy="9" r="2.5" fill="currentColor"/></svg>
@@ -85,7 +85,7 @@
         }}
     />
 
-    <div class="my-5 ">
+    <div class="my-5 shadow-lg">
         <ul class="grid grid-cols-3 menu menu-compact bg-base-300 dark:bg-gray-900 rounded-xl items-center p-2">
             {#each $searchStore.filtered as stop}
             <li>

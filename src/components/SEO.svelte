@@ -1,12 +1,7 @@
-<script lang="ts">
-
-</script>
-
-
 <svelte:head>
-    <title>NUS BetterNextBus</title>
-    <meta name="title" content="NUS BetterNextBus">
-    <meta name="description" content="A faster way of getting your ISB timings!">
+    <title>NUS NextBus</title>
+    <meta name="title" content="NUS NextBus">
+    <meta name="description" content="NUS Internal Shuttle Bus Timings">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
     <meta name="google-site-verification" content="X5Gix4InPC8naCq_jdp43uouWw7_pekxQEgoZbAIBbc" />
