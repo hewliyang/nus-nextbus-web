@@ -44,10 +44,14 @@
 </script>
 
 {#if bookmarks.length > 0}
-	<div class="flex flex-col justify-center items-center rounded-lg shadow-xl">
+	<div class="flex flex-col justify-center items-center rounded shadow-xl">
 		<h2 class="text-2xl font-semibold tracking-tight">Bookmarks 🔖</h2>
-		<div class="bg-gradient-to-r from-purple-600 via-blue-500 to-orange-400 p-0.5 rounded-lg mt-3">
-			<ul class="grid grid-cols-2 bg-neutral-50 dark:bg-neutral-800 items-center rounded-md p-1">
+		<div class="bg-gradient-to-r from-purple-600 via-blue-500 to-orange-400 p-0.5 rounded mt-3">
+			<ul
+				class={`grid ${
+					bookmarks.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
+				} bg-neutral-50 dark:bg-neutral-800 items-center rounded p-1`}
+			>
 				{#each bookmarks as fav}
 					<li
 						class="flex flex-row justify-between items-center space-x-6 hover:bg-base-300 hover:border p-2 rounded-xl"

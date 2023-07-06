@@ -18,9 +18,11 @@
 </script>
 
 <div class="max-w-2xl mx-auto px-6 pb-3 flex flex-col items-center justify-between min-h-screen">
-	<nav class="navbar border-b border-slate-400 mb-3 justify-between h-14 p-3">
+	<nav class="navbar justify-between">
 		<div class="flex-1">
-			<h1 class="font-bold text-2xl tracking-tighter"><a href="/">NUS NextBus 🚌</a></h1>
+			<h1 class="font-bold text-2xl tracking-tighter hover:text-gray-400 dark:hover:text-gray-100">
+				<a href="/">NUS NextBus 🚌</a>
+			</h1>
 		</div>
 		<div>
 			<div class="flex gap-3 mr-3 items-center">
@@ -29,9 +31,12 @@
 					>All Routes</a
 				>
 			</div>
-			<ul class="menu menu-xs menu-horizontal rounded-box z-1">
+			<ul class="menu menu-xs menu-horizontal z-1">
 				<li>
-					<button class="button" aria-label="switch-theme">
+					<button
+						class="border rounded-xl p-1.5 border-neutral-200 dark:border-neutral-700"
+						aria-label="switch-theme"
+					>
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
 							<path
 								fill="currentColor"
@@ -69,7 +74,7 @@
 	<slot />
 
 	<footer
-		class="footer px-10 py-4 border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-base-content inset-x-0 bottom-0 mt-auto rounded-2xl flex items-center justify-center shadow-xl"
+		class="footer px-10 py-4 border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-base-content inset-x-0 bottom-0 mt-auto rounded flex items-center justify-center shadow-xl"
 	>
 		<div class="flex items-center grid-flow-col">
 			<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 15 15"
