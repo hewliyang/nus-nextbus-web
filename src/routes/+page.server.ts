@@ -54,5 +54,15 @@ export const actions: Actions = {
             status: 200,
         }
 
+    },
+    closeAlert: async({ cookies }) => {
+        try {
+            cookies.set('alert', 'false', { path: '/', maxAge: 60*60*24*365 })
+        } catch (err) {
+            console.error(err)
+            return fail(500, {
+                message: JSON.stringify(err)
+            })
+        } 
     }
 };

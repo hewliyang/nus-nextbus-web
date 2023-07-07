@@ -54,33 +54,33 @@
 
 <h3>Last updated at: {ts.toLocaleString('en-SG')}</h3>
 
-<div class="overflow-x-auto mt-5">
-	<table class="table table-compact w-full text-center">
+<div class="relative overflow-x-auto mt-5">
+	<table class="w-full text-center">
 		<!-- head -->
-		<thead>
+		<thead class="text-sm text-black uppercase dark:text-white bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700">
 			<tr>
-				<th>Route</th>
-				<th>Arrival</th>
-				<th>Next Arrival</th>
+				<th class="px-6 py-3 rounded-l-lg">Route</th>
+				<th class="px-6 py-3">Arrival</th>
+				<th class="px-6 py-3 rounded-r-lg">Next Arrival</th>
 			</tr>
 		</thead>
 		<tbody>
 			{#each filteredShuttles as { name, arrivalTime, nextArrivalTime }}
-				<tr>
-					<td>
+				<tr class="border-b dark:border-b-gray-700 ">
+					<td class="px-6 py-3 font-medium text-gray-900 dark:text-white">
 						{#if name.slice(0, 3) === 'PUB'}
-							<span class="font-semibold text-lg">{name.slice(4)}</span>
+							<span class="text-lg font-semibold font-mono">{name.slice(4)}</span>
 						{:else}
 							<a
-								class="font-semibold text-content text-lg font-sans underline underline-offset-4"
+								class="text-lg font-semibold font-mono btn btn-tertiary btn-sm"
 								href="/stop/{stopName}/route/{name}#current"
 							>
 								{name}
 							</a>
 						{/if}
 					</td>
-					<td>{arrivalTime} <span class="text-xs">mins</span></td>
-					<td>{nextArrivalTime} <span class="text-xs">mins</span></td>
+					<td class="px-6 py-3">{arrivalTime} <span class="text-xs">mins</span></td>
+					<td class="px-6 py-3">{nextArrivalTime} <span class="text-xs">mins</span></td>
 				</tr>
 			{/each}
 		</tbody>

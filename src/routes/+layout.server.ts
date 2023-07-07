@@ -5,5 +5,6 @@ import type { PageServerLoad } from "./$types";
 export const load: PageServerLoad = ({ cookies }) => {
     return {
         bookmarks: JSON.parse(cookies.get('bookmarks') || "[]"),
+        alert: JSON.parse(cookies.get('alert') || 'true')
     }
 };
