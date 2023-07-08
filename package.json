@@ -36,6 +36,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@fontsource-variable/inter": "^5.0.4",
 		"@vercel/analytics": "^0.1.8",
 		"daisyui": "^2.50.0",
 		"svelte-geolocation": "^0.3.0"

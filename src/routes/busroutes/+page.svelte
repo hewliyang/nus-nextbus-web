@@ -2,22 +2,20 @@
 	import BusRoute from '../../components/BusRoute.svelte';
 	import routes from '$lib/data/routes.json';
 
-    type Stop = {
+	type Stop = {
 		seq: number;
 		stop_name: string;
 		busstopcode: string;
 	};
 
-    let routesWithType: Record<string, Stop[]> = routes
-	let stops: Stop[] = [];
-    let selectedRoute = 'D2';
+	let routesWithType: Record<string, Stop[]> = routes;
+	let selectedRoute = 'D2';
 	const keys = Object.keys(routes);
-    $: data = routesWithType[selectedRoute]
-
+	$: stops = routesWithType[selectedRoute];
 </script>
 
-<div class="flex flex-col items-center space-y-4">
-	<h1 class="text-2xl font-bold">Routes</h1>
+<div class="flex flex-col items-center space-y-4 mb-4">
+	<h1 class="text-2xl font-semibold">Routes</h1>
 
 	<div class="btn-group">
 		{#each keys as key}
@@ -31,9 +29,10 @@
 			/>
 		{/each}
 	</div>
-
-	<h3 class="text-xl font-bold">{selectedRoute}</h3>
-	<!-- <pre>{JSON.stringify(stops, null, 2)}</pre> -->
-	<BusRoute bind:stops={data} />
-    
+	<!-- <h3 class="text-xl font-bold">{selectedRoute}</h3> -->
+	<div
+		class="border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 rounded px-4 py-2"
+	>
+		<BusRoute bind:stops />
+	</div>
 </div>
