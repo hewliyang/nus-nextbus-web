@@ -57,7 +57,9 @@
 <div class="relative overflow-x-auto mt-5">
 	<table class="w-full text-center">
 		<!-- head -->
-		<thead class="text-sm text-black uppercase dark:text-white bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700">
+		<thead
+			class="text-sm text-black uppercase dark:text-white bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+		>
 			<tr>
 				<th class="px-6 py-3 rounded-l-lg">Route</th>
 				<th class="px-6 py-3">Arrival</th>
@@ -66,13 +68,13 @@
 		</thead>
 		<tbody>
 			{#each filteredShuttles as { name, arrivalTime, nextArrivalTime }}
-				<tr class="border-b dark:border-b-gray-700 ">
+				<tr class="border-b dark:border-b-gray-700">
 					<td class="px-6 py-3 font-medium text-gray-900 dark:text-white">
 						{#if name.slice(0, 3) === 'PUB'}
 							<span class="text-lg font-semibold font-mono">{name.slice(4)}</span>
 						{:else}
 							<a
-								class="text-lg font-semibold font-mono btn btn-tertiary btn-sm"
+								class="text-lg font-semibold font-mono px-2.5 py-1.5 rounded border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
 								href="/stop/{stopName}/route/{name}#current"
 							>
 								{name}
