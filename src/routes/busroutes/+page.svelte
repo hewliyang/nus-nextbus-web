@@ -16,7 +16,11 @@
 
 <div class="flex flex-col items-center space-y-4 mb-4">
 	<h1 class="text-2xl font-semibold">Routes</h1>
-
+	<!-- <input
+		class="input input-sm input-bordered w-full"
+		placeholder="Search for routes that include X stop"
+		bind:value={searchQuery}
+	/> -->
 	<div class="btn-group">
 		{#each keys as key}
 			<input
@@ -29,7 +33,6 @@
 			/>
 		{/each}
 	</div>
-	<!-- <h3 class="text-xl font-bold">{selectedRoute}</h3> -->
 	<div
 		class="border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 rounded px-4 py-2"
 	>

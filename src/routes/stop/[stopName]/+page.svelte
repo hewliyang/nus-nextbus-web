@@ -14,7 +14,7 @@
 	const stopName: string = data.times.name;
 
 	// disambiguate the terminal stations
-	const terminals: string[] = ['KRB', 'OTH', 'UTOWN', 'COM3'];
+	const terminals: string[] = ['KRB', 'OTH', 'UTOWN', 'COM3', 'OTH'];
 
 	const {
 		TimeStamp,

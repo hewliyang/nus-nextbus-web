@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { createSearchStore, searchHandler } from '../lib/stores/search';
-	import busStops from '$lib/data/bus_stops.json';
+	import busStops from '$lib/data/stops.json';
 	import { enhance } from '$app/forms';
 	import Geolocation from 'svelte-geolocation';
 	import { page } from '$app/stores';
