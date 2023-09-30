@@ -1,13 +1,10 @@
 <script lang="ts">
-	import { enhance, type SubmitFunction } from '$app/forms';
+	import { enhance } from '$app/forms';
+	import type { SubmitFunction } from '@sveltejs/kit';
 	import { page } from '$app/stores';
-	import SEO from '../components/SEO.svelte';
 	import '../app.css';
 	import { dev } from '$app/environment';
-	import { inject } from '@vercel/analytics';
 	import '@fontsource-variable/inter';
-
-	inject({ mode: dev ? 'development' : 'production' });
 
 	const submitUpdateTheme: SubmitFunction = ({ action }) => {
 		const theme = action.searchParams.get('theme');
@@ -17,6 +14,17 @@
 		}
 	};
 </script>
+
+<!-- only inject the tracking script if in prod -->
+<svelte:head>
+	{#if !dev}
+		<script
+			async
+			src="https://umami.hewliyang.tech/script.js"
+			data-website-id="d6998608-6fea-427f-a123-c562f07e20be"
+		></script>
+	{/if}
+</svelte:head>
 
 <div class="max-w-2xl mx-auto px-6 pb-3 flex flex-col items-center justify-between min-h-screen">
 	<nav class="navbar justify-between">
@@ -96,5 +104,3 @@
 		</div>
 	</footer>
 </div>
-
-<SEO />
