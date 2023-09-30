@@ -24,20 +24,20 @@ Also, when location services load slowly, so does the app on boot. There isn't a
 
 ## Developing
 
+This project uses Bun as the package manager but feel free to delete `bun.lockb` and install
+with `pnpm`/`npm`/`yarn`.
+
 Install dependencies
 
 ```bash
-pnpm i
+bun install
 
 cp .env.example .env # setup ur config here
 ```
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
 ```bash
-pnpm run dev
-
-# or start the server and open the app in a new browser tab
-pnpm run dev --open
+bun run dev
 ```
 
 ## Disclaimer
