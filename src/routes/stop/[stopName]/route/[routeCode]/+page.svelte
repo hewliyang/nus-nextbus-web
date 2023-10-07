@@ -2,7 +2,6 @@
 	import type { PageData } from './$types';
 	import routes from '$lib/data/routes.json';
 	import DecoratedBusRoute from '../../../../../components/DecoratedBusRoute.svelte';
-	import { page } from '$app/stores';
 
 	export let data: PageData;
 
@@ -12,11 +11,13 @@
 		busstopcode: string;
 	};
 
-	const routes2: { [key: string]: Stop[] } = routes;
+	const routes2: { [key: string]: Stop[] } = routes; // typescript
 	const stopName: string = data.stopName;
 	const routeCode: string = data.routeCode;
 </script>
 
-<DecoratedBusRoute stops={routes2[routeCode]} curStopCode={stopName} route={routeCode} />
+<div class="flex flex-col py-4 space-y-4 items-center justify-center">
+	<DecoratedBusRoute stops={routes2[routeCode]} curStopCode={stopName} route={routeCode} />
 
-<a class="mt-1 btn btn-outline btn-error mb-5" href="/stop/{stopName}"> Back </a>
+	<a class="mt-1 btn btn-outline btn-error mb-5" href="/stop/{stopName}"> Back </a>
+</div>

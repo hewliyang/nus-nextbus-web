@@ -12,7 +12,9 @@
 	$: lastStop = stopsCopy.pop();
 </script>
 
-<div>
+<div
+	class="border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 rounded px-4 py-2"
+>
 	<div>
 		<ul class="steps steps-vertical">
 			<li class="step step-primary">

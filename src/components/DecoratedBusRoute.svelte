@@ -22,9 +22,11 @@
 	const stopsAfter: Stop[] = stopsCopy.slice(curStopIndex + 1, -1);
 </script>
 
-<div class="flex flex-col justify-center items-center">
+<div
+	class="border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 rounded px-4 py-2 flex flex-col justify-center items-center"
+>
 	<h2 class="text-xl font-semibold mt-3">{route}</h2>
-	<div class="p-4">
+	<div class="p-4 text-left">
 		<ul class="steps steps-vertical">
 			{#if curStop === firstStop}
 				<li class="step step-secondary">{firstStop?.stop_name}</li>

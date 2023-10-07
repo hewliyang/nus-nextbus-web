@@ -1,481 +1,523 @@
 {
-    "A1": [
-        {
-            "seq": 1,
-            "stop_name": "Kent Ridge Bus Terminal",
-            "busstopcode": "KRB"
-        },
-        {
-            "seq": 2,
-            "stop_name": "LT 13",
-            "busstopcode": "LT13"
-        },
-        {
-            "seq": 3,
-            "stop_name": "AS 5",
-            "busstopcode": "AS5"
-        },
-        {
-            "seq": 4,
-            "stop_name": "COM 2",
-            "busstopcode": "COM2"
-        },
-        {
-            "seq": 5,
-            "stop_name": "BIZ 2",
-            "busstopcode": "BIZ2"
-        },
-        {
-            "seq": 6,
-            "stop_name": "Opp TCOMS",
-            "busstopcode": "TCOMS-OPP"
-        },
-        {
-            "seq": 7,
-            "stop_name": "Prince George's Park",
-            "busstopcode": "PGP"
-        },
-        {
-            "seq": 8,
-            "stop_name": "Kent Ridge MRT",
-            "busstopcode": "KR-MRT"
-        },
-        {
-            "seq": 9,
-            "stop_name": "LT 27",
-            "busstopcode": "LT27"
-        },
-        {
-            "seq": 10,
-            "stop_name": "University Hall",
-            "busstopcode": "UHALL"
-        },
-        {
-            "seq": 11,
-            "stop_name": "Opp University Health Centre",
-            "busstopcode": "UHC-OPP"
-        },
-        {
-            "seq": 12,
-            "stop_name": "Yusof Ishak House",
-            "busstopcode": "YIH"
-        },
-        {
-            "seq": 13,
-            "stop_name": "Central Library",
-            "busstopcode": "CLB"
-        },
-        {
-            "seq": 32767,
-            "stop_name": "Kent Ridge Bus Terminal",
-            "busstopcode": "KRB"
-        }
-    ],
-    "A2": [
-        {
-            "seq": 1,
-            "stop_name": "Kent Ridge Bus Terminal",
-            "busstopcode": "KRB"
-        },
-        {
-            "seq": 2,
-            "stop_name": "Information Technology",
-            "busstopcode": "IT"
-        },
-        {
-            "seq": 3,
-            "stop_name": "Opp Yusof Ishak House",
-            "busstopcode": "YIH-OPP"
-        },
-        {
-            "seq": 4,
-            "stop_name": "Museum",
-            "busstopcode": "MUSEUM"
-        },
-        {
-            "seq": 5,
-            "stop_name": "University Health Centre",
-            "busstopcode": "UHC"
-        },
-        {
-            "seq": 6,
-            "stop_name": "Opp University Hall",
-            "busstopcode": "UHALL-OPP"
-        },
-        {
-            "seq": 7,
-            "stop_name": "S 17",
-            "busstopcode": "S17"
-        },
-        {
-            "seq": 8,
-            "stop_name": "Opp Kent Ridge MRT",
-            "busstopcode": "KR-MRT-OPP"
-        },
-        {
-            "seq": 9,
-            "stop_name": "Prince George's Park Foyer",
-            "busstopcode": "PGPR"
-        },
-        {
-            "seq": 10,
-            "stop_name": "TCOMS",
-            "busstopcode": "TCOMS"
-        },
-        {
-            "seq": 11,
-            "stop_name": "Opp HSSML",
-            "busstopcode": "HSSML-OPP"
-        },
-        {
-            "seq": 12,
-            "stop_name": "Opp NUSS",
-            "busstopcode": "NUSS-OPP"
-        },
-        {
-            "seq": 13,
-            "stop_name": "COM 2",
-            "busstopcode": "COM2"
-        },
-        {
-            "seq": 14,
-            "stop_name": "Ventus",
-            "busstopcode": "LT13-OPP"
-        },
-        {
-            "seq": 32767,
-            "stop_name": "Kent Ridge Bus Terminal",
-            "busstopcode": "KRB"
-        }
-    ],
-    "BTC": [
-        {
-            "seq": 1,
-            "stop_name": "Oei Tiong Ham Building",
-            "busstopcode": "OTH"
-        },
-        {
-            "seq": 2,
-            "stop_name": "Botanic Gardens MRT",
-            "busstopcode": "BG-MRT"
-        },
-        {
-            "seq": 3,
-            "stop_name": "Kent Ridge MRT",
-            "busstopcode": "KR-MRT"
-        },
-        {
-            "seq": 4,
-            "stop_name": "LT 27",
-            "busstopcode": "LT27"
-        },
-        {
-            "seq": 5,
-            "stop_name": "University Hall",
-            "busstopcode": "UHALL"
-        },
-        {
-            "seq": 6,
-            "stop_name": "Opp University Health Centre",
-            "busstopcode": "UHC-OPP"
-        },
-        {
-            "seq": 7,
-            "stop_name": "University Town",
-            "busstopcode": "UTOWN"
-        },
-        {
-            "seq": 8,
-            "stop_name": "Raffles Hall",
-            "busstopcode": "RAFFLES"
-        },
-        {
-            "seq": 9,
-            "stop_name": "Kent Vale",
-            "busstopcode": "KV"
-        },
-        {
-            "seq": 10,
-            "stop_name": "Museum",
-            "busstopcode": "MUSEUM"
-        },
-        {
-            "seq": 11,
-            "stop_name": "Yusof Ishak House",
-            "busstopcode": "YIH"
-        },
-        {
-            "seq": 12,
-            "stop_name": "Central Library",
-            "busstopcode": "CLB"
-        },
-        {
-            "seq": 13,
-            "stop_name": "LT 13",
-            "busstopcode": "LT13"
-        },
-        {
-            "seq": 14,
-            "stop_name": "AS 5",
-            "busstopcode": "AS5"
-        },
-        {
-            "seq": 15,
-            "stop_name": "BIZ 2",
-            "busstopcode": "BIZ2"
-        },
-        {
-            "seq": 16,
-            "stop_name": "Prince George's Park",
-            "busstopcode": "PGP"
-        },
-        {
-            "seq": 17,
-            "stop_name": "College Green",
-            "busstopcode": "CG"
-        },
-        {
-            "seq": 32767,
-            "stop_name": "Oei Tiong Ham Building",
-            "busstopcode": "OTH"
-        }
-    ],
-    "D1": [
-        {
-            "seq": 1,
-            "stop_name": "COM 3",
-            "busstopcode": "COM3"
-        },
-        {
-            "seq": 2,
-            "stop_name": "Opp HSSML",
-            "busstopcode": "HSSML-OPP"
-        },
-        {
-            "seq": 3,
-            "stop_name": "Opp NUSS",
-            "busstopcode": "NUSS-OPP"
-        },
-        {
-            "seq": 4,
-            "stop_name": "Ventus",
-            "busstopcode": "LT13-OPP"
-        },
-        {
-            "seq": 5,
-            "stop_name": "Information Technology",
-            "busstopcode": "IT"
-        },
-        {
-            "seq": 6,
-            "stop_name": "Opp Yusof Ishak House",
-            "busstopcode": "YIH-OPP"
-        },
-        {
-            "seq": 7,
-            "stop_name": "Museum",
-            "busstopcode": "MUSEUM"
-        },
-        {
-            "seq": 8,
-            "stop_name": "University Town",
-            "busstopcode": "UTOWN"
-        },
-        {
-            "seq": 9,
-            "stop_name": "Yusof Ishak House",
-            "busstopcode": "YIH"
-        },
-        {
-            "seq": 10,
-            "stop_name": "Central Library",
-            "busstopcode": "CLB"
-        },
-        {
-            "seq": 11,
-            "stop_name": "LT 13",
-            "busstopcode": "LT13"
-        },
-        {
-            "seq": 12,
-            "stop_name": "AS 5",
-            "busstopcode": "AS5"
-        },
-        {
-            "seq": 13,
-            "stop_name": "BIZ 2",
-            "busstopcode": "BIZ2"
-        },
-        {
-            "seq": 32767,
-            "stop_name": "COM 3",
-            "busstopcode": "COM3"
-        }
-    ],
-    "D2": [
-        {
-            "seq": 1,
-            "stop_name": "Prince George's Park",
-            "busstopcode": "PGP"
-        },
-        {
-            "seq": 2,
-            "stop_name": "Kent Ridge MRT",
-            "busstopcode": "KR-MRT"
-        },
-        {
-            "seq": 3,
-            "stop_name": "LT 27",
-            "busstopcode": "LT27"
-        },
-        {
-            "seq": 4,
-            "stop_name": "University Hall",
-            "busstopcode": "UHALL"
-        },
-        {
-            "seq": 5,
-            "stop_name": "Opp University Health Centre",
-            "busstopcode": "UHC-OPP"
-        },
-        {
-            "seq": 6,
-            "stop_name": "Museum",
-            "busstopcode": "MUSEUM"
-        },
-        {
-            "seq": 7,
-            "stop_name": "University Town",
-            "busstopcode": "UTOWN"
-        },
-        {
-            "seq": 8,
-            "stop_name": "University Health Centre",
-            "busstopcode": "UHC"
-        },
-        {
-            "seq": 9,
-            "stop_name": "Opp University Hall",
-            "busstopcode": "UHALL-OPP"
-        },
-        {
-            "seq": 10,
-            "stop_name": "S 17",
-            "busstopcode": "S17"
-        },
-        {
-            "seq": 11,
-            "stop_name": "Opp Kent Ridge MRT",
-            "busstopcode": "KR-MRT-OPP"
-        },
-        {
-            "seq": 32767,
-            "stop_name": "Prince George's Park Foyer",
-            "busstopcode": "PGPR"
-        }
-    ],
-    "K": [
-        {
-            "seq": 1,
-            "stop_name": "Prince George's Park",
-            "busstopcode": "PGP"
-        },
-        {
-            "seq": 2,
-            "stop_name": "Kent Ridge MRT",
-            "busstopcode": "KR-MRT"
-        },
-        {
-            "seq": 3,
-            "stop_name": "LT 27",
-            "busstopcode": "LT27"
-        },
-        {
-            "seq": 4,
-            "stop_name": "University Hall",
-            "busstopcode": "UHALL"
-        },
-        {
-            "seq": 5,
-            "stop_name": "Opp University Health Centre",
-            "busstopcode": "UHC-OPP"
-        },
-        {
-            "seq": 6,
-            "stop_name": "Yusof Ishak House",
-            "busstopcode": "YIH"
-        },
-        {
-            "seq": 7,
-            "stop_name": "Central Library",
-            "busstopcode": "CLB"
-        },
-        {
-            "seq": 8,
-            "stop_name": "Opp SDE 3",
-            "busstopcode": "SDE3-OPP"
-        },
-        {
-            "seq": 9,
-            "stop_name": "The Japanese Primary School",
-            "busstopcode": "JP-SCH-16151"
-        },
-        {
-            "seq": 10,
-            "stop_name": "Kent Vale",
-            "busstopcode": "KV"
-        },
-        {
-            "seq": 11,
-            "stop_name": "Museum",
-            "busstopcode": "MUSEUM"
-        },
-        {
-            "seq": 12,
-            "stop_name": "University Health Centre",
-            "busstopcode": "UHC"
-        },
-        {
-            "seq": 13,
-            "stop_name": "Opp University Hall",
-            "busstopcode": "UHALL-OPP"
-        },
-        {
-            "seq": 14,
-            "stop_name": "S 17",
-            "busstopcode": "S17"
-        },
-        {
-            "seq": 15,
-            "stop_name": "Opp Kent Ridge MRT",
-            "busstopcode": "KR-MRT-OPP"
-        },
-        {
-            "seq": 32767,
-            "stop_name": "Prince George's Park Foyer",
-            "busstopcode": "PGPR"
-        }
-    ],
-    "L": [
-        {
-            "seq": 1,
-            "stop_name": "Oei Tiong Ham Building",
-            "busstopcode": "OTH"
-        },
-        {
-            "seq": 2,
-            "stop_name": "Botanic Gardens MRT",
-            "busstopcode": "BG-MRT"
-        },
-        {
-            "seq": 3,
-            "stop_name": "College Green",
-            "busstopcode": "CG"
-        },
-        {
-            "seq": 32767,
-            "stop_name": "Oei Tiong Ham Building",
-            "busstopcode": "OTH"
-        }
-    ]
+  "A1": [
+    {
+      "seq": 1,
+      "stop_name": "Kent Ridge Bus Terminal",
+      "busstopcode": "KRB"
+    },
+    {
+      "seq": 2,
+      "stop_name": "LT 13",
+      "busstopcode": "LT13"
+    },
+    {
+      "seq": 3,
+      "stop_name": "AS 5",
+      "busstopcode": "AS5"
+    },
+    {
+      "seq": 4,
+      "stop_name": "COM 2",
+      "busstopcode": "COM2"
+    },
+    {
+      "seq": 5,
+      "stop_name": "BIZ 2",
+      "busstopcode": "BIZ2"
+    },
+    {
+      "seq": 6,
+      "stop_name": "Opp TCOMS",
+      "busstopcode": "TCOMS-OPP"
+    },
+    {
+      "seq": 7,
+      "stop_name": "Prince George's Park",
+      "busstopcode": "PGP"
+    },
+    {
+      "seq": 8,
+      "stop_name": "Kent Ridge MRT",
+      "busstopcode": "KR-MRT"
+    },
+    {
+      "seq": 9,
+      "stop_name": "LT 27",
+      "busstopcode": "LT27"
+    },
+    {
+      "seq": 10,
+      "stop_name": "University Hall",
+      "busstopcode": "UHALL"
+    },
+    {
+      "seq": 11,
+      "stop_name": "Opp University Health Centre",
+      "busstopcode": "UHC-OPP"
+    },
+    {
+      "seq": 12,
+      "stop_name": "Yusof Ishak House",
+      "busstopcode": "YIH"
+    },
+    {
+      "seq": 13,
+      "stop_name": "Central Library",
+      "busstopcode": "CLB"
+    },
+    {
+      "seq": 32767,
+      "stop_name": "Kent Ridge Bus Terminal",
+      "busstopcode": "KRB"
+    }
+  ],
+  "A2": [
+    {
+      "seq": 1,
+      "stop_name": "Kent Ridge Bus Terminal",
+      "busstopcode": "KRB"
+    },
+    {
+      "seq": 2,
+      "stop_name": "Information Technology",
+      "busstopcode": "IT"
+    },
+    {
+      "seq": 3,
+      "stop_name": "Opp Yusof Ishak House",
+      "busstopcode": "YIH-OPP"
+    },
+    {
+      "seq": 4,
+      "stop_name": "Museum",
+      "busstopcode": "MUSEUM"
+    },
+    {
+      "seq": 5,
+      "stop_name": "University Health Centre",
+      "busstopcode": "UHC"
+    },
+    {
+      "seq": 6,
+      "stop_name": "Opp University Hall",
+      "busstopcode": "UHALL-OPP"
+    },
+    {
+      "seq": 7,
+      "stop_name": "S 17",
+      "busstopcode": "S17"
+    },
+    {
+      "seq": 8,
+      "stop_name": "Opp Kent Ridge MRT",
+      "busstopcode": "KR-MRT-OPP"
+    },
+    {
+      "seq": 9,
+      "stop_name": "Prince George's Park Foyer",
+      "busstopcode": "PGPR"
+    },
+    {
+      "seq": 10,
+      "stop_name": "TCOMS",
+      "busstopcode": "TCOMS"
+    },
+    {
+      "seq": 11,
+      "stop_name": "Opp HSSML",
+      "busstopcode": "HSSML-OPP"
+    },
+    {
+      "seq": 12,
+      "stop_name": "Opp NUSS",
+      "busstopcode": "NUSS-OPP"
+    },
+    {
+      "seq": 13,
+      "stop_name": "COM 2",
+      "busstopcode": "COM2"
+    },
+    {
+      "seq": 14,
+      "stop_name": "Ventus",
+      "busstopcode": "LT13-OPP"
+    },
+    {
+      "seq": 32767,
+      "stop_name": "Kent Ridge Bus Terminal",
+      "busstopcode": "KRB"
+    }
+  ],
+  "BTC": [
+    {
+      "seq": 1,
+      "stop_name": "Oei Tiong Ham Building",
+      "busstopcode": "OTH"
+    },
+    {
+      "seq": 2,
+      "stop_name": "Botanic Gardens MRT (PUDO)",
+      "busstopcode": "BG-MRT"
+    },
+    {
+      "seq": 3,
+      "stop_name": "Kent Ridge MRT",
+      "busstopcode": "KR-MRT"
+    },
+    {
+      "seq": 4,
+      "stop_name": "LT 27",
+      "busstopcode": "LT27"
+    },
+    {
+      "seq": 5,
+      "stop_name": "University Hall",
+      "busstopcode": "UHALL"
+    },
+    {
+      "seq": 6,
+      "stop_name": "Opp University Health Centre",
+      "busstopcode": "UHC-OPP"
+    },
+    {
+      "seq": 7,
+      "stop_name": "University Town",
+      "busstopcode": "UTOWN"
+    },
+    {
+      "seq": 8,
+      "stop_name": "Raffles Hall",
+      "busstopcode": "RAFFLES"
+    },
+    {
+      "seq": 9,
+      "stop_name": "Kent Vale",
+      "busstopcode": "KV"
+    },
+    {
+      "seq": 10,
+      "stop_name": "Museum",
+      "busstopcode": "MUSEUM"
+    },
+    {
+      "seq": 11,
+      "stop_name": "Yusof Ishak House",
+      "busstopcode": "YIH"
+    },
+    {
+      "seq": 12,
+      "stop_name": "Central Library",
+      "busstopcode": "CLB"
+    },
+    {
+      "seq": 13,
+      "stop_name": "LT 13",
+      "busstopcode": "LT13"
+    },
+    {
+      "seq": 14,
+      "stop_name": "AS 5",
+      "busstopcode": "AS5"
+    },
+    {
+      "seq": 15,
+      "stop_name": "BIZ 2",
+      "busstopcode": "BIZ2"
+    },
+    {
+      "seq": 16,
+      "stop_name": "Prince George's Park",
+      "busstopcode": "PGP"
+    },
+    {
+      "seq": 17,
+      "stop_name": "College Green",
+      "busstopcode": "CG"
+    },
+    {
+      "seq": 32767,
+      "stop_name": "Oei Tiong Ham Building",
+      "busstopcode": "OTH"
+    }
+  ],
+  "D1": [
+    {
+      "seq": 1,
+      "stop_name": "COM 3",
+      "busstopcode": "COM3"
+    },
+    {
+      "seq": 2,
+      "stop_name": "Opp HSSML",
+      "busstopcode": "HSSML-OPP"
+    },
+    {
+      "seq": 3,
+      "stop_name": "Opp NUSS",
+      "busstopcode": "NUSS-OPP"
+    },
+    {
+      "seq": 4,
+      "stop_name": "Ventus",
+      "busstopcode": "LT13-OPP"
+    },
+    {
+      "seq": 5,
+      "stop_name": "Information Technology",
+      "busstopcode": "IT"
+    },
+    {
+      "seq": 6,
+      "stop_name": "Opp Yusof Ishak House",
+      "busstopcode": "YIH-OPP"
+    },
+    {
+      "seq": 7,
+      "stop_name": "Museum",
+      "busstopcode": "MUSEUM"
+    },
+    {
+      "seq": 8,
+      "stop_name": "University Town",
+      "busstopcode": "UTOWN"
+    },
+    {
+      "seq": 9,
+      "stop_name": "Yusof Ishak House",
+      "busstopcode": "YIH"
+    },
+    {
+      "seq": 10,
+      "stop_name": "Central Library",
+      "busstopcode": "CLB"
+    },
+    {
+      "seq": 11,
+      "stop_name": "LT 13",
+      "busstopcode": "LT13"
+    },
+    {
+      "seq": 12,
+      "stop_name": "AS 5",
+      "busstopcode": "AS5"
+    },
+    {
+      "seq": 13,
+      "stop_name": "BIZ 2",
+      "busstopcode": "BIZ2"
+    },
+    {
+      "seq": 32767,
+      "stop_name": "COM 3",
+      "busstopcode": "COM3"
+    }
+  ],
+  "D2": [
+    {
+      "seq": 1,
+      "stop_name": "Prince George's Park",
+      "busstopcode": "PGP"
+    },
+    {
+      "seq": 2,
+      "stop_name": "Kent Ridge MRT",
+      "busstopcode": "KR-MRT"
+    },
+    {
+      "seq": 3,
+      "stop_name": "LT 27",
+      "busstopcode": "LT27"
+    },
+    {
+      "seq": 4,
+      "stop_name": "University Hall",
+      "busstopcode": "UHALL"
+    },
+    {
+      "seq": 5,
+      "stop_name": "Opp University Health Centre",
+      "busstopcode": "UHC-OPP"
+    },
+    {
+      "seq": 6,
+      "stop_name": "Museum",
+      "busstopcode": "MUSEUM"
+    },
+    {
+      "seq": 7,
+      "stop_name": "University Town",
+      "busstopcode": "UTOWN"
+    },
+    {
+      "seq": 8,
+      "stop_name": "University Health Centre",
+      "busstopcode": "UHC"
+    },
+    {
+      "seq": 9,
+      "stop_name": "Opp University Hall",
+      "busstopcode": "UHALL-OPP"
+    },
+    {
+      "seq": 10,
+      "stop_name": "S 17",
+      "busstopcode": "S17"
+    },
+    {
+      "seq": 11,
+      "stop_name": "Opp Kent Ridge MRT",
+      "busstopcode": "KR-MRT-OPP"
+    },
+    {
+      "seq": 32767,
+      "stop_name": "Prince George's Park Foyer",
+      "busstopcode": "PGPR"
+    }
+  ],
+  "E": [
+    {
+      "seq": 1,
+      "stop_name": "University Town",
+      "busstopcode": "UTOWN"
+    },
+    {
+      "seq": 2,
+      "stop_name": "Raffles Hall",
+      "busstopcode": "RAFFLES"
+    },
+    {
+      "seq": 3,
+      "stop_name": "Kent Vale",
+      "busstopcode": "KV"
+    },
+    {
+      "seq": 4,
+      "stop_name": "EA",
+      "busstopcode": "EA"
+    },
+    {
+      "seq": 5,
+      "stop_name": "SDE 3",
+      "busstopcode": "SDE3"
+    },
+    {
+      "seq": 6,
+      "stop_name": "Information Technology",
+      "busstopcode": "IT"
+    },
+    {
+      "seq": 7,
+      "stop_name": "Opp Yusof Ishak House",
+      "busstopcode": "YIH-OPP"
+    },
+    {
+      "seq": 32767,
+      "stop_name": "University Town",
+      "busstopcode": "UTOWN"
+    }
+  ],
+  "K": [
+    {
+      "seq": 1,
+      "stop_name": "Prince George's Park",
+      "busstopcode": "PGP"
+    },
+    {
+      "seq": 2,
+      "stop_name": "Kent Ridge MRT",
+      "busstopcode": "KR-MRT"
+    },
+    {
+      "seq": 3,
+      "stop_name": "LT 27",
+      "busstopcode": "LT27"
+    },
+    {
+      "seq": 4,
+      "stop_name": "University Hall",
+      "busstopcode": "UHALL"
+    },
+    {
+      "seq": 5,
+      "stop_name": "Opp University Health Centre",
+      "busstopcode": "UHC-OPP"
+    },
+    {
+      "seq": 6,
+      "stop_name": "Yusof Ishak House",
+      "busstopcode": "YIH"
+    },
+    {
+      "seq": 7,
+      "stop_name": "Central Library",
+      "busstopcode": "CLB"
+    },
+    {
+      "seq": 8,
+      "stop_name": "Opp SDE 3",
+      "busstopcode": "SDE3-OPP"
+    },
+    {
+      "seq": 9,
+      "stop_name": "The Japanese Primary School",
+      "busstopcode": "JP-SCH-16151"
+    },
+    {
+      "seq": 10,
+      "stop_name": "Kent Vale",
+      "busstopcode": "KV"
+    },
+    {
+      "seq": 11,
+      "stop_name": "Museum",
+      "busstopcode": "MUSEUM"
+    },
+    {
+      "seq": 12,
+      "stop_name": "University Health Centre",
+      "busstopcode": "UHC"
+    },
+    {
+      "seq": 13,
+      "stop_name": "Opp University Hall",
+      "busstopcode": "UHALL-OPP"
+    },
+    {
+      "seq": 14,
+      "stop_name": "S 17",
+      "busstopcode": "S17"
+    },
+    {
+      "seq": 15,
+      "stop_name": "Opp Kent Ridge MRT",
+      "busstopcode": "KR-MRT-OPP"
+    },
+    {
+      "seq": 32767,
+      "stop_name": "Prince George's Park Foyer",
+      "busstopcode": "PGPR"
+    }
+  ],
+  "L": [
+    {
+      "seq": 1,
+      "stop_name": "Oei Tiong Ham Building",
+      "busstopcode": "OTH"
+    },
+    {
+      "seq": 2,
+      "stop_name": "Botanic Gardens MRT (PUDO)",
+      "busstopcode": "BG-MRT"
+    },
+    {
+      "seq": 3,
+      "stop_name": "College Green",
+      "busstopcode": "CG"
+    },
+    {
+      "seq": 32767,
+      "stop_name": "Oei Tiong Ham Building",
+      "busstopcode": "OTH"
+    }
+  ]
 }
