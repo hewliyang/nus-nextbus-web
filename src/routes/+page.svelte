@@ -5,8 +5,9 @@
 	import { enhance } from '$app/forms';
 	import Geolocation from 'svelte-geolocation';
 	import { page } from '$app/stores';
+	import { Icons } from '$lib/icons/icons';
 
-	type Product = {
+	type Stop = {
 		caption: string;
 		name: string;
 		LongName: string;
@@ -21,7 +22,7 @@
 		longitude?: number;
 	};
 
-	const searchStops: Product[] = busStops.BusStopsResult.busstops.map((stop) => ({
+	const searchStops: Stop[] = busStops.map((stop) => ({
 		...stop,
 		searchTerms: `${stop.caption} ${stop.name} ${stop.ShortName} ${stop.LongName}`
 	}));
@@ -47,18 +48,7 @@
 	<div class="alert alert-info text-sm">
 		<div class="flex-1 justify-between">
 			<div class="flex gap-2 items-center">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					class="stroke-current shrink-0 w-6 h-6"
-					><path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-					/></svg
-				>
+				<Icons.info />
 				<span class="font-bold">Be sure to bookmark🔖 your frequent stops for easy access!</span>
 			</div>
 			<form action="?/closeAlert" method="POST" use:enhance>
@@ -117,23 +107,14 @@
 			type="search"
 			placeholder="Search..."
 			bind:value={$searchStore.search}
-			class="input input-md input-bordered w-full"
+			class="input input-sm input-bordered w-full"
 		/>
 		<button
-			class="btn btn-xs btn-outline btn-round"
+			class="btn btn-outline btn-xs"
 			aria-label="get-geolocation"
 			on:click={() => (getPosition = true)}
 		>
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-				><path
-					fill="currentColor"
-					d="M12 4C9.24 4 7 6.24 7 9c0 2.85 2.92 7.21 5 9.88c2.11-2.69 5-7 5-9.88c0-2.76-2.24-5-5-5zm0 7.5a2.5 2.5 0 0 1 0-5a2.5 2.5 0 0 1 0 5z"
-					opacity=".3"
-				/><path
-					fill="currentColor"
-					d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 2.88-2.88 7.19-5 9.88C9.92 16.21 7 11.85 7 9z"
-				/><circle cx="12" cy="9" r="2.5" fill="currentColor" /></svg
-			>
+			<Icons.location />
 		</button>
 	</div>
 
@@ -147,15 +128,22 @@
 		}}
 	/>
 
-	<div class="my-5 shadow-lg">
-		<ul
-			class="grid grid-cols-3 menu menu-compact bg-neutral-50 dark:bg-neutral-800 rounded items-center p-2 border border-neutral-200 dark:border-neutral-700"
-		>
-			{#each $searchStore.filtered as stop}
-				<li>
-					<a class="hover:underline hover:border" href="/stop/{stop.name}">{stop.caption}</a>
-				</li>
-			{/each}
-		</ul>
-	</div>
+	{#if $searchStore.filtered.length > 0}
+		<div class="my-5 shadow-lg">
+			<ul
+				class="grid grid-cols-3 menu menu-compact bg-neutral-50 dark:bg-neutral-800 rounded items-center p-2 border border-neutral-200 dark:border-neutral-700"
+			>
+				{#each $searchStore.filtered as stop}
+					<li>
+						<a class="hover:underline hover:border" href="/stop/{stop.name}">{stop.caption}</a>
+					</li>
+				{/each}
+			</ul>
+		</div>
+	{:else}
+		<div class="flex flex-col p-16 space-y-8 items-center">
+			<p class="text-3xl">😅</p>
+			<p class="font-semibold">No results leh!</p>
+		</div>
+	{/if}
 </div>

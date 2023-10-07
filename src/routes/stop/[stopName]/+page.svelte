@@ -50,9 +50,23 @@
 	const ts = new Date(TimeStamp);
 </script>
 
-<h2 class="text-semibold text-2xl text-center mb-2 md:mt-5">{caption}</h2>
+<div
+	class="flex flex-col rounded shadow-sm items-center justify-center border-b-2 border-gray-500/30 pb-3"
+>
+	<div class="px-6 pt-4 text-center">
+		<div class="font-bold text-2xl mb-2">{caption}</div>
+	</div>
+	<div class="px-6 pt-2">
+		<span
+			class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 text-center"
+			>{ts.toLocaleString('en-SG')}</span
+		>
+	</div>
+</div>
 
-<h3>Last updated at: {ts.toLocaleString('en-SG')}</h3>
+<!-- <h2 class="text-semibold text-2xl text-center mb-2 md:mt-5">{caption}</h2>
+
+<h3>Last updated at: {ts.toLocaleString('en-SG')}</h3> -->
 
 <div class="relative overflow-x-auto mt-5">
 	<table class="w-full text-center">
