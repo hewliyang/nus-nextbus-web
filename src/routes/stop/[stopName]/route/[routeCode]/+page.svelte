@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import routes from '$lib/data/routes.json';
-	import DecoratedBusRoute from '../../../../../components/DecoratedBusRoute.svelte';
+	import DecoratedBusRoute from '$lib/components/DecoratedBusRoute.svelte';
 
 	export let data: PageData;
 

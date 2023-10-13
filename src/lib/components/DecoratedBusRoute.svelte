@@ -17,7 +17,6 @@
 
 	const curStopIndex = stopsCopy.map((stop) => stop.busstopcode).indexOf(curStopCode);
 	const curStop = stopsCopy[curStopIndex];
-	console.log(curStop);
 	const stopsBefore: Stop[] = stopsCopy.slice(1, curStopIndex);
 	const stopsAfter: Stop[] = stopsCopy.slice(curStopIndex + 1, -1);
 </script>

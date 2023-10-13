@@ -1,37 +1,28 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
-
-	interface Shuttles {
-		name: string;
-		busstopcode: string;
-		arrivalTime: string;
-		nextArrivalTime: string;
-	}
+	import BusCapacityLabel from '$lib/components/BusCapacityLabel.svelte';
 
 	export let data;
-	const result = data.times;
-	const stopName: string = data.times.name;
+
+	const { etas } = data;
+	const { busStopName, lastUpdated, busStopCaption, timings } = etas;
 
 	// disambiguate the terminal stations
-	const terminals: string[] = ['KRB', 'OTH', 'UTOWN', 'COM3', 'OTH'];
+	const terminals: string[] = ['KRB', 'OTH', 'UTOWN', 'COM3'];
 
-	const {
-		TimeStamp,
-		name,
-		shuttles,
-		caption
-	}: { TimeStamp: string; name: string; shuttles: Shuttles[]; caption: string } = result;
+	let filteredShuttles: Timing[];
 
-	let filteredShuttles: Shuttles[];
-
-	if (terminals.includes(stopName)) {
-		filteredShuttles = shuttles.filter(({ busstopcode }) => {
-			const tokens = busstopcode.split('-');
+	if (terminals.includes(busStopName)) {
+		filteredShuttles = timings.filter(({ busStopCode }) => {
+			if (!busStopCode) {
+				return true;
+			}
+			const tokens = busStopCode.split('-');
 			return !(tokens.length > 1 && tokens[2] === 'E');
 		});
 	} else {
-		filteredShuttles = shuttles;
+		filteredShuttles = timings;
 	}
 
 	// check if current stop is already in bookmarks
@@ -45,16 +36,16 @@
 	let alreadyBookmarked: boolean;
 
 	$: bookmark_objs = $page.data.bookmarks;
-	$: alreadyBookmarked = bookmark_objs.map((obj) => obj.name).includes(stopName);
+	$: alreadyBookmarked = bookmark_objs.map((obj) => obj.name).includes(busStopName);
 
-	const ts = new Date(TimeStamp);
+	const ts = new Date(lastUpdated);
 </script>
 
 <div
 	class="flex flex-col rounded shadow-sm items-center justify-center border-b-2 border-gray-500/30 pb-3"
 >
 	<div class="px-6 pt-4 text-center">
-		<div class="font-bold text-2xl mb-2">{caption}</div>
+		<div class="font-bold text-2xl mb-2">{busStopCaption}</div>
 	</div>
 	<div class="px-6 pt-2">
 		<span
@@ -64,12 +55,8 @@
 	</div>
 </div>
 
-<!-- <h2 class="text-semibold text-2xl text-center mb-2 md:mt-5">{caption}</h2>
-
-<h3>Last updated at: {ts.toLocaleString('en-SG')}</h3> -->
-
 <div class="relative overflow-x-auto mt-5">
-	<table class="w-full text-center">
+	<table class="table-fixed text-center">
 		<!-- head -->
 		<thead
 			class="text-sm text-black uppercase dark:text-white bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
@@ -81,22 +68,40 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each filteredShuttles as { name, arrivalTime, nextArrivalTime }}
+			{#each filteredShuttles as { name, arrivalTime, nextArrivalTime, arrivalTime_ridership, arrivalTime_veh_plate, arrivalTime_capacity, nextArrivalTime_capacity, nextArrivalTime_ridership, nextArrivalTime_veh_plate }}
 				<tr class="border-b dark:border-b-gray-700">
-					<td class="px-6 py-3 font-medium text-gray-900 dark:text-white">
+					<td class="px-3 py-2 font-medium text-gray-900 dark:text-white">
 						{#if name.slice(0, 3) === 'PUB'}
 							<span class="text-lg font-semibold font-mono">{name.slice(4)}</span>
 						{:else}
 							<a
 								class="text-lg font-semibold font-mono px-2.5 py-1.5 rounded border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
-								href="/stop/{stopName}/route/{name}#current"
+								href="/stop/{busStopName}/route/{name}#current"
 							>
 								{name}
 							</a>
 						{/if}
 					</td>
-					<td class="px-6 py-3">{arrivalTime} <span class="text-xs">mins</span></td>
-					<td class="px-6 py-3">{nextArrivalTime} <span class="text-xs">mins</span></td>
+					<td class="px-1 py-3">
+						<div class="flex flex-col items-center justify-center space-y-2">
+							<div>{arrivalTime} <span class="text-xs">mins</span></div>
+							<BusCapacityLabel
+								capacity={arrivalTime_capacity}
+								veh_plate={arrivalTime_veh_plate}
+								ridership={arrivalTime_ridership}
+							/>
+						</div></td
+					>
+					<td class="px-1 py-3">
+						<div class="flex flex-col items-center justify-center space-y-2">
+							<div>{nextArrivalTime} <span class="text-xs">mins</span></div>
+							<BusCapacityLabel
+								capacity={nextArrivalTime_capacity}
+								veh_plate={nextArrivalTime_veh_plate}
+								ridership={nextArrivalTime_ridership}
+							/>
+						</div></td
+					>
 				</tr>
 			{/each}
 		</tbody>
@@ -104,7 +109,7 @@
 </div>
 
 <div class="flex flex-row space-x-4 items-center justify-between my-3">
-	<form action="?/addBookmark&id={name}&caption={caption}" method="POST" use:enhance>
+	<form action="?/addBookmark&id={busStopName}&caption={busStopCaption}" method="POST" use:enhance>
 		<button class="mt-3 btn btn-outline btn-warning mb-3" disabled={alreadyBookmarked}>
 			{#if alreadyBookmarked}
 				Bookmarked!
@@ -114,7 +119,7 @@
 		</button>
 	</form>
 	<a class="mt-3 btn btn-outline btn-error mb-3" href="/"> Home </a>
-	<a class="mt-3 btn btn-outline btn-success mb-3" href="./{stopName}" data-sveltekit-reload>
+	<a class="mt-3 btn btn-outline btn-success mb-3" href="./{busStopName}" data-sveltekit-reload>
 		Refresh
 	</a>
 </div>

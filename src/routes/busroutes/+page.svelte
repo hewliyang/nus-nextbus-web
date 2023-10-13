@@ -1,5 +1,5 @@
 <script lang="ts">
-	import BusRoute from '../../components/BusRoute.svelte';
+	import BusRoute from '$lib/components/BusRoute.svelte';
 	import routes from '$lib/data/routes.json';
 
 	type Stop = {
