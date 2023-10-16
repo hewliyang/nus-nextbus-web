@@ -1,5 +1,21 @@
 [
   {
+    "caption": "COM 3",
+    "name": "COM3",
+    "LongName": "COM 3",
+    "ShortName": "COM 3",
+    "latitude": 1.294431,
+    "longitude": 103.775217
+  },
+  {
+    "caption": "Opp TCOMS",
+    "name": "TCOMS-OPP",
+    "LongName": "Opp TCOMS",
+    "ShortName": "Opp TCOMS",
+    "latitude": 1.293789,
+    "longitude": 103.776715
+  },
+  {
     "caption": "Prince George's Park",
     "name": "PGP",
     "LongName": "Prince George's Park",
@@ -96,12 +112,12 @@
     "longitude": 103.78109
   },
   {
-    "caption": "COM 3",
-    "name": "COM3",
-    "LongName": "COM 3",
-    "ShortName": "COM 3",
-    "latitude": 1.294431,
-    "longitude": 103.775217
+    "caption": "TCOMS",
+    "name": "TCOMS",
+    "LongName": "TCOMS",
+    "ShortName": "TCOMS",
+    "latitude": 1.293654,
+    "longitude": 103.776898
   },
   {
     "caption": "Opp HSSML",
@@ -190,30 +206,6 @@
     "ShortName": "KR Bus Ter",
     "latitude": 1.29453,
     "longitude": 103.769924
-  },
-  {
-    "caption": "TCOMS",
-    "name": "TCOMS",
-    "LongName": "TCOMS",
-    "ShortName": "TCOMS",
-    "latitude": 1.293654,
-    "longitude": 103.776898
-  },
-  {
-    "caption": "COM 2",
-    "name": "COM2",
-    "LongName": "COM 2",
-    "ShortName": "COM 2",
-    "latitude": 1.29483,
-    "longitude": 103.773687
-  },
-  {
-    "caption": "Opp TCOMS",
-    "name": "TCOMS-OPP",
-    "LongName": "Opp TCOMS",
-    "ShortName": "Opp TCOMS",
-    "latitude": 1.293789,
-    "longitude": 103.776715
   },
   {
     "caption": "Opp SDE 3",
