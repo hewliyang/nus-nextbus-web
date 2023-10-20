@@ -3,9 +3,10 @@
 	export let capacity: number | undefined;
 	export let ridership: number | undefined;
 
-	type Status = 'empty' | 'mid' | 'full';
+	type Status = 'empty' | 'low' | 'mid' | 'full';
 	const colors = new Map<Status, string>([
-		['empty', 'bg-green-500/75'],
+		['empty', 'bg-gray-500/75'],
+		['low', 'bg-green-500/75'],
 		['mid', 'bg-orange-500/75'],
 		['full', 'bg-red-500/75']
 	]);
@@ -13,8 +14,10 @@
 	const progress = ((ridership || 0) / (capacity || 88)) * 100;
 
 	let status: Status;
-	if (progress < (1 / 3) * 100) {
+	if (progress === 0) {
 		status = 'empty';
+	} else if (progress < (1 / 3) * 100) {
+		status = 'low';
 	} else if (progress > (2 / 3) * 100) {
 		status = 'full';
 	} else {
