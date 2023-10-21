@@ -25,14 +25,21 @@
 	}
 </script>
 
-{#if capacity}
+{#if veh_plate && veh_plate != '-'}
 	<div
 		class="p-2.5 relative rounded border h-[18px] w-16 flex items-center justify-center border-gray-500/50 dark:border-white/50 text-[11px] font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground"
 	>
-		<div
-			class={`${colors.get(status)} absolute top-0 bottom-0 left-0 rounded`}
-			style="width: {progress}%"
-		/>
+		{#if capacity && capacity > 0}
+			<div
+				class={`${colors.get(status)} absolute top-0 bottom-0 left-0 rounded`}
+				style="width: {progress}%"
+			/>
+		{:else}
+			<div
+				class="bg-zinc-300/40 dark:bg-zinc-300/10 backdrop-blur-sm absolute top-0 bottom-0 left-0 rounded"
+				style="width: 100%"
+			/>
+		{/if}
 
 		<div class="relative">{veh_plate}</div>
 	</div>
