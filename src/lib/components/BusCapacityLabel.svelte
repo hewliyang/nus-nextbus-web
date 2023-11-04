@@ -10,7 +10,8 @@
 		['full', 'bg-red-500/75']
 	]);
 
-	const progress = ((ridership || 0) / (capacity || 88)) * 100;
+	// adjust ridership... usually understated
+	const progress = ((Math.min(ridership! + 7, capacity!) || 0) / (capacity || 88)) * 100;
 
 	let status: Status;
 	if (progress < (1 / 3) * 100) {
