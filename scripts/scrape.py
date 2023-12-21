@@ -1,15 +1,17 @@
 """
-This file is assumed to be placed in src/scripts/scrape.py
+Script to scrape the latest routes & stop information
+from the NextBus API
 """
 
-import requests
 import os
 import json
+import requests
+
 from pathlib import Path
 from typing import Dict, List, Literal, Set, TypedDict
 
 BASE_PATH = Path(__file__).resolve().parent.parent
-DATA_PATH = BASE_PATH / "lib" / "data"
+DATA_PATH = BASE_PATH / "src" / "lib" / "data"
 
 url = os.getenv("NEXTBUS_API_URL")
 header = {
