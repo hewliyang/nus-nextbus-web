@@ -30,8 +30,10 @@ jobs:
 
       - name: Commit and push any changes
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git add .
-          git commit -m "gh-actions: update routes & stops"
-          git push
+          git diff --exit-code || {
+            git config --global user.email "actions@github.com"
+            git config --global user.name "GitHub Actions"
+            git add .
+            git commit -m "gh-actions: update routes & stops"
+            git push
+          }
