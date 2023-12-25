@@ -19,6 +19,9 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
+        env:
+          NEXTBUS_API_URL: ${{ secrets.NEXTBUS_API_URL }}
+          NEXTBUS_BASIC_AUTH: ${{ secrets.NEXTBUS_BASIC_AUTH }}
         run: |
           pip install -r scripts/requirements.txt
 
