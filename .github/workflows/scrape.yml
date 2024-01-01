@@ -2,7 +2,7 @@ name: Weekly Scrape
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '0 0 * * 1,4' # run on Mon and Thurs
 
 jobs:
   scrape:
