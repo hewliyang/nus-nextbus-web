@@ -19,6 +19,11 @@ header = {
     "Content-Type": "application/json",
 }
 
+if not url:
+    raise ValueError("NEXTBUS_API_URL secret not defined")
+
+if not os.getenv("NEXTBUS_BASIC_AUTH"):
+    raise ValueError("NEXTBUS_BASIC_AUTH secret not defined")
 
 RouteLiterals = Literal["A1", "A2", "D1", "D2", "BTC", "E", "K", "L"]
 
