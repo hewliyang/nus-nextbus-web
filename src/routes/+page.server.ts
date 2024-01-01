@@ -1,10 +1,9 @@
-import { fail, redirect, type Actions } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
+import { fail, redirect, type Actions } from '@sveltejs/kit';
 
 type Bookmark = {
-    caption: string,
-    name: string,
-}
+	caption: string;
+	name: string;
+};
 
 // pass bookmarks array to page.svelte to SSR the stored bookmarks in cookies
 // export const load: PageServerLoad = ({ cookies }) => {
@@ -16,53 +15,52 @@ type Bookmark = {
 // ^ we already do this in layout. can reaccess using $page.data.bookmarks instead!
 
 export const actions: Actions = {
-    setTheme: async ({ url, cookies }) => {
-        const theme = url.searchParams.get("theme");
-        const redirectTo = url.searchParams.get("redirectTo");
-        
-        if (theme) {
-            cookies.set("colortheme", theme, {
-                path: '/',
-                maxAge: 60*60*24*365,
-            });
-        };
+	setTheme: async ({ url, cookies }) => {
+		const theme = url.searchParams.get('theme');
+		const redirectTo = url.searchParams.get('redirectTo');
 
-        throw redirect(303, redirectTo ?? '/');
-    },
+		if (theme) {
+			cookies.set('colortheme', theme, {
+				path: '/',
+				maxAge: 60 * 60 * 24 * 365
+			});
+		}
 
-    deleteBookmark: async ({ url, cookies }) => {
-        const id = url.searchParams.get("id")
-        if (!id) {
-            return fail(400, { message: "Invalid Request" })
-        }
+		throw redirect(303, redirectTo ?? '/');
+	},
 
-        try {
-            const bookmarksOld: Bookmark[] = JSON.parse(cookies.get('bookmarks') || "[]")
-            const bookmarksNew = bookmarksOld.filter(({name}) => name !== id)
-            cookies.set('bookmarks', JSON.stringify(bookmarksNew), {
-                path: '/',
-                maxAge: 60*60*24*365,
-            })
-        } catch (err) {
-            console.error(err)
-            return fail(500, {
-                message: "Something went wrong",
-            })
-        }
+	deleteBookmark: async ({ url, cookies }) => {
+		const id = url.searchParams.get('id');
+		if (!id) {
+			return fail(400, { message: 'Invalid Request' });
+		}
 
-        return {
-            status: 200,
-        }
+		try {
+			const bookmarksOld: Bookmark[] = JSON.parse(cookies.get('bookmarks') || '[]');
+			const bookmarksNew = bookmarksOld.filter(({ name }) => name !== id);
+			cookies.set('bookmarks', JSON.stringify(bookmarksNew), {
+				path: '/',
+				maxAge: 60 * 60 * 24 * 365
+			});
+		} catch (err) {
+			console.error(err);
+			return fail(500, {
+				message: 'Something went wrong'
+			});
+		}
 
-    },
-    closeAlert: async({ cookies }) => {
-        try {
-            cookies.set('alert', 'false', { path: '/', maxAge: 60*60*24*365 })
-        } catch (err) {
-            console.error(err)
-            return fail(500, {
-                message: JSON.stringify(err)
-            })
-        } 
-    }
+		return {
+			status: 200
+		};
+	},
+	closeAlert: async ({ cookies }) => {
+		try {
+			cookies.set('alert', 'false', { path: '/', maxAge: 60 * 60 * 24 * 365 });
+		} catch (err) {
+			console.error(err);
+			return fail(500, {
+				message: JSON.stringify(err)
+			});
+		}
+	}
 };

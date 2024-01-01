@@ -2,7 +2,7 @@ name: Weekly Scrape
 
 on:
   schedule:
-    - cron: '0 0 * * 1' # Run every Monday at midnight
+    - cron: '*/5 * * * *'
 
 jobs:
   scrape:
@@ -19,13 +19,13 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        env:
-          NEXTBUS_API_URL: ${{ secrets.NEXTBUS_API_URL }}
-          NEXTBUS_BASIC_AUTH: ${{ secrets.NEXTBUS_BASIC_AUTH }}
         run: |
           pip install -r scripts/requirements.txt
 
       - name: Run scraping script
+        env:
+          NEXTBUS_API_URL: ${{ secrets.NEXTBUS_API_URL }}
+          NEXTBUS_BASIC_AUTH: ${{ secrets.NEXTBUS_BASIC_AUTH }}
         run: python scripts/scrape.py
 
       - name: Commit and push any changes

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
-	import { createSearchStore, searchHandler } from '../lib/stores/search';
 	import busStops from '$lib/data/stops.json';
-	import { enhance } from '$app/forms';
 	import Geolocation from 'svelte-geolocation';
+	import { onDestroy } from 'svelte';
+	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import { Icons } from '$lib/icons/icons';
+	import { createSearchStore, searchHandler } from '../lib/stores/search';
 
 	type Stop = {
 		caption: string;
@@ -38,8 +38,9 @@
 	$: ({ bookmarks, alert } = $page.data);
 
 	let getPosition = false;
-	$: $searchStore.sort = getPosition;
 	let detail: Location = {};
+
+	$: $searchStore.sort = getPosition;
 	$: $searchStore.pos.latitude = detail.latitude;
 	$: $searchStore.pos.longitude = detail.longitude;
 </script>
