@@ -21,7 +21,7 @@
 	{#if !dev}
 		<script
 			async
-			src="https://umami.hewliyang.tech/script.js"
+			src="https://umami.hewliyang.com/script.js"
 			data-website-id="d6998608-6fea-427f-a123-c562f07e20be"
 		></script>
 	{/if}
