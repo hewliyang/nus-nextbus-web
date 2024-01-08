@@ -1,6 +1,5 @@
-/** @type {import('tailwindcss').Config} */
-
-const defaultTheme = require('tailwindcss/defaultTheme');
+import type { Config } from 'tailwindcss';
+import defaultTheme from 'tailwindcss/defaultTheme';
 
 module.exports = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
@@ -18,4 +17,4 @@ module.exports = {
 	},
 
 	darkMode: ['class', '[data-theme="halloween"]']
-};
+} satisfies Config;

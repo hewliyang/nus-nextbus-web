@@ -30,3 +30,9 @@ export type Bookmark = {
 	caption: string;
 	name: string;
 };
+
+export type Stop = {
+	seq: number;
+	stop_name: string;
+	busstopcode: string;
+};

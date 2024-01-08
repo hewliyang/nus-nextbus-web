@@ -1,51 +1,68 @@
 <script lang="ts">
-	type Stop = {
-		seq: number;
-		stop_name: string;
-		busstopcode: string;
-	};
+	import Icons from '$lib/icons';
+	import type { Stop } from '$lib/types';
 
 	export let stops: Stop[];
 	export let curStopCode: string;
 	export let route: string;
 
-	const stopsCopy = [...stops];
-
-	// get first and last stop
-	var firstStop = stopsCopy[0];
-	var lastStop = stopsCopy[stops.length - 1];
+	let stopsCopy = stops.map((stop, index) => {
+		let side = index % 2 === 0 ? 'left' : 'right';
+		let href = `/stop/${stop.busstopcode}`;
+		return { ...stop, side, href };
+	});
 
 	const curStopIndex = stopsCopy.map((stop) => stop.busstopcode).indexOf(curStopCode);
-	const curStop = stopsCopy[curStopIndex];
-	const stopsBefore: Stop[] = stopsCopy.slice(1, curStopIndex);
-	const stopsAfter: Stop[] = stopsCopy.slice(curStopIndex + 1, -1);
+	const stopsBefore = stopsCopy.slice(0, curStopIndex);
+	const stopsAfter = stopsCopy.slice(curStopIndex, stopsCopy.length);
 </script>
 
-<div
-	class="border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 rounded px-4 py-2 flex flex-col justify-center items-center"
->
-	<h2 class="text-xl font-semibold mt-3">{route}</h2>
-	<div class="p-4 text-left">
-		<ul class="steps steps-vertical">
-			{#if curStop === firstStop}
-				<li class="step step-secondary">{firstStop?.stop_name}</li>
+<div class="py-3">
+	<h2 class="text-xl font-semibold mt-3 text-center mb-6">{route}</h2>
+	<ul class="timeline timeline-vertical text-sm font-semibold tracking-tight">
+		<!-- render first stop -> cur stop -->
+		{#each stopsBefore as stop}
+			{#if stop.side === 'right'}
+				<li>
+					<hr />
+					<div class="timeline-middle">
+						<Icons.timestep active={false} />
+					</div>
+					<a href={stop.href} class="timeline-end timeline-box">{stop?.stop_name}</a>
+					<hr />
+				</li>
 			{:else}
-				<li class="step step-primary">{firstStop?.stop_name}</li>
+				<li>
+					<hr />
+					<div class="timeline-middle">
+						<Icons.timestep active={false} />
+					</div>
+					<a href={stop.href} class="timeline-start timeline-box">{stop?.stop_name}</a>
+					<hr />
+				</li>
 			{/if}
-			{#each stopsBefore as { stop_name }}
-				<li class="step">{stop_name}</li>
-			{/each}
-			{#if curStop != firstStop && curStop != lastStop}
-				<li id="current" class="step step-secondary">{curStop.stop_name}</li>
-			{/if}
-			{#each stopsAfter as { stop_name }}
-				<li class="step step-success">{stop_name}</li>
-			{/each}
-			{#if curStop === lastStop}
-				<li class="step step-secondary">{lastStop?.stop_name}</li>
+		{/each}
+		<!-- render cur stop -> last stop -->
+		{#each stopsAfter as stop, i}
+			{#if stop.side === 'right'}
+				<li id={i === 0 ? 'current' : ''}>
+					<hr class={i === 0 ? '' : 'bg-primary'} />
+					<div class="timeline-middle">
+						<Icons.timestep active={true} />
+					</div>
+					<a href={stop.href} class="timeline-end timeline-box">{stop?.stop_name}</a>
+					<hr class="bg-primary" />
+				</li>
 			{:else}
-				<li class="step step-primary">{lastStop?.stop_name}</li>
+				<li>
+					<hr class="bg-primary" />
+					<div class="timeline-middle">
+						<Icons.timestep active={true} />
+					</div>
+					<a href={stop.href} class="timeline-start timeline-box">{stop?.stop_name}</a>
+					<hr class="bg-primary" />
+				</li>
 			{/if}
-		</ul>
-	</div>
+		{/each}
+	</ul>
 </div>

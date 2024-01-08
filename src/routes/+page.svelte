@@ -1,10 +1,10 @@
 <script lang="ts">
 	import busStops from '$lib/data/stops.json';
 	import Geolocation from 'svelte-geolocation';
+	import Icons from '$lib/icons';
 	import { onDestroy } from 'svelte';
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
-	import { Icons } from '$lib/icons/icons';
 	import { createSearchStore, searchHandler } from '../lib/stores/search';
 
 	type Stop = {
