@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import routes from '$lib/data/routes.json';
-	import DecoratedBusRoute from '$lib/components/DecoratedBusRoute.svelte';
+	import NewDecoratedBusRoute from '$lib/components/DecoratedBusRoute.svelte';
 
 	export let data: PageData;
 
@@ -17,7 +17,6 @@
 </script>
 
 <div class="flex flex-col py-4 space-y-4 items-center justify-center">
-	<DecoratedBusRoute stops={routes2[routeCode]} curStopCode={stopName} route={routeCode} />
-
+	<NewDecoratedBusRoute stops={routes2[routeCode]} curStopCode={stopName} route={routeCode} />
 	<a class="mt-1 btn btn-outline btn-error mb-5" href="/stop/{stopName}"> Back </a>
 </div>

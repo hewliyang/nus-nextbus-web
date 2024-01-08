@@ -1,10 +1,10 @@
 <script lang="ts">
 	import '../app.css';
 	import '@fontsource-variable/inter';
+	import Icons from '$lib/icons';
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import { dev } from '$app/environment';
-	import { Icons } from '$lib/icons/icons';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
 	const submitUpdateTheme: SubmitFunction = ({ action }) => {

@@ -16,7 +16,7 @@
 
 <div class="flex flex-col items-center space-y-4 mb-4">
 	<h1 class="text-2xl font-semibold">Routes</h1>
-	<div role="tablist" class="tabs tabs-bordered">
+	<div role="tablist" class="tabs tabs-boxed">
 		{#each keys as key}
 			<input
 				type="radio"
