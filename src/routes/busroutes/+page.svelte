@@ -16,17 +16,19 @@
 
 <div class="flex flex-col items-center space-y-4 mb-4">
 	<h1 class="text-2xl font-semibold">Routes</h1>
-	<div class="btn-group">
+	<div role="tablist" class="tabs tabs-bordered">
 		{#each keys as key}
 			<input
 				type="radio"
 				name="options"
+				role="tab"
+				class="tab"
 				data-title={key}
 				value={key}
-				class="btn btn-sm md:btn-md"
+				aria-label={key}
 				bind:group={selectedRoute}
 			/>
 		{/each}
 	</div>
-	<BusRoute bind:stops />
+	<BusRoute {stops} />
 </div>

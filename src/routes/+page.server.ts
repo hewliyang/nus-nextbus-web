@@ -1,9 +1,5 @@
 import { fail, redirect, type Actions } from '@sveltejs/kit';
-
-type Bookmark = {
-	caption: string;
-	name: string;
-};
+import type { Bookmark } from '$lib/types';
 
 // pass bookmarks array to page.svelte to SSR the stored bookmarks in cookies
 // export const load: PageServerLoad = ({ cookies }) => {

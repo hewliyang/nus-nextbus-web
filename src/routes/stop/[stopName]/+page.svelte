@@ -1,7 +1,8 @@
 <script lang="ts">
+	import BusCapacityLabel from '$lib/components/BusCapacityLabel.svelte';
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
-	import BusCapacityLabel from '$lib/components/BusCapacityLabel.svelte';
+	import type { Timing, Bookmark } from '$lib/types';
 
 	export let data;
 
@@ -26,11 +27,6 @@
 	}
 
 	// check if current stop is already in bookmarks
-
-	type Bookmark = {
-		caption: string;
-		name: string;
-	};
 
 	let bookmark_objs: Bookmark[];
 	let alreadyBookmarked: boolean;
@@ -119,7 +115,7 @@
 		</button>
 	</form>
 	<a class="mt-3 btn btn-outline btn-error mb-3" href="/"> Home </a>
-	<a class="mt-3 btn btn-outline btn-success mb-3" href="./{busStopName}" data-sveltekit-reload>
+	<a class="mt-3 btn btn-outline btn-success mb-3" href="/stop/{busStopName}" data-sveltekit-reload>
 		Refresh
 	</a>
 </div>

@@ -42,18 +42,20 @@
 			<div class="flex gap-3 mr-3 items-center">
 				<a class="hidden btn btn-info btn-outline btn-sm md:flex items-center" href="/">Stops</a>
 				<a class="hidden btn btn-warning btn-outline btn-sm md:flex items-center" href="/busroutes"
-					>All Routes</a
+					>Routes</a
 				>
 			</div>
-			<ul class="menu menu-xs menu-horizontal z-1">
+			<ul class="dropdown dropdown-bottom dropdown-end">
 				<li>
-					<button
+					<div
+						tabindex="0"
+						role="button"
 						class="border rounded-xl p-1.5 border-neutral-200 dark:border-neutral-700"
 						aria-label="switch-theme"
 					>
 						<Icons.sun />
-					</button>
-					<ul class="bg-base-200 rounded-xl">
+					</div>
+					<ul class="bg-base-200 rounded-xl dropdown-content z-[1] menu p-2 shadow">
 						<form method="POST" use:enhance={submitUpdateTheme}>
 							<li>
 								<button
@@ -77,7 +79,7 @@
 	</nav>
 	<div class="flex justify-center items-center space-x-5 p-5 md:hidden">
 		<a class="btn btn-info btn-sm" href="/">Stops</a>
-		<a class="btn btn-warning btn-sm" href="/busroutes">All Routes</a>
+		<a class="btn btn-warning btn-sm" href="/busroutes">Routes</a>
 	</div>
 
 	<slot />
