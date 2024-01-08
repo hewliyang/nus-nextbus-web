@@ -46,12 +46,10 @@
 </script>
 
 {#if bookmarks.length === 0 && alert}
-	<div class="alert alert-info text-sm">
-		<div class="flex-1 justify-between">
-			<div class="flex gap-2 items-center">
-				<Icons.info />
-				<span class="font-bold">Be sure to bookmark🔖 your frequent stops for easy access!</span>
-			</div>
+	<div role="alert" class="alert alert-info text-sm">
+		<Icons.info />
+		<span class="font-bold">Be sure to bookmark🔖 your frequent stops for easy access!</span>
+		<div>
 			<form action="?/closeAlert" method="POST" use:enhance>
 				<button class="btn btn-outline btn-sm">X</button>
 			</form>
