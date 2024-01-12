@@ -1,6 +1,5 @@
 <script lang="ts">
 	import '../app.css';
-	import '@fontsource-variable/inter';
 	import Icons from '$lib/icons';
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
