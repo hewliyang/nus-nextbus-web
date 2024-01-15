@@ -94,7 +94,7 @@
 		<div>
 			<p>
 				<span class="font-mono font-semibold text-success">{new Date().getFullYear()}</span>
-				<a href="https://hewliyang.tech" class="hover:underline font-semibold font-mono"
+				<a href="https://hewliyang.com" class="hover:underline font-semibold font-mono"
 					>hewliyang 👋</a
 				><br />
 			</p>
