@@ -5,14 +5,11 @@
   BetterNextBus 
 </h1>
 
-> A minimal **PWA** for fetching and displaying NUS Internal Shuttle Bus routes & arrival timings
+# !DISCLAIMER!
+If you have been using this at the `nextbus.me` domain, it has expired and I'm not spending money to renew it. You can continue to use it if you'd like at my personal subdomain at https://bus.hewliyang.com
 
-## Motivation
 
-Just personally wanted a less bloated, faster NextBus. 
-
-Also, when location services load slowly, so does the app on boot. There isn't an option to disable this functionality (as far as I know on *Android*) except for disabling it entirely.
-
+> A minimal **PWA** for fetching and displaying NUS Internal Shuttle Bus routes & arrival timings because... too many NUS apps
 
 ## Features
 - Geolocation 📍
