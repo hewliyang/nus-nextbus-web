@@ -6,7 +6,7 @@
 </h1>
 
 > [!WARNING]  
-> This project is no longer being maintained but should still work as long as the NUS bus API does not radically change. Additionally, the original [nextbus.me](nextbus.me) domain has expired so it's now only accessible via [bus.hewliyang.com](bus.hewliyang.com)
+> This project is no longer being maintained but should still work as long as the NUS bus API does not radically change. Additionally, the original [nextbus.me](https://nextbus.me) domain has expired so it's now only accessible via [bus.hewliyang.com](https://bus.hewliyang.com)
 
 > [!NOTE]
 > A minimal **PWA** for fetching and displaying NUS Internal Shuttle Bus routes & arrival timings because... too many NUS apps
