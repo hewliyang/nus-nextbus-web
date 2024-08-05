@@ -84,15 +84,15 @@
     "name": "UHALL-OPP",
     "LongName": "Opp University Hall",
     "ShortName": "Opp UHall",
-    "latitude": 1.297574,
-    "longitude": 103.778088
+    "latitude": 1.297518,
+    "longitude": 103.77813
   },
   {
     "caption": "S 17",
     "name": "S17",
     "LongName": "S 17",
     "ShortName": "S 17",
-    "latitude": 1.297477,
+    "latitude": 1.29756,
     "longitude": 103.780718
   },
   {
@@ -100,16 +100,16 @@
     "name": "KR-MRT-OPP",
     "LongName": "Opp Kent Ridge MRT",
     "ShortName": "Opp KR MRT",
-    "latitude": 1.294962,
-    "longitude": 103.784556
+    "latitude": 1.294923,
+    "longitude": 103.784603
   },
   {
     "caption": "Prince George's Park Foyer",
     "name": "PGPR",
     "LongName": "Prince George's Park Foyer",
     "ShortName": "PGP Foyer",
-    "latitude": 1.291016,
-    "longitude": 103.781185
+    "latitude": 1.290969,
+    "longitude": 103.78109
   },
   {
     "caption": "TCOMS",
@@ -157,7 +157,7 @@
     "LongName": "Opp Yusof Ishak House",
     "ShortName": "Opp YIH",
     "latitude": 1.298904,
-    "longitude": 103.77412
+    "longitude": 103.774118
   },
   {
     "caption": "Yusof Ishak House",
@@ -236,24 +236,24 @@
     "name": "OTH",
     "LongName": "Oei Tiong Ham Building",
     "ShortName": "OTH Bldg",
-    "latitude": 1.320227,
-    "longitude": 103.818851
+    "latitude": 1.319333,
+    "longitude": 103.818262
   },
   {
     "caption": "Botanic Gardens MRT (PUDO)",
     "name": "BG-MRT",
     "LongName": "Botanic Gardens MRT (PUDO)",
     "ShortName": "BG MRT",
-    "latitude": 1.322512,
-    "longitude": 103.815855
+    "latitude": 1.322586,
+    "longitude": 103.816135
   },
   {
     "caption": "College Green",
     "name": "CG",
     "LongName": "College Green",
     "ShortName": "College Gr",
-    "latitude": 1.323456,
-    "longitude": 103.816284
+    "latitude": 1.323345,
+    "longitude": 103.816273
   },
   {
     "caption": "Raffles Hall",
@@ -262,5 +262,21 @@
     "ShortName": "Raffles Hall",
     "latitude": 1.300963,
     "longitude": 103.772705
+  },
+  {
+    "caption": "EA",
+    "name": "EA",
+    "LongName": "EA",
+    "ShortName": "EA",
+    "latitude": 1.300534,
+    "longitude": 103.770171
+  },
+  {
+    "caption": "SDE 3",
+    "name": "SDE3",
+    "LongName": "SDE 3",
+    "ShortName": "SDE 3",
+    "latitude": 1.297756,
+    "longitude": 103.770043
   }
 ]
