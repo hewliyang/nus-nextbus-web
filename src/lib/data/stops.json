@@ -232,30 +232,6 @@
     "longitude": 103.769455
   },
   {
-    "caption": "Oei Tiong Ham Building",
-    "name": "OTH",
-    "LongName": "Oei Tiong Ham Building",
-    "ShortName": "OTH Bldg",
-    "latitude": 1.319333,
-    "longitude": 103.818262
-  },
-  {
-    "caption": "Botanic Gardens MRT (PUDO)",
-    "name": "BG-MRT",
-    "LongName": "Botanic Gardens MRT (PUDO)",
-    "ShortName": "BG MRT",
-    "latitude": 1.322586,
-    "longitude": 103.816135
-  },
-  {
-    "caption": "College Green",
-    "name": "CG",
-    "LongName": "College Green",
-    "ShortName": "College Gr",
-    "latitude": 1.323345,
-    "longitude": 103.816273
-  },
-  {
     "caption": "Raffles Hall",
     "name": "RAFFLES",
     "LongName": "Raffles Hall",
@@ -278,5 +254,29 @@
     "ShortName": "SDE 3",
     "latitude": 1.297756,
     "longitude": 103.770043
+  },
+  {
+    "caption": "Oei Tiong Ham Building",
+    "name": "OTH",
+    "LongName": "Oei Tiong Ham Building",
+    "ShortName": "OTH Bldg",
+    "latitude": 1.319333,
+    "longitude": 103.818262
+  },
+  {
+    "caption": "Botanic Gardens MRT (PUDO)",
+    "name": "BG-MRT",
+    "LongName": "Botanic Gardens MRT (PUDO)",
+    "ShortName": "BG MRT",
+    "latitude": 1.322586,
+    "longitude": 103.816135
+  },
+  {
+    "caption": "College Green",
+    "name": "CG",
+    "LongName": "College Green",
+    "ShortName": "College Gr",
+    "latitude": 1.323345,
+    "longitude": 103.816273
   }
 ]
