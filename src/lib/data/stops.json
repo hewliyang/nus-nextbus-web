@@ -1,11 +1,163 @@
 [
   {
+    "caption": "Prince George's Park",
+    "name": "PGP",
+    "LongName": "Prince George's Park",
+    "ShortName": "PGP",
+    "latitude": 1.291765,
+    "longitude": 103.780419
+  },
+  {
+    "caption": "Kent Ridge MRT",
+    "name": "KR-MRT",
+    "LongName": "Kent Ridge MRT",
+    "ShortName": "KR MRT",
+    "latitude": 1.29482,
+    "longitude": 103.784413
+  },
+  {
+    "caption": "LT 27",
+    "name": "LT27",
+    "LongName": "LT 27",
+    "ShortName": "LT 27",
+    "latitude": 1.297421,
+    "longitude": 103.780941
+  },
+  {
+    "caption": "University Hall",
+    "name": "UHALL",
+    "LongName": "University Hall",
+    "ShortName": "UHall",
+    "latitude": 1.297372,
+    "longitude": 103.778075
+  },
+  {
+    "caption": "Opp University Health Centre",
+    "name": "UHC-OPP",
+    "LongName": "Opp University Health Centre",
+    "ShortName": "Opp UHC",
+    "latitude": 1.298788,
+    "longitude": 103.775612
+  },
+  {
+    "caption": "Yusof Ishak House",
+    "name": "YIH",
+    "LongName": "Yusof Ishak House",
+    "ShortName": "YIH",
+    "latitude": 1.298885,
+    "longitude": 103.774377
+  },
+  {
+    "caption": "Central Library",
+    "name": "CLB",
+    "LongName": "Central Library",
+    "ShortName": "CLB",
+    "latitude": 1.296544,
+    "longitude": 103.772569
+  },
+  {
+    "caption": "Opp SDE 3",
+    "name": "SDE3-OPP",
+    "LongName": "Opp SDE 3",
+    "ShortName": "Opp SDE 3",
+    "latitude": 1.297799,
+    "longitude": 103.769603
+  },
+  {
+    "caption": "The Japanese Primary School",
+    "name": "JP-SCH-16151",
+    "LongName": "The Japanese Primary School",
+    "ShortName": "Jpn Pr Sch",
+    "latitude": 1.30077,
+    "longitude": 103.769904
+  },
+  {
+    "caption": "Kent Vale",
+    "name": "KV",
+    "LongName": "Kent Vale",
+    "ShortName": "Kent Vale",
+    "latitude": 1.301899,
+    "longitude": 103.769455
+  },
+  {
+    "caption": "Museum",
+    "name": "MUSEUM",
+    "LongName": "Museum",
+    "ShortName": "Museum",
+    "latitude": 1.301081,
+    "longitude": 103.77369
+  },
+  {
+    "caption": "University Health Centre",
+    "name": "UHC",
+    "LongName": "University Health Centre",
+    "ShortName": "UHC",
+    "latitude": 1.29891,
+    "longitude": 103.776103
+  },
+  {
+    "caption": "Opp University Hall",
+    "name": "UHALL-OPP",
+    "LongName": "Opp University Hall",
+    "ShortName": "Opp UHall",
+    "latitude": 1.297574,
+    "longitude": 103.778088
+  },
+  {
+    "caption": "S 17",
+    "name": "S17",
+    "LongName": "S 17",
+    "ShortName": "S 17",
+    "latitude": 1.297488,
+    "longitude": 103.780707
+  },
+  {
+    "caption": "Opp Kent Ridge MRT",
+    "name": "KR-MRT-OPP",
+    "LongName": "Opp Kent Ridge MRT",
+    "ShortName": "Opp KR MRT",
+    "latitude": 1.294962,
+    "longitude": 103.784556
+  },
+  {
+    "caption": "Prince George's Park Foyer",
+    "name": "PGPR",
+    "LongName": "Prince George's Park Foyer",
+    "ShortName": "PGP Foyer",
+    "latitude": 1.290994,
+    "longitude": 103.781153
+  },
+  {
     "caption": "COM 3",
     "name": "COM3",
     "LongName": "COM 3",
     "ShortName": "COM 3",
     "latitude": 1.294431,
     "longitude": 103.775217
+  },
+  {
+    "caption": "Opp TCOMS",
+    "name": "TCOMS-OPP",
+    "LongName": "Opp TCOMS",
+    "ShortName": "Opp TCOMS",
+    "latitude": 1.293789,
+    "longitude": 103.776715
+  },
+  {
+    "caption": "University Town",
+    "name": "UTOWN",
+    "LongName": "University Town",
+    "ShortName": "UTown",
+    "latitude": 1.303623,
+    "longitude": 103.774388
+  },
+  {
+    "caption": "TCOMS",
+    "name": "TCOMS",
+    "LongName": "TCOMS",
+    "ShortName": "TCOMS",
+    "latitude": 1.293654,
+    "longitude": 103.776898
   },
   {
     "caption": "Opp HSSML",
@@ -48,38 +200,6 @@
     "longitude": 103.774118
   },
   {
-    "caption": "Museum",
-    "name": "MUSEUM",
-    "LongName": "Museum",
-    "ShortName": "Museum",
-    "latitude": 1.301081,
-    "longitude": 103.77369
-  },
-  {
-    "caption": "University Town",
-    "name": "UTOWN",
-    "LongName": "University Town",
-    "ShortName": "UTown",
-    "latitude": 1.303623,
-    "longitude": 103.774388
-  },
-  {
-    "caption": "Yusof Ishak House",
-    "name": "YIH",
-    "LongName": "Yusof Ishak House",
-    "ShortName": "YIH",
-    "latitude": 1.298885,
-    "longitude": 103.774377
-  },
-  {
-    "caption": "Central Library",
-    "name": "CLB",
-    "LongName": "Central Library",
-    "ShortName": "CLB",
-    "latitude": 1.296544,
-    "longitude": 103.772569
-  },
-  {
     "caption": "LT 13",
     "name": "LT13",
     "LongName": "LT 13",
@@ -100,104 +220,16 @@
     "name": "BIZ2",
     "LongName": "BIZ 2",
     "ShortName": "BIZ 2",
-    "latitude": 1.293223,
-    "longitude": 103.775068
+    "latitude": 1.293273,
+    "longitude": 103.775074
   },
   {
-    "caption": "Opp TCOMS",
-    "name": "TCOMS-OPP",
-    "LongName": "Opp TCOMS",
-    "ShortName": "Opp TCOMS",
-    "latitude": 1.293789,
-    "longitude": 103.776715
-  },
-  {
-    "caption": "Prince George's Park",
-    "name": "PGP",
-    "LongName": "Prince George's Park",
-    "ShortName": "PGP",
-    "latitude": 1.291765,
-    "longitude": 103.780419
-  },
-  {
-    "caption": "Kent Ridge MRT",
-    "name": "KR-MRT",
-    "LongName": "Kent Ridge MRT",
-    "ShortName": "KR MRT",
-    "latitude": 1.29483,
-    "longitude": 103.784439
-  },
-  {
-    "caption": "LT 27",
-    "name": "LT27",
-    "LongName": "LT 27",
-    "ShortName": "LT 27",
-    "latitude": 1.297421,
-    "longitude": 103.780941
-  },
-  {
-    "caption": "University Hall",
-    "name": "UHALL",
-    "LongName": "University Hall",
-    "ShortName": "UHall",
-    "latitude": 1.297372,
-    "longitude": 103.778075
-  },
-  {
-    "caption": "Opp University Health Centre",
-    "name": "UHC-OPP",
-    "LongName": "Opp University Health Centre",
-    "ShortName": "Opp UHC",
-    "latitude": 1.298786,
-    "longitude": 103.77563
-  },
-  {
-    "caption": "University Health Centre",
-    "name": "UHC",
-    "LongName": "University Health Centre",
-    "ShortName": "UHC",
-    "latitude": 1.29891,
-    "longitude": 103.776103
-  },
-  {
-    "caption": "Opp University Hall",
-    "name": "UHALL-OPP",
-    "LongName": "Opp University Hall",
-    "ShortName": "Opp UHall",
-    "latitude": 1.297518,
-    "longitude": 103.77813
-  },
-  {
-    "caption": "S 17",
-    "name": "S17",
-    "LongName": "S 17",
-    "ShortName": "S 17",
-    "latitude": 1.29756,
-    "longitude": 103.780718
-  },
-  {
-    "caption": "Opp Kent Ridge MRT",
-    "name": "KR-MRT-OPP",
-    "LongName": "Opp Kent Ridge MRT",
-    "ShortName": "Opp KR MRT",
-    "latitude": 1.294923,
-    "longitude": 103.784603
-  },
-  {
-    "caption": "Prince George's Park Foyer",
-    "name": "PGPR",
-    "LongName": "Prince George's Park Foyer",
-    "ShortName": "PGP Foyer",
-    "latitude": 1.290969,
-    "longitude": 103.78109
-  },
-  {
-    "caption": "TCOMS",
-    "name": "TCOMS",
-    "LongName": "TCOMS",
-    "ShortName": "TCOMS",
-    "latitude": 1.293654,
-    "longitude": 103.776898
+    "caption": "Kent Ridge Bus Terminal",
+    "name": "KRB",
+    "LongName": "Kent Ridge Bus Terminal",
+    "ShortName": "KR Bus Ter",
+    "latitude": 1.29453,
+    "longitude": 103.769924
   },
   {
     "caption": "Raffles Hall",
@@ -206,14 +238,6 @@
     "ShortName": "Raffles Hall",
     "latitude": 1.300963,
     "longitude": 103.772705
-  },
-  {
-    "caption": "Kent Vale",
-    "name": "KV",
-    "LongName": "Kent Vale",
-    "ShortName": "Kent Vale",
-    "latitude": 1.301899,
-    "longitude": 103.769455
   },
   {
     "caption": "EA",
@@ -230,22 +254,6 @@
     "ShortName": "SDE 3",
     "latitude": 1.297756,
     "longitude": 103.770043
-  },
-  {
-    "caption": "Opp SDE 3",
-    "name": "SDE3-OPP",
-    "LongName": "Opp SDE 3",
-    "ShortName": "Opp SDE 3",
-    "latitude": 1.297799,
-    "longitude": 103.769603
-  },
-  {
-    "caption": "The Japanese Primary School",
-    "name": "JP-SCH-16151",
-    "LongName": "The Japanese Primary School",
-    "ShortName": "Jpn Pr Sch",
-    "latitude": 1.30077,
-    "longitude": 103.769904
   },
   {
     "caption": "Oei Tiong Ham Building",
@@ -270,13 +278,5 @@
     "ShortName": "College Gr",
     "latitude": 1.323345,
     "longitude": 103.816273
-  },
-  {
-    "caption": "Kent Ridge Bus Terminal",
-    "name": "KRB",
-    "LongName": "Kent Ridge Bus Terminal",
-    "ShortName": "KR Bus Ter",
-    "latitude": 1.29453,
-    "longitude": 103.769924
   }
 ]
