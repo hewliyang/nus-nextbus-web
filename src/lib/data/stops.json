@@ -1,5 +1,85 @@
 [
   {
+    "caption": "Oei Tiong Ham Building",
+    "name": "OTH",
+    "LongName": "Oei Tiong Ham Building",
+    "ShortName": "OTH Bldg",
+    "latitude": 1.319333,
+    "longitude": 103.818262
+  },
+  {
+    "caption": "Botanic Gardens MRT (PUDO)",
+    "name": "BG-MRT",
+    "LongName": "Botanic Gardens MRT (PUDO)",
+    "ShortName": "BG MRT",
+    "latitude": 1.322586,
+    "longitude": 103.816135
+  },
+  {
+    "caption": "College Green",
+    "name": "CG",
+    "LongName": "College Green",
+    "ShortName": "College Gr",
+    "latitude": 1.323345,
+    "longitude": 103.816273
+  },
+  {
+    "caption": "University Town",
+    "name": "UTOWN",
+    "LongName": "University Town",
+    "ShortName": "UTown",
+    "latitude": 1.303623,
+    "longitude": 103.774388
+  },
+  {
+    "caption": "Raffles Hall",
+    "name": "RAFFLES",
+    "LongName": "Raffles Hall",
+    "ShortName": "Raffles Hall",
+    "latitude": 1.300963,
+    "longitude": 103.772705
+  },
+  {
+    "caption": "Kent Vale",
+    "name": "KV",
+    "LongName": "Kent Vale",
+    "ShortName": "Kent Vale",
+    "latitude": 1.301899,
+    "longitude": 103.769455
+  },
+  {
+    "caption": "EA",
+    "name": "EA",
+    "LongName": "EA",
+    "ShortName": "EA",
+    "latitude": 1.300534,
+    "longitude": 103.770171
+  },
+  {
+    "caption": "SDE 3",
+    "name": "SDE3",
+    "LongName": "SDE 3",
+    "ShortName": "SDE 3",
+    "latitude": 1.297756,
+    "longitude": 103.770043
+  },
+  {
+    "caption": "Information Technology",
+    "name": "IT",
+    "LongName": "Information Technology",
+    "ShortName": "IT",
+    "latitude": 1.297204,
+    "longitude": 103.772688
+  },
+  {
+    "caption": "Opp Yusof Ishak House",
+    "name": "YIH-OPP",
+    "LongName": "Opp Yusof Ishak House",
+    "ShortName": "Opp YIH",
+    "latitude": 1.298904,
+    "longitude": 103.774118
+  },
+  {
     "caption": "COM 3",
     "name": "COM3",
     "LongName": "COM 3",
@@ -64,14 +144,6 @@
     "longitude": 103.77369
   },
   {
-    "caption": "University Town",
-    "name": "UTOWN",
-    "LongName": "University Town",
-    "ShortName": "UTown",
-    "latitude": 1.303623,
-    "longitude": 103.774388
-  },
-  {
     "caption": "University Health Centre",
     "name": "UHC",
     "LongName": "University Health Centre",
@@ -120,46 +192,6 @@
     "longitude": 103.776898
   },
   {
-    "caption": "Opp HSSML",
-    "name": "HSSML-OPP",
-    "LongName": "Opp Hon Sui Sen Memorial Library",
-    "ShortName": "Opp HSSML",
-    "latitude": 1.292798,
-    "longitude": 103.774978
-  },
-  {
-    "caption": "Opp NUSS",
-    "name": "NUSS-OPP",
-    "LongName": "Opp NUSS",
-    "ShortName": "Opp NUSS",
-    "latitude": 1.293208,
-    "longitude": 103.772618
-  },
-  {
-    "caption": "Ventus",
-    "name": "LT13-OPP",
-    "LongName": "Ventus",
-    "ShortName": "Ventus",
-    "latitude": 1.29534,
-    "longitude": 103.770617
-  },
-  {
-    "caption": "Information Technology",
-    "name": "IT",
-    "LongName": "Information Technology",
-    "ShortName": "IT",
-    "latitude": 1.297204,
-    "longitude": 103.772688
-  },
-  {
-    "caption": "Opp Yusof Ishak House",
-    "name": "YIH-OPP",
-    "LongName": "Opp Yusof Ishak House",
-    "ShortName": "Opp YIH",
-    "latitude": 1.298904,
-    "longitude": 103.774118
-  },
-  {
     "caption": "Yusof Ishak House",
     "name": "YIH",
     "LongName": "Yusof Ishak House",
@@ -200,14 +232,6 @@
     "longitude": 103.775074
   },
   {
-    "caption": "Kent Ridge Bus Terminal",
-    "name": "KRB",
-    "LongName": "Kent Ridge Bus Terminal",
-    "ShortName": "KR Bus Ter",
-    "latitude": 1.29453,
-    "longitude": 103.769924
-  },
-  {
     "caption": "Opp SDE 3",
     "name": "SDE3-OPP",
     "LongName": "Opp SDE 3",
@@ -224,59 +248,35 @@
     "longitude": 103.769904
   },
   {
-    "caption": "Kent Vale",
-    "name": "KV",
-    "LongName": "Kent Vale",
-    "ShortName": "Kent Vale",
-    "latitude": 1.301899,
-    "longitude": 103.769455
+    "caption": "Opp HSSML",
+    "name": "HSSML-OPP",
+    "LongName": "Opp Hon Sui Sen Memorial Library",
+    "ShortName": "Opp HSSML",
+    "latitude": 1.292798,
+    "longitude": 103.774978
   },
   {
-    "caption": "Raffles Hall",
-    "name": "RAFFLES",
-    "LongName": "Raffles Hall",
-    "ShortName": "Raffles Hall",
-    "latitude": 1.300963,
-    "longitude": 103.772705
+    "caption": "Opp NUSS",
+    "name": "NUSS-OPP",
+    "LongName": "Opp NUSS",
+    "ShortName": "Opp NUSS",
+    "latitude": 1.293208,
+    "longitude": 103.772618
   },
   {
-    "caption": "EA",
-    "name": "EA",
-    "LongName": "EA",
-    "ShortName": "EA",
-    "latitude": 1.300534,
-    "longitude": 103.770171
+    "caption": "Ventus",
+    "name": "LT13-OPP",
+    "LongName": "Ventus",
+    "ShortName": "Ventus",
+    "latitude": 1.29534,
+    "longitude": 103.770617
   },
   {
-    "caption": "SDE 3",
-    "name": "SDE3",
-    "LongName": "SDE 3",
-    "ShortName": "SDE 3",
-    "latitude": 1.297756,
-    "longitude": 103.770043
-  },
-  {
-    "caption": "Oei Tiong Ham Building",
-    "name": "OTH",
-    "LongName": "Oei Tiong Ham Building",
-    "ShortName": "OTH Bldg",
-    "latitude": 1.319333,
-    "longitude": 103.818262
-  },
-  {
-    "caption": "Botanic Gardens MRT (PUDO)",
-    "name": "BG-MRT",
-    "LongName": "Botanic Gardens MRT (PUDO)",
-    "ShortName": "BG MRT",
-    "latitude": 1.322586,
-    "longitude": 103.816135
-  },
-  {
-    "caption": "College Green",
-    "name": "CG",
-    "LongName": "College Green",
-    "ShortName": "College Gr",
-    "latitude": 1.323345,
-    "longitude": 103.816273
+    "caption": "Kent Ridge Bus Terminal",
+    "name": "KRB",
+    "LongName": "Kent Ridge Bus Terminal",
+    "ShortName": "KR Bus Ter",
+    "latitude": 1.29453,
+    "longitude": 103.769924
   }
 ]
