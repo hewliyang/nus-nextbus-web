@@ -1,21 +1,5 @@
 [
   {
-    "caption": "COM 3",
-    "name": "COM3",
-    "LongName": "COM 3",
-    "ShortName": "COM 3",
-    "latitude": 1.294431,
-    "longitude": 103.775217
-  },
-  {
-    "caption": "Opp TCOMS",
-    "name": "TCOMS-OPP",
-    "LongName": "Opp TCOMS",
-    "ShortName": "Opp TCOMS",
-    "latitude": 1.293789,
-    "longitude": 103.776715
-  },
-  {
     "caption": "Prince George's Park",
     "name": "PGP",
     "LongName": "Prince George's Park",
@@ -56,20 +40,52 @@
     "longitude": 103.775612
   },
   {
+    "caption": "Yusof Ishak House",
+    "name": "YIH",
+    "LongName": "Yusof Ishak House",
+    "ShortName": "YIH",
+    "latitude": 1.298885,
+    "longitude": 103.774377
+  },
+  {
+    "caption": "Central Library",
+    "name": "CLB",
+    "LongName": "Central Library",
+    "ShortName": "CLB",
+    "latitude": 1.296544,
+    "longitude": 103.772569
+  },
+  {
+    "caption": "Opp SDE 3",
+    "name": "SDE3-OPP",
+    "LongName": "Opp SDE 3",
+    "ShortName": "Opp SDE 3",
+    "latitude": 1.297799,
+    "longitude": 103.769603
+  },
+  {
+    "caption": "The Japanese Primary School",
+    "name": "JP-SCH-16151",
+    "LongName": "The Japanese Primary School",
+    "ShortName": "Jpn Pr Sch",
+    "latitude": 1.30077,
+    "longitude": 103.769904
+  },
+  {
+    "caption": "Kent Vale",
+    "name": "KV",
+    "LongName": "Kent Vale",
+    "ShortName": "Kent Vale",
+    "latitude": 1.301899,
+    "longitude": 103.769455
+  },
+  {
     "caption": "Museum",
     "name": "MUSEUM",
     "LongName": "Museum",
     "ShortName": "Museum",
     "latitude": 1.301081,
     "longitude": 103.77369
-  },
-  {
-    "caption": "University Town",
-    "name": "UTOWN",
-    "LongName": "University Town",
-    "ShortName": "UTown",
-    "latitude": 1.303653,
-    "longitude": 103.774688
   },
   {
     "caption": "University Health Centre",
@@ -110,6 +126,30 @@
     "ShortName": "PGP Foyer",
     "latitude": 1.290994,
     "longitude": 103.781153
+  },
+  {
+    "caption": "COM 3",
+    "name": "COM3",
+    "LongName": "COM 3",
+    "ShortName": "COM 3",
+    "latitude": 1.294431,
+    "longitude": 103.775217
+  },
+  {
+    "caption": "Opp TCOMS",
+    "name": "TCOMS-OPP",
+    "LongName": "Opp TCOMS",
+    "ShortName": "Opp TCOMS",
+    "latitude": 1.293789,
+    "longitude": 103.776715
+  },
+  {
+    "caption": "University Town",
+    "name": "UTOWN",
+    "LongName": "University Town",
+    "ShortName": "UTown",
+    "latitude": 1.303653,
+    "longitude": 103.774688
   },
   {
     "caption": "TCOMS",
@@ -160,22 +200,6 @@
     "longitude": 103.774118
   },
   {
-    "caption": "Yusof Ishak House",
-    "name": "YIH",
-    "LongName": "Yusof Ishak House",
-    "ShortName": "YIH",
-    "latitude": 1.298885,
-    "longitude": 103.774377
-  },
-  {
-    "caption": "Central Library",
-    "name": "CLB",
-    "LongName": "Central Library",
-    "ShortName": "CLB",
-    "latitude": 1.296544,
-    "longitude": 103.772569
-  },
-  {
     "caption": "LT 13",
     "name": "LT13",
     "LongName": "LT 13",
@@ -206,30 +230,6 @@
     "ShortName": "KR Bus Ter",
     "latitude": 1.29443,
     "longitude": 103.769997
-  },
-  {
-    "caption": "Opp SDE 3",
-    "name": "SDE3-OPP",
-    "LongName": "Opp SDE 3",
-    "ShortName": "Opp SDE 3",
-    "latitude": 1.297799,
-    "longitude": 103.769603
-  },
-  {
-    "caption": "The Japanese Primary School",
-    "name": "JP-SCH-16151",
-    "LongName": "The Japanese Primary School",
-    "ShortName": "Jpn Pr Sch",
-    "latitude": 1.30077,
-    "longitude": 103.769904
-  },
-  {
-    "caption": "Kent Vale",
-    "name": "KV",
-    "LongName": "Kent Vale",
-    "ShortName": "Kent Vale",
-    "latitude": 1.301899,
-    "longitude": 103.769455
   },
   {
     "caption": "Oei Tiong Ham Building",
