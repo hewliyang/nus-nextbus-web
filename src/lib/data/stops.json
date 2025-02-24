@@ -136,6 +136,30 @@
     "longitude": 103.775217
   },
   {
+    "caption": "Opp TCOMS",
+    "name": "TCOMS-OPP",
+    "LongName": "Opp TCOMS",
+    "ShortName": "Opp TCOMS",
+    "latitude": 1.293789,
+    "longitude": 103.776715
+  },
+  {
+    "caption": "University Town",
+    "name": "UTOWN",
+    "LongName": "University Town",
+    "ShortName": "UTown",
+    "latitude": 1.303623,
+    "longitude": 103.774388
+  },
+  {
+    "caption": "TCOMS",
+    "name": "TCOMS",
+    "LongName": "TCOMS",
+    "ShortName": "TCOMS",
+    "latitude": 1.293654,
+    "longitude": 103.776898
+  },
+  {
     "caption": "Opp HSSML",
     "name": "HSSML-OPP",
     "LongName": "Opp Hon Sui Sen Memorial Library",
@@ -176,14 +200,6 @@
     "longitude": 103.774118
   },
   {
-    "caption": "University Town",
-    "name": "UTOWN",
-    "LongName": "University Town",
-    "ShortName": "UTown",
-    "latitude": 1.303623,
-    "longitude": 103.774388
-  },
-  {
     "caption": "LT 13",
     "name": "LT13",
     "LongName": "LT 13",
@@ -214,22 +230,6 @@
     "ShortName": "KR Bus Ter",
     "latitude": 1.29453,
     "longitude": 103.769924
-  },
-  {
-    "caption": "TCOMS",
-    "name": "TCOMS",
-    "LongName": "TCOMS",
-    "ShortName": "TCOMS",
-    "latitude": 1.293654,
-    "longitude": 103.776898
-  },
-  {
-    "caption": "Opp TCOMS",
-    "name": "TCOMS-OPP",
-    "LongName": "Opp TCOMS",
-    "ShortName": "Opp TCOMS",
-    "latitude": 1.293789,
-    "longitude": 103.776715
   },
   {
     "caption": "Oei Tiong Ham Building",
