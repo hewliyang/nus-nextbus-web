@@ -152,46 +152,6 @@
     "longitude": 103.781153
   },
   {
-    "caption": "University Town",
-    "name": "UTOWN",
-    "LongName": "University Town",
-    "ShortName": "UTown",
-    "latitude": 1.303876,
-    "longitude": 103.774621
-  },
-  {
-    "caption": "Raffles Hall",
-    "name": "RAFFLES",
-    "LongName": "Raffles Hall",
-    "ShortName": "Raffles Hall",
-    "latitude": 1.300963,
-    "longitude": 103.772705
-  },
-  {
-    "caption": "LT 13",
-    "name": "LT13",
-    "LongName": "LT 13",
-    "ShortName": "LT 13",
-    "latitude": 1.294552,
-    "longitude": 103.770635
-  },
-  {
-    "caption": "AS 5",
-    "name": "AS5",
-    "LongName": "AS 5",
-    "ShortName": "AS 5",
-    "latitude": 1.293619,
-    "longitude": 103.771475
-  },
-  {
-    "caption": "BIZ 2",
-    "name": "BIZ2",
-    "LongName": "BIZ 2",
-    "ShortName": "BIZ 2",
-    "latitude": 1.293223,
-    "longitude": 103.775068
-  },
-  {
     "caption": "COM 3",
     "name": "COM3",
     "LongName": "COM 3",
@@ -206,6 +166,14 @@
     "ShortName": "Opp TCOMS",
     "latitude": 1.293789,
     "longitude": 103.776715
+  },
+  {
+    "caption": "University Town",
+    "name": "UTOWN",
+    "LongName": "University Town",
+    "ShortName": "UTown",
+    "latitude": 1.303623,
+    "longitude": 103.774388
   },
   {
     "caption": "TCOMS",
@@ -256,11 +224,59 @@
     "longitude": 103.774118
   },
   {
+    "caption": "LT 13",
+    "name": "LT13",
+    "LongName": "LT 13",
+    "ShortName": "LT 13",
+    "latitude": 1.294552,
+    "longitude": 103.770635
+  },
+  {
+    "caption": "AS 5",
+    "name": "AS5",
+    "LongName": "AS 5",
+    "ShortName": "AS 5",
+    "latitude": 1.293619,
+    "longitude": 103.771475
+  },
+  {
+    "caption": "BIZ 2",
+    "name": "BIZ2",
+    "LongName": "BIZ 2",
+    "ShortName": "BIZ 2",
+    "latitude": 1.293273,
+    "longitude": 103.775074
+  },
+  {
     "caption": "Kent Ridge Bus Terminal",
     "name": "KRB",
     "LongName": "Kent Ridge Bus Terminal",
     "ShortName": "KR Bus Ter",
-    "latitude": 1.29443,
-    "longitude": 103.769997
+    "latitude": 1.294536,
+    "longitude": 103.77
+  },
+  {
+    "caption": "Raffles Hall",
+    "name": "RAFFLES",
+    "LongName": "Raffles Hall",
+    "ShortName": "Raffles Hall",
+    "latitude": 1.300963,
+    "longitude": 103.772705
+  },
+  {
+    "caption": "EA",
+    "name": "EA",
+    "LongName": "EA",
+    "ShortName": "EA",
+    "latitude": 1.300534,
+    "longitude": 103.770171
+  },
+  {
+    "caption": "SDE 3",
+    "name": "SDE3",
+    "LongName": "SDE 3",
+    "ShortName": "SDE 3",
+    "latitude": 1.297756,
+    "longitude": 103.770043
   }
 ]
