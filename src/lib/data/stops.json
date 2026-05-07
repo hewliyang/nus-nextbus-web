@@ -96,6 +96,30 @@
     "longitude": 103.772569
   },
   {
+    "caption": "Opp HSSML",
+    "name": "HSSML-OPP",
+    "LongName": "Opp Hon Sui Sen Memorial Library",
+    "ShortName": "Opp HSSML",
+    "latitude": 1.292798,
+    "longitude": 103.774978
+  },
+  {
+    "caption": "Opp NUSS",
+    "name": "NUSS-OPP",
+    "LongName": "Opp NUSS",
+    "ShortName": "Opp NUSS",
+    "latitude": 1.293208,
+    "longitude": 103.772618
+  },
+  {
+    "caption": "Ventus",
+    "name": "LT13-OPP",
+    "LongName": "Ventus",
+    "ShortName": "Ventus",
+    "latitude": 1.29534,
+    "longitude": 103.770617
+  },
+  {
     "caption": "Information Technology",
     "name": "IT",
     "LongName": "Information Technology",
@@ -112,12 +136,76 @@
     "longitude": 103.774118
   },
   {
+    "caption": "University Town",
+    "name": "UTOWN",
+    "LongName": "University Town",
+    "ShortName": "UTown",
+    "latitude": 1.303876,
+    "longitude": 103.774621
+  },
+  {
+    "caption": "Raffles Hall",
+    "name": "RAFFLES",
+    "LongName": "Raffles Hall",
+    "ShortName": "Raffles Hall",
+    "latitude": 1.300946,
+    "longitude": 103.772703
+  },
+  {
+    "caption": "Kent Vale",
+    "name": "KV",
+    "LongName": "Kent Vale",
+    "ShortName": "Kent Vale",
+    "latitude": 1.301899,
+    "longitude": 103.769455
+  },
+  {
     "caption": "Museum",
     "name": "MUSEUM",
     "LongName": "Museum",
     "ShortName": "Museum",
     "latitude": 1.301081,
     "longitude": 103.77369
+  },
+  {
+    "caption": "College Green",
+    "name": "CG",
+    "LongName": "College Green",
+    "ShortName": "College Gr",
+    "latitude": 1.323337,
+    "longitude": 103.816276
+  },
+  {
+    "caption": "Oei Tiong Ham Building",
+    "name": "OTH",
+    "LongName": "Oei Tiong Ham Building",
+    "ShortName": "OTH Bldg",
+    "latitude": 1.319796,
+    "longitude": 103.817774
+  },
+  {
+    "caption": "Botanic Gardens MRT (PUDO)",
+    "name": "BG-MRT",
+    "LongName": "Botanic Gardens MRT (PUDO)",
+    "ShortName": "BG MRT",
+    "latitude": 1.322614,
+    "longitude": 103.815914
+  },
+  {
+    "caption": "Opp SDE 3",
+    "name": "SDE3-OPP",
+    "LongName": "Opp SDE 3",
+    "ShortName": "Opp SDE 3",
+    "latitude": 1.297799,
+    "longitude": 103.769603
+  },
+  {
+    "caption": "The Japanese Primary School",
+    "name": "JP-SCH-16151",
+    "LongName": "The Japanese Primary School",
+    "ShortName": "Jpn Pr Sch",
+    "latitude": 1.30077,
+    "longitude": 103.769904
   },
   {
     "caption": "University Health Centre",
@@ -160,38 +248,6 @@
     "longitude": 103.781153
   },
   {
-    "caption": "TCOMS",
-    "name": "TCOMS",
-    "LongName": "TCOMS",
-    "ShortName": "TCOMS",
-    "latitude": 1.293654,
-    "longitude": 103.776898
-  },
-  {
-    "caption": "Opp HSSML",
-    "name": "HSSML-OPP",
-    "LongName": "Opp Hon Sui Sen Memorial Library",
-    "ShortName": "Opp HSSML",
-    "latitude": 1.292798,
-    "longitude": 103.774978
-  },
-  {
-    "caption": "Opp NUSS",
-    "name": "NUSS-OPP",
-    "LongName": "Opp NUSS",
-    "ShortName": "Opp NUSS",
-    "latitude": 1.293208,
-    "longitude": 103.772618
-  },
-  {
-    "caption": "Ventus",
-    "name": "LT13-OPP",
-    "LongName": "Ventus",
-    "ShortName": "Ventus",
-    "latitude": 1.29534,
-    "longitude": 103.770617
-  },
-  {
     "caption": "COM 3",
     "name": "COM3",
     "LongName": "COM 3",
@@ -200,67 +256,11 @@
     "longitude": 103.775217
   },
   {
-    "caption": "University Town",
-    "name": "UTOWN",
-    "LongName": "University Town",
-    "ShortName": "UTown",
-    "latitude": 1.303876,
-    "longitude": 103.774621
-  },
-  {
-    "caption": "Raffles Hall",
-    "name": "RAFFLES",
-    "LongName": "Raffles Hall",
-    "ShortName": "Raffles Hall",
-    "latitude": 1.300946,
-    "longitude": 103.772703
-  },
-  {
-    "caption": "Kent Vale",
-    "name": "KV",
-    "LongName": "Kent Vale",
-    "ShortName": "Kent Vale",
-    "latitude": 1.301899,
-    "longitude": 103.769455
-  },
-  {
-    "caption": "College Green",
-    "name": "CG",
-    "LongName": "College Green",
-    "ShortName": "College Gr",
-    "latitude": 1.323337,
-    "longitude": 103.816276
-  },
-  {
-    "caption": "Oei Tiong Ham Building",
-    "name": "OTH",
-    "LongName": "Oei Tiong Ham Building",
-    "ShortName": "OTH Bldg",
-    "latitude": 1.319796,
-    "longitude": 103.817774
-  },
-  {
-    "caption": "Botanic Gardens MRT (PUDO)",
-    "name": "BG-MRT",
-    "LongName": "Botanic Gardens MRT (PUDO)",
-    "ShortName": "BG MRT",
-    "latitude": 1.322614,
-    "longitude": 103.815914
-  },
-  {
-    "caption": "Opp SDE 3",
-    "name": "SDE3-OPP",
-    "LongName": "Opp SDE 3",
-    "ShortName": "Opp SDE 3",
-    "latitude": 1.297799,
-    "longitude": 103.769603
-  },
-  {
-    "caption": "The Japanese Primary School",
-    "name": "JP-SCH-16151",
-    "LongName": "The Japanese Primary School",
-    "ShortName": "Jpn Pr Sch",
-    "latitude": 1.30077,
-    "longitude": 103.769904
+    "caption": "TCOMS",
+    "name": "TCOMS",
+    "LongName": "TCOMS",
+    "ShortName": "TCOMS",
+    "latitude": 1.293654,
+    "longitude": 103.776898
   }
 ]
