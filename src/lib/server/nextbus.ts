@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { randomUUID } from 'node:crypto';
 import type {
 	AccessTokenData,
 	FmsJson,
@@ -45,7 +46,7 @@ function config(): NextbusConfig {
 	return _config;
 }
 
-const DEVICE_ID = (globalThis.crypto?.randomUUID?.() ?? '00000000-0000-4000-8000-000000000000').toUpperCase();
+const DEVICE_ID = randomUUID().toUpperCase();
 
 export type RouteColor = { BUS: string; COLOR_CODE: string; COLOR_FONT: string };
 

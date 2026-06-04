@@ -6,7 +6,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import { routeColor, routeTextColor, stopCoord } from '$lib/routes';
 
-	export let data: PageData;
+	let { data }: { data: PageData } = $props();
 
 	const stopName = data.stopName;
 	const routeCode = data.routeCode;

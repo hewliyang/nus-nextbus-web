@@ -7,7 +7,7 @@
 	import type { PageData } from './$types';
 	import type { Timing, Bookmark } from '$lib/types';
 
-	export let data: PageData;
+	let { data }: { data: PageData } = $props();
 
 	const { etas, degraded } = data;
 	const { busStopName, lastUpdated, busStopCaption, timings } = etas;
@@ -25,22 +25,19 @@
 	}
 
 	const hasTime = (t: string | undefined) => !!t && t !== '-';
-	// routes with a live prediction vs. routes that serve this stop but aren't running
-	$: liveShuttles = filteredShuttles.filter(
-		(s) => hasTime(s.arrivalTime) || hasTime(s.nextArrivalTime)
+	const liveShuttles = $derived(
+		filteredShuttles.filter((s) => hasTime(s.arrivalTime) || hasTime(s.nextArrivalTime))
 	);
-	$: idleRoutes = [
+	const idleRoutes = $derived([
 		...new Set(
 			filteredShuttles
 				.filter((s) => !hasTime(s.arrivalTime) && !hasTime(s.nextArrivalTime))
 				.map((s) => s.name)
 		)
-	];
+	]);
 
-	let bookmark_objs: Bookmark[];
-	let alreadyBookmarked: boolean;
-	$: bookmark_objs = $page.data.bookmarks;
-	$: alreadyBookmarked = bookmark_objs.map((o) => o.name).includes(busStopName);
+	const bookmark_objs: Bookmark[] = $derived($page.data.bookmarks);
+	const alreadyBookmarked = $derived(bookmark_objs.map((o) => o.name).includes(busStopName));
 
 	const ts = new Date(lastUpdated);
 	function relative(d: Date) {
@@ -54,10 +51,23 @@
 		return `${days} day${days > 1 ? 's' : ''} ago`;
 	}
 
-	function fmt(t: string) {
+	const FAR_MIN = 60;
+	function clock(ts: string) {
+		const m = ts.match(/(\d{1,2}):(\d{2})/);
+		if (!m) return ts;
+		let h = Number(m[1]);
+		const ap = h < 12 ? 'am' : 'pm';
+		h = h % 12 || 12;
+		return `${h}:${m[2]}${ap}`;
+	}
+	function fmt(t: string, ts?: string) {
 		if (!t || t === '-') return { value: '—', unit: '' };
 		const n = Number(t);
-		if (!Number.isNaN(n)) return { value: n === 0 ? 'Arr' : String(n), unit: n === 0 ? '' : 'min' };
+		if (!Number.isNaN(n)) {
+			if (n === 0) return { value: 'Arr', unit: '' };
+			if (n >= FAR_MIN && ts) return { value: clock(ts), unit: '' };
+			return { value: String(n), unit: 'min' };
+		}
 		return { value: t, unit: '' };
 	}
 </script>
@@ -120,9 +130,9 @@
 
 	{#if liveShuttles.length > 0}
 		<ul class="space-y-2">
-			{#each liveShuttles as { name, arrivalTime, nextArrivalTime, arrivalTime_ridership, arrivalTime_veh_plate, arrivalTime_capacity, nextArrivalTime_capacity, nextArrivalTime_ridership, nextArrivalTime_veh_plate }}
-				{@const arr = fmt(arrivalTime)}
-				{@const nxt = fmt(nextArrivalTime)}
+			{#each liveShuttles as { name, arrivalTime, nextArrivalTime, arrivalTime_ts, nextArrivalTime_ts, arrivalTime_ridership, arrivalTime_veh_plate, arrivalTime_capacity, nextArrivalTime_capacity, nextArrivalTime_ridership, nextArrivalTime_veh_plate }}
+				{@const arr = fmt(arrivalTime, arrivalTime_ts)}
+				{@const nxt = fmt(nextArrivalTime, nextArrivalTime_ts)}
 				{@const label = isPublic(name) ? name.slice(4) : name}
 				<li
 					class="grid grid-cols-[auto_1fr_1fr] items-center gap-3 rounded-2xl border border-border bg-surface p-3 shadow-card"

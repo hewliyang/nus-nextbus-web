@@ -3,15 +3,17 @@
 	import { routeColor, routeStops, routeLine, NUS_CENTER } from '$lib/routes';
 	import type { GeoJSONSource, Map as MlMap } from 'maplibre-gl';
 
-	export let route: string;
-	/** busstopcode of the stop to emphasise (e.g. the user's current stop) */
-	export let activeStop: string | null = null;
+	interface Props {
+		route: string;
+		activeStop?: string | null;
+	}
+
+	let { route, activeStop = null }: Props = $props();
 
 	let container: HTMLDivElement;
 	let map: MlMap | null = null;
-	let ready = false;
+	let ready = $state(false);
 
-	/** Rasterize any CSS color (incl. oklch) to #rrggbb so MapLibre accepts it. */
 	function toHex(color: string): string {
 		const c = document.createElement('canvas');
 		c.width = c.height = 1;
@@ -27,7 +29,6 @@
 		return document.documentElement.getAttribute('data-theme') === 'dark';
 	}
 
-	/** Muted colour for the already-passed (unreachable) portion of the route. */
 	function dimColor() {
 		const v = getComputedStyle(document.documentElement)
 			.getPropertyValue('--border-strong')
@@ -42,8 +43,6 @@
 		const line = routeLine(route);
 		const stops = routeStops(route);
 
-		// Index of the active stop along the route. Everything before it has
-		// already been passed and is unreachable from here, so we dim it.
 		const activeIdx = activeStop ? stops.findIndex((s) => s.code === activeStop) : -1;
 
 		const lineFeatures =
@@ -226,9 +225,11 @@
 		});
 	});
 
-	$: if (ready && route) draw();
+	$effect(() => {
+		if (ready && route) draw();
+	});
 
 	onDestroy(() => map?.remove());
 </script>
 
-<div bind:this={container} class="h-full w-full" />
+<div bind:this={container} class="h-full w-full"></div>

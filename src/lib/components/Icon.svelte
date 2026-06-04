@@ -1,9 +1,12 @@
 <script lang="ts">
-	export let name: string;
-	export let size = 18;
-	export let stroke = 1.75;
+	interface Props {
+		name: string;
+		size?: number;
+		stroke?: number;
+	}
 
-	// Lucide-style 24x24 stroke paths
+	let { name, size = 18, stroke = 1.75 }: Props = $props();
+
 	const paths: Record<string, string> = {
 		search: 'M21 21l-4.3-4.3M11 19a8 8 0 100-16 8 8 0 000 16z',
 		crosshair:
@@ -25,7 +28,7 @@
 		pin: 'M12 22s8-4.5 8-11a8 8 0 10-16 0c0 6.5 8 11 8 11zM12 13a3 3 0 100-6 3 3 0 000 6z'
 	};
 
-	$: filled = name === 'bookmark-fill';
+	const filled = $derived(name === 'bookmark-fill');
 </script>
 
 <svg

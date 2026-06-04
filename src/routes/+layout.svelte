@@ -7,9 +7,12 @@
 	import { page } from '$app/stores';
 	import { dev } from '$app/environment';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import type { Snippet } from 'svelte';
 
-	$: theme = $page.data.theme;
-	$: nextTheme = theme === 'dark' ? 'light' : 'dark';
+	let { children }: { children: Snippet } = $props();
+
+	const theme = $derived($page.data.theme);
+	const nextTheme = $derived(theme === 'dark' ? 'light' : 'dark');
 
 	const applyTheme: SubmitFunction = ({ action }) => {
 		const t = action.searchParams.get('theme');
@@ -20,8 +23,8 @@
 		{ href: '/', label: 'Stops', icon: 'bus' },
 		{ href: '/busroutes', label: 'Routes', icon: 'route' }
 	];
-	$: pathname = $page.url.pathname;
-	$: activeTab = pathname.startsWith('/busroutes') ? '/busroutes' : '/';
+	const pathname = $derived($page.url.pathname);
+	const activeTab = $derived(pathname.startsWith('/busroutes') ? '/busroutes' : '/');
 </script>
 
 <svelte:head>
@@ -80,7 +83,7 @@
 	</header>
 
 	<main class="flex-1 py-3">
-		<slot />
+		{@render children()}
 	</main>
 
 	<footer

@@ -2,8 +2,10 @@ export type Timing = {
 	name: string;
 	busStopCode?: string;
 	arrivalTime: string;
+	arrivalTime_ts?: string;
 	arrivalTime_veh_plate?: string;
 	nextArrivalTime: string;
+	nextArrivalTime_ts?: string;
 	nextArrivalTime_veh_plate?: string;
 	arrivalTime_capacity?: number;
 	arrivalTime_ridership?: number;

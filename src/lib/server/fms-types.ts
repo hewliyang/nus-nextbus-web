@@ -20,6 +20,12 @@ export type InitDataPayload = {
 	'bus-stop-color'?: { BUS: string; COLOR_CODE: string; COLOR_FONT: string }[];
 };
 
+export type FmsEta = {
+	eta: number;
+	ts: string;
+	plate?: string;
+};
+
 export type FmsShuttle = {
 	name: string;
 	arrivalTime: string;
@@ -27,6 +33,7 @@ export type FmsShuttle = {
 	arrivalTime_veh_plate?: string;
 	nextArrivalTime_veh_plate?: string;
 	busstopcode?: string;
+	_etas?: FmsEta[];
 };
 
 export type ShuttleServiceResult = {

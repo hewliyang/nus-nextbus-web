@@ -6,8 +6,8 @@
 	import { routeColor, routeTextColor } from '$lib/routes';
 
 	const keys = Object.keys(routes);
-	let selectedRoute = 'D2';
-	$: stops = routes[selectedRoute];
+	let selectedRoute = $state('D2');
+	const stops = $derived(routes[selectedRoute]);
 </script>
 
 <section class="fade-up space-y-4">
@@ -15,7 +15,7 @@
 		{#each keys as key}
 			{@const active = key === selectedRoute}
 			<button
-				on:click={() => (selectedRoute = key)}
+				onclick={() => (selectedRoute = key)}
 				class="rounded-full px-3.5 py-1.5 font-mono text-sm font-bold transition-all
 					{active ? 'shadow-card' : 'border border-border bg-surface text-ink-soft hover:bg-surface-2'}"
 				style={active ? `background: ${routeColor(key)}; color: ${routeTextColor(key)}` : ''}
@@ -39,7 +39,7 @@
 			{stops.length} stops
 		</h2>
 		<span class="flex items-center gap-1.5 text-xs font-medium text-muted">
-			<span class="h-2.5 w-2.5 rounded-full" style="background: {routeColor(selectedRoute)}" />
+			<span class="h-2.5 w-2.5 rounded-full" style="background: {routeColor(selectedRoute)}"></span>
 			Line {selectedRoute}
 		</span>
 	</div>

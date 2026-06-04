@@ -7,10 +7,13 @@ import type { BusStopTiming, ActiveBus, Bookmark, Timing } from '$lib/types';
 import type { PageServerLoad } from './$types';
 
 function shuttleToTiming(shuttle: FmsShuttle): Timing {
+	const etas = shuttle._etas ?? [];
 	const timing: Timing = {
 		name: shuttle.name,
 		arrivalTime: shuttle.arrivalTime,
-		nextArrivalTime: shuttle.nextArrivalTime
+		nextArrivalTime: shuttle.nextArrivalTime,
+		arrivalTime_ts: etas[0]?.ts,
+		nextArrivalTime_ts: etas[1]?.ts
 	};
 	if (shuttle.arrivalTime_veh_plate || shuttle.nextArrivalTime_veh_plate) {
 		timing.busStopCode = shuttle.busstopcode;

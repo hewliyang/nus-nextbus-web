@@ -16,15 +16,18 @@
 	const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
 	onDestroy(unsubscribe);
 
-	$: ({ bookmarks, alert } = $page.data);
+	const bookmarks = $derived($page.data.bookmarks);
+	const alert = $derived($page.data.alert);
 
-	let getPosition = false;
-	let locating = false;
-	let detail: GeoPosition = {};
+	let getPosition = $state(false);
+	let locating = $state(false);
+	let detail: GeoPosition = $state({});
 
-	$: $searchStore.sort = getPosition;
-	$: $searchStore.pos.latitude = detail.latitude;
-	$: $searchStore.pos.longitude = detail.longitude;
+	$effect(() => {
+		$searchStore.sort = getPosition;
+		$searchStore.pos.latitude = detail.latitude;
+		$searchStore.pos.longitude = detail.longitude;
+	});
 
 	function locate() {
 		if (!navigator.geolocation) return;
@@ -111,7 +114,7 @@
 					? 'border-accent bg-accent text-accent-fg'
 					: 'border-border bg-surface text-ink-soft hover:bg-surface-2'}"
 				aria-label="Sort by nearest"
-				on:click={locate}
+				onclick={locate}
 			>
 				<Icon name="crosshair" size={18} />
 			</button>
