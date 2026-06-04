@@ -1,64 +1,49 @@
-import { NEXTBUS_BASIC_AUTH, NEXTBUS_API_URL } from '$env/static/private';
-import { fail, type Actions } from '@sveltejs/kit';
-import type { BusStopTiming, ActiveBus, Bookmark } from '$lib/types';
+import { error, fail, type Actions } from '@sveltejs/kit';
+import { fmsFetch } from '$lib/server/nextbus';
+import type { ActiveBusResponse, FmsShuttle, ShuttleServiceResponse } from '$lib/server/fms-types';
+import { routesServingStop, stopCoord } from '$lib/routes';
+import { parseBookmarks } from '$lib/parse';
+import type { BusStopTiming, ActiveBus, Bookmark, Timing } from '$lib/types';
+import type { PageServerLoad } from './$types';
 
-const headers = {
-	Authorization: `Basic ${NEXTBUS_BASIC_AUTH}`
-};
+function shuttleToTiming(shuttle: FmsShuttle): Timing {
+	const timing: Timing = {
+		name: shuttle.name,
+		arrivalTime: shuttle.arrivalTime,
+		nextArrivalTime: shuttle.nextArrivalTime
+	};
+	if (shuttle.arrivalTime_veh_plate || shuttle.nextArrivalTime_veh_plate) {
+		timing.busStopCode = shuttle.busstopcode;
+		timing.arrivalTime_veh_plate = shuttle.arrivalTime_veh_plate;
+		timing.nextArrivalTime_veh_plate = shuttle.nextArrivalTime_veh_plate;
+	}
+	return timing;
+}
 
-export async function load({ fetch, params }) {
+export const load: PageServerLoad = async ({ params }) => {
 	async function get_etas(stop: string): Promise<BusStopTiming> {
-		const resp = await fetch(NEXTBUS_API_URL + '/ShuttleService?busstopname=' + stop, {
-			headers: headers
-		});
-
-		const res = await resp.json();
+		const res = await fmsFetch<ShuttleServiceResponse>('ShuttleService', { busstopname: stop });
 
 		const result = res.ShuttleServiceResult;
-		const shuttles = result.shuttles;
+		if (!result) {
+			throw new Error(`ShuttleService error: ${JSON.stringify(res).slice(0, 120)}`);
+		}
+		const shuttles = result.shuttles ?? [];
 
-		const res_d: BusStopTiming = {
-			lastUpdated: result.TimeStamp,
+		return {
+			lastUpdated: result.Timestamp ?? result.TimeStamp ?? new Date().toISOString(),
 			busStopName: result.name,
 			busStopCaption: result.caption,
-			timings: []
+			timings: shuttles.map(shuttleToTiming)
 		};
-
-		for (const shuttle of shuttles) {
-			const name = shuttle.name;
-			const d: any = { name };
-
-			const arrivalTime = shuttle.arrivalTime;
-			const arrivalTime_veh_plate = shuttle.arrivalTime_veh_plate;
-			const nextArrivalTime = shuttle.nextArrivalTime;
-			const nextArrivalTime_veh_plate = shuttle.nextArrivalTime_veh_plate;
-
-			if (arrivalTime_veh_plate || nextArrivalTime_veh_plate) {
-				d.busStopCode = shuttle.busstopcode;
-				d.arrivalTime = arrivalTime;
-				d.arrivalTime_veh_plate = arrivalTime_veh_plate;
-				d.nextArrivalTime = nextArrivalTime;
-				d.nextArrivalTime_veh_plate = nextArrivalTime_veh_plate;
-			} else {
-				d.arrivalTime = arrivalTime;
-				d.nextArrivalTime = nextArrivalTime;
-			}
-
-			res_d.timings.push(d);
-		}
-
-		return res_d;
 	}
 
 	async function get_active_bus(route: string): Promise<ActiveBus[]> {
-		const active_buses = await fetch(NEXTBUS_API_URL + '/ActiveBus?route_code=' + route, {
-			headers: headers
-		});
+		const res = await fmsFetch<ActiveBusResponse>('ActiveBus', { route_code: route });
+		const buses = res.ActiveBusResult?.activebus ?? [];
 
-		const res = await active_buses.json();
-
-		return res.ActiveBusResult.activebus.map((bus: any) => ({
-			route: route,
+		return buses.map((bus) => ({
+			route,
 			vehplate: bus.vehplate,
 			occupancy: bus.loadInfo.occupancy,
 			capacity: bus.loadInfo.capacity,
@@ -66,8 +51,8 @@ export async function load({ fetch, params }) {
 		}));
 	}
 
-	function get_route_list(etas: BusStopTiming) {
-		const res = [];
+	function get_route_list(etas: BusStopTiming): string[] {
+		const res: string[] = [];
 
 		for (const timing of etas.timings) {
 			if (timing.name.startsWith('PUB')) {
@@ -80,7 +65,10 @@ export async function load({ fetch, params }) {
 	}
 
 	function joinCapacityAndRidership(timings: BusStopTiming, vehicles: ActiveBus[][]) {
-		const vehplateToCapacityAndRidership = new Map();
+		const vehplateToCapacityAndRidership = new Map<
+			string,
+			{ capacity: number; ridership: number }
+		>();
 		for (const vehicleList of vehicles) {
 			for (const vehicle of vehicleList) {
 				vehplateToCapacityAndRidership.set(vehicle.vehplate, {
@@ -114,15 +102,33 @@ export async function load({ fetch, params }) {
 		return timings;
 	}
 
-	const timings = await get_etas(params.stopName);
-	const routeList = get_route_list(timings);
-	const routePromises = routeList.map((route) => get_active_bus(route));
-	const ridership = await Promise.all(routePromises);
+	try {
+		const timings = await get_etas(params.stopName);
+		const routeList = get_route_list(timings);
+		const routePromises = routeList.map((route) => get_active_bus(route));
+		const ridership = await Promise.all(routePromises);
 
-	return {
-		etas: joinCapacityAndRidership(timings, ridership)
-	};
-}
+		return {
+			etas: joinCapacityAndRidership(timings, ridership),
+			degraded: false as const
+		};
+	} catch (e) {
+		console.error('Failed to load shuttle timings:', e);
+
+		const serving = routesServingStop(params.stopName);
+		if (serving.length > 0) {
+			const etas: BusStopTiming = {
+				lastUpdated: new Date().toISOString(),
+				busStopName: params.stopName,
+				busStopCaption: stopCoord(params.stopName)?.caption ?? params.stopName,
+				timings: serving.map((name) => ({ name, arrivalTime: '-', nextArrivalTime: '-' }))
+			};
+			return { etas, degraded: true as const };
+		}
+
+		throw error(502, "Couldn't reach the NUS shuttle service. Try again in a moment.");
+	}
+};
 
 export const actions: Actions = {
 	addBookmark: async ({ url, cookies }) => {
@@ -134,8 +140,8 @@ export const actions: Actions = {
 		}
 
 		try {
-			const bookmarksOld: Bookmark[] = JSON.parse(cookies.get('bookmarks') || '[]');
-			const bookmarksNew: Bookmark[] = [...bookmarksOld, { caption: caption, name: id }];
+			const bookmarksOld = parseBookmarks(cookies.get('bookmarks') || '[]');
+			const bookmarksNew: Bookmark[] = [...bookmarksOld, { caption, name: id }];
 			cookies.set('bookmarks', JSON.stringify(bookmarksNew), {
 				path: '/',
 				maxAge: 60 * 60 * 24 * 365

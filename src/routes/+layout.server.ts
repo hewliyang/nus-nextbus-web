@@ -1,9 +1,9 @@
-import type { Bookmark } from '$lib/types';
+import { parseAlert, parseBookmarks, parseTheme } from '$lib/parse';
 
-// pass bookmarks array to page.svelte to SSR the stored bookmarks in cookies
 export const load = ({ cookies }) => {
 	return {
-		bookmarks: JSON.parse(cookies.get('bookmarks') || '[]') as Bookmark,
-		alert: JSON.parse(cookies.get('alert') || 'true') as boolean
+		bookmarks: parseBookmarks(cookies.get('bookmarks') || '[]'),
+		alert: parseAlert(cookies.get('alert')),
+		theme: parseTheme(cookies.get('colortheme'))
 	};
 };

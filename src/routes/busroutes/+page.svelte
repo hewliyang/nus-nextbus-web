@@ -1,34 +1,50 @@
 <script lang="ts">
-	import BusRoute from '$lib/components/BusRoute.svelte';
-	import routes from '$lib/data/routes.json';
+	import RouteTimeline from '$lib/components/RouteTimeline.svelte';
+	import RouteMap from '$lib/components/RouteMap.svelte';
+	import Icon from '$lib/components/Icon.svelte';
+	import { routes } from '$lib/data';
+	import { routeColor, routeTextColor } from '$lib/routes';
 
-	type Stop = {
-		seq: number;
-		stop_name: string;
-		busstopcode: string;
-	};
-
-	let routesWithType: Record<string, Stop[]> = routes;
-	let selectedRoute = 'D2';
 	const keys = Object.keys(routes);
-	$: stops = routesWithType[selectedRoute];
+	let selectedRoute = 'D2';
+	$: stops = routes[selectedRoute];
 </script>
 
-<div class="flex flex-col items-center space-y-4 mb-4">
-	<h1 class="text-2xl font-semibold">Routes</h1>
-	<div role="tablist" class="tabs tabs-boxed">
+<section class="fade-up space-y-4">
+	<div class="flex flex-wrap gap-2">
 		{#each keys as key}
-			<input
-				type="radio"
-				name="options"
-				role="tab"
-				class="tab"
-				data-title={key}
-				value={key}
-				aria-label={key}
-				bind:group={selectedRoute}
-			/>
+			{@const active = key === selectedRoute}
+			<button
+				on:click={() => (selectedRoute = key)}
+				class="rounded-full px-3.5 py-1.5 font-mono text-sm font-bold transition-all
+					{active ? 'shadow-card' : 'border border-border bg-surface text-ink-soft hover:bg-surface-2'}"
+				style={active ? `background: ${routeColor(key)}; color: ${routeTextColor(key)}` : ''}
+			>
+				{key}
+			</button>
 		{/each}
 	</div>
-	<BusRoute {stops} />
-</div>
+
+	<div class="overflow-hidden rounded-2xl border border-border shadow-card">
+		<div class="h-72 w-full">
+			{#key selectedRoute}
+				<RouteMap route={selectedRoute} />
+			{/key}
+		</div>
+	</div>
+
+	<div class="flex items-center justify-between px-1">
+		<h2 class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted">
+			<Icon name="map" size={13} />
+			{stops.length} stops
+		</h2>
+		<span class="flex items-center gap-1.5 text-xs font-medium text-muted">
+			<span class="h-2.5 w-2.5 rounded-full" style="background: {routeColor(selectedRoute)}" />
+			Line {selectedRoute}
+		</span>
+	</div>
+
+	<div class="rounded-2xl border border-border bg-bg p-3">
+		<RouteTimeline {stops} route={selectedRoute} />
+	</div>
+</section>

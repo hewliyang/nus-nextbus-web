@@ -1,3 +1,101 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ─────────────────────────────────────────────
+   Design tokens — OKLCH, tinted toward indigo
+   Scene: NUS student at a stop in bright tropical
+   daylight checking arrivals. Light by default.
+   ───────────────────────────────────────────── */
+:root {
+	--bg: oklch(0.985 0.004 255);
+	--surface: oklch(1 0 0);
+	--surface-2: oklch(0.975 0.006 255);
+	--border: oklch(0.915 0.008 255);
+	--border-strong: oklch(0.86 0.012 255);
+	--ink: oklch(0.27 0.03 262);
+	--ink-soft: oklch(0.44 0.022 260);
+	--muted: oklch(0.6 0.018 258);
+	--accent: oklch(0.55 0.17 262);
+	--accent-soft: oklch(0.95 0.03 262);
+	--accent-fg: oklch(0.99 0.005 262);
+
+	--ok: oklch(0.62 0.15 152);
+	--warn: oklch(0.72 0.15 70);
+	--bad: oklch(0.6 0.2 25);
+
+	--shadow: 0 1px 2px oklch(0.4 0.03 262 / 0.06), 0 8px 24px -12px oklch(0.4 0.03 262 / 0.18);
+	--map-style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
+}
+
+[data-theme='dark'] {
+	--bg: oklch(0.19 0.014 262);
+	--surface: oklch(0.235 0.016 262);
+	--surface-2: oklch(0.275 0.018 262);
+	--border: oklch(0.32 0.018 262);
+	--border-strong: oklch(0.4 0.02 262);
+	--ink: oklch(0.94 0.008 262);
+	--ink-soft: oklch(0.78 0.012 262);
+	--muted: oklch(0.64 0.015 262);
+	--accent: oklch(0.7 0.15 262);
+	--accent-soft: oklch(0.32 0.05 262);
+	--accent-fg: oklch(0.16 0.02 262);
+
+	--ok: oklch(0.72 0.15 152);
+	--warn: oklch(0.78 0.15 70);
+	--bad: oklch(0.7 0.18 25);
+
+	--shadow: 0 1px 2px oklch(0 0 0 / 0.4), 0 12px 30px -14px oklch(0 0 0 / 0.6);
+	--map-style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
+}
+
+html {
+	background: var(--bg);
+	color: var(--ink);
+	-webkit-tap-highlight-color: transparent;
+}
+
+body {
+	font-feature-settings: 'cv05', 'cv08', 'ss01';
+}
+
+::selection {
+	background: var(--accent-soft);
+	color: var(--accent);
+}
+
+/* Route color tokens, used inline via data-route */
+:root {
+	--rt-A1: oklch(0.58 0.2 25);
+	--rt-A2: oklch(0.74 0.15 78);
+	--rt-D1: oklch(0.62 0.22 350);
+	--rt-D2: oklch(0.52 0.2 298);
+	--rt-K: oklch(0.62 0.15 155);
+	--rt-P: oklch(0.62 0.12 205);
+	--rt-R1: oklch(0.56 0.16 250);
+	--rt-R2: oklch(0.5 0.15 280);
+	--rt-BTC: oklch(0.55 0.13 200);
+	--rt-E: oklch(0.6 0.13 330);
+	--rt-L: oklch(0.55 0.02 260);
+}
+
+/* MapLibre overrides */
+.maplibregl-ctrl-attrib,
+.maplibregl-ctrl-logo {
+	display: none !important;
+}
+.maplibregl-canvas {
+	outline: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.fade-up {
+		animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+}
+@keyframes fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+}

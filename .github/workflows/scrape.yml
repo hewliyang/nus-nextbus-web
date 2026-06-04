@@ -24,8 +24,19 @@ jobs:
 
       - name: Run scraping script
         env:
-          NEXTBUS_API_URL: ${{ secrets.NEXTBUS_API_URL }}
-          NEXTBUS_BASIC_AUTH: ${{ secrets.NEXTBUS_BASIC_AUTH }}
+          # Required - configure these as repository secrets:
+          #   Settings -> Secrets and variables -> Actions -> New repository secret
+          # The script aborts if any required value is missing. See docs/secrets.md.
+          NEXTBUS_AUTH_BASE: ${{ secrets.NEXTBUS_AUTH_BASE }}
+          NEXTBUS_FMS_BASE: ${{ secrets.NEXTBUS_FMS_BASE }}
+          NEXTBUS_APP_VERSION: ${{ secrets.NEXTBUS_APP_VERSION }}
+          NEXTBUS_HTD_API: ${{ secrets.NEXTBUS_HTD_API }}
+          NEXTBUS_APP_API: ${{ secrets.NEXTBUS_APP_API }}
+          NEXTBUS_FMS_SERVICE_ID: ${{ secrets.NEXTBUS_FMS_SERVICE_ID }}
+          NEXTBUS_FMS_TENANT_CODE: ${{ secrets.NEXTBUS_FMS_TENANT_CODE }}
+          # Optional parity headers (safe to leave unset):
+          NEXTBUS_REQUESTED_BY: ${{ secrets.NEXTBUS_REQUESTED_BY }}
+          NEXTBUS_SECURED_REQUEST: ${{ secrets.NEXTBUS_SECURED_REQUEST }}
         run: python scripts/scrape.py
 
       - name: Commit and push any changes

@@ -1,6 +1,6 @@
 export type Timing = {
 	name: string;
-	busStopCode: string;
+	busStopCode?: string;
 	arrivalTime: string;
 	arrivalTime_veh_plate?: string;
 	nextArrivalTime: string;
@@ -31,8 +31,23 @@ export type Bookmark = {
 	name: string;
 };
 
-export type Stop = {
+export type RouteStop = {
 	seq: number;
 	stop_name: string;
 	busstopcode: string;
 };
+
+export type RoutesMap = Record<string, RouteStop[]>;
+
+export type SearchStop = {
+	caption: string;
+	name: string;
+	LongName: string;
+	ShortName: string;
+	latitude: number;
+	longitude: number;
+};
+
+export type SearchStopWithTerms = SearchStop & { searchTerms: string };
+
+export type ColorTheme = 'light' | 'dark';

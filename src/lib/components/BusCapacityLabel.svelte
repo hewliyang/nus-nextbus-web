@@ -4,41 +4,34 @@
 	export let ridership: number | undefined;
 
 	type Status = 'low' | 'mid' | 'full';
-	const colors = new Map<Status, string>([
-		['low', 'bg-green-500/75'],
-		['mid', 'bg-orange-500/75'],
-		['full', 'bg-red-500/75']
-	]);
+	const meta: Record<Status, { color: string; label: string }> = {
+		low: { color: 'var(--ok)', label: 'Seats' },
+		mid: { color: 'var(--warn)', label: 'Filling' },
+		full: { color: 'var(--bad)', label: 'Packed' }
+	};
 
-	// adjust ridership... usually understated
-	const progress = ((Math.min(ridership! + 7, capacity!) || 0) / (capacity || 88)) * 100;
-
-	let status: Status;
-	if (progress < (1 / 3) * 100) {
-		status = 'low';
-	} else if (progress > (2 / 3) * 100) {
-		status = 'full';
-	} else {
-		status = 'mid';
-	}
+	// ridership is usually understated, nudge it up a touch
+	$: progress = ((Math.min((ridership ?? 0) + 7, capacity ?? 88) || 0) / (capacity || 88)) * 100;
+	$: status = (progress < 34 ? 'low' : progress > 66 ? 'full' : 'mid') as Status;
+	$: hasLoad = !!ridership && ridership > 0;
 </script>
 
-{#if veh_plate && veh_plate != '-'}
-	<div
-		class="p-2.5 relative rounded border h-[18px] w-16 flex items-center justify-center border-gray-500/50 dark:border-white/50 text-[11px] font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground"
-	>
-		{#if ridership && ridership > 0}
+{#if veh_plate && veh_plate !== '-'}
+	<div class="flex items-center gap-2">
+		<div
+			class="relative h-1.5 w-14 overflow-hidden rounded-full bg-border"
+			role="img"
+			aria-label={hasLoad ? meta[status].label : 'Capacity unknown'}
+		>
 			<div
-				class={`${colors.get(status)} absolute top-0 bottom-0 left-0 rounded`}
-				style="width: {progress}%"
+				class="absolute inset-y-0 left-0 rounded-full"
+				style="width: {hasLoad ? progress : 100}%; background: {hasLoad
+					? meta[status].color
+					: 'var(--border-strong)'}"
 			/>
-		{:else}
-			<div
-				class="bg-zinc-300/40 dark:bg-zinc-300/10 backdrop-blur-sm absolute top-0 bottom-0 left-0 rounded"
-				style="width: 100%"
-			/>
-		{/if}
-
-		<div class="relative">{veh_plate}</div>
+		</div>
+		<span class="font-mono text-[10px] font-medium uppercase tracking-wide text-muted">
+			{veh_plate}
+		</span>
 	</div>
 {/if}

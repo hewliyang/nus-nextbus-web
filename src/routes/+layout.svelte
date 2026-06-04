@@ -1,21 +1,29 @@
 <script lang="ts">
 	import '../app.css';
-	import Icons from '$lib/icons';
+	import '@fontsource-variable/inter';
+	import Icon from '$lib/components/Icon.svelte';
+	import GitHub from '$lib/icons/github.svelte';
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import { dev } from '$app/environment';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
-	const submitUpdateTheme: SubmitFunction = ({ action }) => {
-		const theme = action.searchParams.get('theme');
+	$: theme = $page.data.theme;
+	$: nextTheme = theme === 'dark' ? 'light' : 'dark';
 
-		if (theme) {
-			document.documentElement.setAttribute('data-theme', theme);
-		}
+	const applyTheme: SubmitFunction = ({ action }) => {
+		const t = action.searchParams.get('theme');
+		if (t) document.documentElement.setAttribute('data-theme', t);
 	};
+
+	const tabs = [
+		{ href: '/', label: 'Stops', icon: 'bus' },
+		{ href: '/busroutes', label: 'Routes', icon: 'route' }
+	];
+	$: pathname = $page.url.pathname;
+	$: activeTab = pathname.startsWith('/busroutes') ? '/busroutes' : '/';
 </script>
 
-<!-- only inject the tracking script if in prod -->
 <svelte:head>
 	{#if !dev}
 		<script
@@ -26,78 +34,68 @@
 	{/if}
 </svelte:head>
 
-<div class="max-w-2xl mx-auto px-6 pb-3 flex flex-col items-center justify-between min-h-screen">
-	<nav
-		class="navbar justify-between mt-3 mb-2 px-3 border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 shadow rounded"
+<div class="mx-auto flex min-h-[100dvh] w-full max-w-xl flex-col px-4 sm:px-5">
+	<header
+		class="sticky top-0 z-30 -mx-4 mb-1 flex items-center justify-between gap-3 bg-bg/85 px-4 py-3 backdrop-blur-md sm:-mx-5 sm:px-5"
 	>
-		<div class="flex-1">
-			<h1
-				class="font-semibold text-xl tracking-tighter hover:text-gray-400 dark:hover:text-gray-100"
-			>
-				<a href="/">NUS NextBus</a>
-			</h1>
-		</div>
-		<div>
-			<div class="flex gap-3 mr-3 items-center">
-				<a class="hidden btn btn-info btn-outline btn-sm md:flex items-center" href="/">Stops</a>
-				<a class="hidden btn btn-warning btn-outline btn-sm md:flex items-center" href="/busroutes"
-					>Routes</a
-				>
-			</div>
-			<ul class="dropdown dropdown-bottom dropdown-end">
-				<li>
-					<div
-						tabindex="0"
-						role="button"
-						class="border rounded-xl p-1.5 border-neutral-200 dark:border-neutral-700"
-						aria-label="switch-theme"
-					>
-						<Icons.sun />
-					</div>
-					<ul class="bg-base-200 rounded-xl dropdown-content z-[1] menu p-2 shadow">
-						<form method="POST" use:enhance={submitUpdateTheme}>
-							<li>
-								<button
-									formaction="/?/setTheme&theme=halloween&redirectTo={$page.url.pathname}"
-									aria-label="dark-theme"
-									class="rounded-xl">Dark</button
-								>
-							</li>
-							<li>
-								<button
-									formaction="/?/setTheme&theme=light&redirectTo={$page.url.pathname}"
-									aria-label="light-theme"
-									class="rounded-xl">Light</button
-								>
-							</li>
-						</form>
-					</ul>
-				</li>
-			</ul>
-		</div>
-	</nav>
-	<div class="flex justify-center items-center space-x-5 p-5 md:hidden">
-		<a class="btn btn-info btn-sm" href="/">Stops</a>
-		<a class="btn btn-warning btn-sm" href="/busroutes">Routes</a>
-	</div>
+		<a href="/" class="shrink-0">
+			<img
+				src="/logo.png"
+				alt="NUS NextBus"
+				class="h-9 w-9 rounded-lg object-cover shadow-sm"
+				width="36"
+				height="36"
+			/>
+		</a>
 
-	<slot />
+		<div class="flex items-center gap-2">
+			<nav
+				class="flex items-center gap-0.5 rounded-full border border-border bg-surface p-0.5 shadow-sm"
+			>
+				{#each tabs as tab}
+					<a
+						href={tab.href}
+						aria-current={activeTab === tab.href ? 'page' : undefined}
+						class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors
+							{activeTab === tab.href
+							? 'bg-accent text-accent-fg shadow-sm'
+							: 'text-ink-soft hover:bg-surface-2'}"
+					>
+						<Icon name={tab.icon} size={15} />
+						{tab.label}
+					</a>
+				{/each}
+			</nav>
+
+			<form method="POST" use:enhance={applyTheme}>
+				<button
+					formaction="/?/setTheme&theme={nextTheme}&redirectTo={pathname}"
+					class="grid h-9 w-9 place-items-center rounded-full border border-border bg-surface text-ink-soft shadow-sm transition-colors hover:bg-surface-2"
+					aria-label="Toggle {nextTheme} mode"
+				>
+					<Icon name={theme === 'dark' ? 'sun' : 'moon'} size={17} />
+				</button>
+			</form>
+		</div>
+	</header>
+
+	<main class="flex-1 py-3">
+		<slot />
+	</main>
 
 	<footer
-		class="footer px-3 border py-2 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-base-content inset-x-0 bottom-0 mt-auto rounded flex items-center justify-between shadow-xl text-xs"
+		class="mt-6 flex items-center justify-between py-4 text-xs text-muted"
 	>
-		<div class="flex items-center grid-flow-col">
-			<a href="https://github.com/hewliyang/nus-betternextbus">
-				<Icons.github />
-			</a>
-		</div>
-		<div>
-			<p>
-				<span class="font-mono font-semibold text-success">{new Date().getFullYear()}</span>
-				<a href="https://hewliyang.com" class="hover:underline font-semibold font-mono"
-					>hewliyang 👋</a
-				><br />
-			</p>
-		</div>
+		<a
+			href="https://github.com/hewliyang/nus-betternextbus"
+			class="flex items-center gap-1.5 transition-colors hover:text-ink"
+			aria-label="GitHub repository"
+		>
+			<GitHub />
+			<span class="font-medium">Source</span>
+		</a>
+		<a href="https://hewliyang.com" class="font-mono font-medium transition-colors hover:text-ink">
+			hewliyang · {new Date().getFullYear()}
+		</a>
 	</footer>
 </div>

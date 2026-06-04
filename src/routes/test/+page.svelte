@@ -1,6 +1,6 @@
 <script lang="ts">
-	import DecoratedBusRoute from '$lib/components/DecoratedBusRoute.svelte';
-	import routes from '$lib/data/routes.json';
+	import RouteTimeline from '$lib/components/RouteTimeline.svelte';
+	import { routes } from '$lib/data';
 </script>
 
-<DecoratedBusRoute stops={routes['D2']} curStopCode="S17" route="D2" />
+<RouteTimeline stops={routes['D2']} route="D2" current="S17" />
