@@ -19,12 +19,7 @@
 		if (t) document.documentElement.setAttribute('data-theme', t);
 	};
 
-	const tabs = [
-		{ href: '/', label: 'Stops', icon: 'bus' },
-		{ href: '/busroutes', label: 'Routes', icon: 'route' }
-	];
 	const pathname = $derived($page.url.pathname);
-	const activeTab = $derived(pathname.startsWith('/busroutes') ? '/busroutes' : '/');
 </script>
 
 <svelte:head>
@@ -44,7 +39,7 @@
 		<a href="/" class="shrink-0">
 			<img
 				src="/logo.png"
-				alt="NUS NextBus"
+				alt="NUS LiveBus"
 				class="h-9 w-9 rounded-lg object-cover shadow-sm"
 				width="36"
 				height="36"
@@ -52,24 +47,6 @@
 		</a>
 
 		<div class="flex items-center gap-2">
-			<nav
-				class="flex items-center gap-0.5 rounded-full border border-border bg-surface p-0.5 shadow-sm"
-			>
-				{#each tabs as tab}
-					<a
-						href={tab.href}
-						aria-current={activeTab === tab.href ? 'page' : undefined}
-						class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors
-							{activeTab === tab.href
-							? 'bg-accent text-accent-fg shadow-sm'
-							: 'text-ink-soft hover:bg-surface-2'}"
-					>
-						<Icon name={tab.icon} size={15} />
-						{tab.label}
-					</a>
-				{/each}
-			</nav>
-
 			<form method="POST" use:enhance={applyTheme}>
 				<button
 					formaction="/?/setTheme&theme={nextTheme}&redirectTo={pathname}"
@@ -90,15 +67,18 @@
 		class="mt-6 flex items-center justify-between py-4 text-xs text-muted"
 	>
 		<a
-			href="https://github.com/hewliyang/nus-betternextbus"
+			href="https://github.com/ianfromdover/nus-livebus"
 			class="flex items-center gap-1.5 transition-colors hover:text-ink"
 			aria-label="GitHub repository"
 		>
 			<GitHub />
 			<span class="font-medium">Source</span>
 		</a>
-		<a href="https://hewliyang.com" class="font-mono font-medium transition-colors hover:text-ink">
-			hewliyang · {new Date().getFullYear()}
-		</a>
+		<span class="font-mono font-medium">
+			<a href="https://hewliyang.com" class="transition-colors hover:text-ink">hewliyang</a>
+			and
+			<a href="https://github.com/ianfromdover" class="transition-colors hover:text-ink">ianfromdover</a>
+			· {new Date().getFullYear()}
+		</span>
 	</footer>
 </div>
