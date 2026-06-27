@@ -4,25 +4,43 @@
 	import { routeColor, routeTextColor, isPublic } from '$lib/routes';
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 	import type { Timing, Bookmark } from '$lib/types';
 
 	let { data }: { data: PageData } = $props();
 
-	const { etas, degraded } = data;
-	const { busStopName, lastUpdated, busStopCaption, timings } = etas;
+	// `data` is the SSR snapshot; `polled` overlays fresher results from the
+	// /api/stop endpoint. `current` prefers the poll when present.
+	let polled = $state<PageData | null>(null);
+	let refreshing = $state(false);
+	let now = $state(Date.now());
+
+	const current = $derived(polled ?? data);
+	const degraded = $derived(current.degraded);
+	const etas = $derived(current.etas);
+	const busStopName = $derived(etas.busStopName);
+	const busStopCaption = $derived(etas.busStopCaption);
+	const lastUpdated = $derived(etas.lastUpdated);
+	const timings = $derived(etas.timings);
+
+	// Drop a stale poll overlay when the server data changes (navigating stops).
+	$effect(() => {
+		data;
+		polled = null;
+	});
 
 	const terminals = ['KRB', 'OTH', 'UTOWN', 'COM3'];
-	let filteredShuttles: Timing[];
-	if (terminals.includes(busStopName)) {
-		filteredShuttles = timings.filter(({ busStopCode }) => {
-			if (!busStopCode) return true;
-			const tokens = busStopCode.split('-');
-			return !(tokens.length > 1 && tokens[2] === 'E');
-		});
-	} else {
-		filteredShuttles = timings;
-	}
+	const filteredShuttles = $derived.by<Timing[]>(() => {
+		if (terminals.includes(busStopName)) {
+			return timings.filter(({ busStopCode }) => {
+				if (!busStopCode) return true;
+				const tokens = busStopCode.split('-');
+				return !(tokens.length > 1 && tokens[2] === 'E');
+			});
+		}
+		return timings;
+	});
 
 	const hasTime = (t: string | undefined) => !!t && t !== '-';
 	const liveShuttles = $derived(
@@ -39,9 +57,8 @@
 	const bookmark_objs: Bookmark[] = $derived($page.data.bookmarks);
 	const alreadyBookmarked = $derived(bookmark_objs.map((o) => o.name).includes(busStopName));
 
-	const ts = new Date(lastUpdated);
-	function relative(d: Date) {
-		const s = Math.round((Date.now() - d.getTime()) / 1000);
+	function relative(d: Date, nowMs: number) {
+		const s = Math.round((nowMs - d.getTime()) / 1000);
 		if (s < 45) return 'just now';
 		const m = Math.round(s / 60);
 		if (m < 60) return `${m} min ago`;
@@ -50,6 +67,38 @@
 		const days = Math.round(h / 24);
 		return `${days} day${days > 1 ? 's' : ''} ago`;
 	}
+	const updatedLabel = $derived(relative(new Date(lastUpdated), now));
+
+	// Live polling: refresh timings every 20s (paused while the tab is hidden,
+	// and refreshed immediately when it becomes visible again). Keeps hewliyang's
+	// server lightly loaded; its own response is cached for ~8s server-side too.
+	const POLL_MS = 20_000;
+	async function refresh() {
+		if (typeof document !== 'undefined' && document.hidden) return;
+		refreshing = true;
+		try {
+			const res = await fetch(`/api/stop/${encodeURIComponent(busStopName)}`);
+			if (res.ok) polled = await res.json();
+		} catch {
+			// keep the last good data on transient failure
+		} finally {
+			refreshing = false;
+		}
+	}
+
+	onMount(() => {
+		const poll = setInterval(refresh, POLL_MS);
+		const tick = setInterval(() => (now = Date.now()), 1000);
+		const onVisible = () => {
+			if (!document.hidden) refresh();
+		};
+		document.addEventListener('visibilitychange', onVisible);
+		return () => {
+			clearInterval(poll);
+			clearInterval(tick);
+			document.removeEventListener('visibilitychange', onVisible);
+		};
+	});
 
 	const FAR_MIN = 60;
 	function clock(ts: string) {
@@ -85,8 +134,17 @@
 				{busStopCaption}
 			</h1>
 			<p class="mt-1 flex items-center gap-1.5 text-xs text-muted">
-				<Icon name="clock" size={13} />
-				{degraded ? 'Live timings unavailable' : `Updated ${relative(ts)}`}
+				{#if degraded}
+					<Icon name="clock" size={13} /> Live timings unavailable
+				{:else}
+					<span
+						class="inline-block h-2 w-2 rounded-full bg-ok transition-opacity {refreshing
+							? 'opacity-40'
+							: 'opacity-100'}"
+						aria-hidden="true"
+					></span>
+					Live · updated {updatedLabel}
+				{/if}
 			</p>
 		</div>
 
@@ -103,14 +161,13 @@
 					<Icon name={alreadyBookmarked ? 'bookmark-fill' : 'bookmark'} size={18} />
 				</button>
 			</form>
-			<a
-				href="/stop/{busStopName}"
-				data-sveltekit-reload
+			<button
+				onclick={refresh}
 				class="grid h-10 w-10 place-items-center rounded-xl border border-border bg-surface text-ink-soft shadow-card transition-colors hover:bg-surface-2"
-				aria-label="Refresh"
+				aria-label="Refresh now"
 			>
 				<Icon name="refresh" size={17} />
-			</a>
+			</button>
 		</div>
 	</div>
 
@@ -130,7 +187,7 @@
 
 	{#if liveShuttles.length > 0}
 		<ul class="space-y-2">
-			{#each liveShuttles as { name, arrivalTime, nextArrivalTime, arrivalTime_ts, nextArrivalTime_ts, arrivalTime_ridership, arrivalTime_veh_plate, arrivalTime_capacity, nextArrivalTime_capacity, nextArrivalTime_ridership, nextArrivalTime_veh_plate }}
+			{#each liveShuttles as { name, arrivalTime, nextArrivalTime, arrivalTime_ts, nextArrivalTime_ts, arrivalTime_ridership, arrivalTime_veh_plate, arrivalTime_capacity, nextArrivalTime_capacity, nextArrivalTime_ridership, nextArrivalTime_veh_plate } (name)}
 				{@const arr = fmt(arrivalTime, arrivalTime_ts)}
 				{@const nxt = fmt(nextArrivalTime, nextArrivalTime_ts)}
 				{@const label = isPublic(name) ? name.slice(4) : name}

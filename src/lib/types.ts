@@ -13,14 +13,6 @@ export type Timing = {
 	nextArrivalTime_ridership?: number;
 };
 
-export type ActiveBus = {
-	route: string;
-	vehplate: string;
-	occupancy: number;
-	capacity: number;
-	ridership: number;
-};
-
 export type BusStopTiming = {
 	lastUpdated: string;
 	busStopName: string;

@@ -1,5 +1,5 @@
 {
-  "name": "nus-nextbus",
+  "name": "nus-livebus",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -33,11 +33,12 @@
     "tslib": "^2.6.2",
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
-    "vitest": "^4.1.8"
+    "vitest": "^2.1.9"
   },
   "type": "module",
   "dependencies": {
     "@fontsource-variable/inter": "^5.0.16",
+    "devalue": "^5.6.1",
     "maplibre-gl": "^5.24.0"
   }
 }
