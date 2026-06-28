@@ -6,9 +6,10 @@
 	interface Props {
 		route: string;
 		activeStop?: string | null;
+		arrows?: boolean;
 	}
 
-	let { route, activeStop = null }: Props = $props();
+	let { route, activeStop = null, arrows = false }: Props = $props();
 
 	let container: HTMLDivElement;
 	let map: MlMap | null = null;
@@ -34,6 +35,29 @@
 			.getPropertyValue('--border-strong')
 			.trim();
 		return v ? toHex(v) : '#b8bcc8';
+	}
+
+	// Small white chevron baked to a canvas, placed along the line + auto-rotated
+	// by maplibre to show travel direction.
+	function ensureArrowImage() {
+		if (!map || map.hasImage('route-arrow')) return;
+		const s = 20;
+		const cnv = document.createElement('canvas');
+		cnv.width = cnv.height = s;
+		const ctx = cnv.getContext('2d');
+		if (!ctx) return;
+		ctx.translate(s / 2, s / 2);
+		ctx.beginPath();
+		ctx.moveTo(-3, -5);
+		ctx.lineTo(5, 0);
+		ctx.lineTo(-3, 5);
+		ctx.closePath();
+		ctx.fillStyle = '#ffffff';
+		ctx.fill();
+		ctx.lineWidth = 1.5;
+		ctx.strokeStyle = 'rgba(20,22,34,0.45)';
+		ctx.stroke();
+		map.addImage('route-arrow', ctx.getImageData(0, 0, s, s));
 	}
 
 	function draw() {
@@ -116,6 +140,24 @@
 					'line-opacity': ['case', ['get', 'passed'], 0.55, 1]
 				}
 			});
+			if (arrows) {
+				ensureArrowImage();
+				map.addLayer({
+					id: 'route-arrows',
+					type: 'symbol',
+					source: 'route-line',
+					layout: {
+						'symbol-placement': 'line',
+						'symbol-spacing': 64,
+						'icon-image': 'route-arrow',
+						'icon-size': 0.85,
+						'icon-rotation-alignment': 'map',
+						'icon-allow-overlap': true,
+						'icon-ignore-placement': true
+					},
+					paint: { 'icon-opacity': ['case', ['get', 'passed'], 0.4, 1] }
+				});
+			}
 			map.addLayer({
 				id: 'stop-dots',
 				type: 'circle',

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "nus-livebus",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev", "--port", "5180", "--strictPort"],
+      "port": 5180
+    }
+  ]
+}

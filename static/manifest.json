@@ -1,8 +1,8 @@
 {
-    "id": "nus-betternextbus",
-    "name": "NUS BetterNextBus",
-    "description": "A faster way to get your ISB timings!",
-    "short_name": "NUS NextBus",
+    "id": "nus-livebus",
+    "name": "NUS LiveBus",
+    "description": "Live NUS shuttle bus timings.",
+    "short_name": "NUS LiveBus",
     "start_url": "/",
     "display": "standalone",
     "orientation": "portrait",

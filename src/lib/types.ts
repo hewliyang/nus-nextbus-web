@@ -42,6 +42,9 @@ export type SearchStop = {
 	longitude: number;
 };
 
-export type SearchStopWithTerms = SearchStop & { searchTerms: string };
+export type RouteScheduleEntry = { first: string; last: string };
+export type RouteSchedule = { weekday: RouteScheduleEntry; weekend: RouteScheduleEntry };
+/** Per-route first/last bus timings. Sparse — routes without data are omitted. */
+export type SchedulesMap = Record<string, RouteSchedule>;
 
 export type ColorTheme = 'light' | 'dark';
