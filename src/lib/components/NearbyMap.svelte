@@ -49,16 +49,23 @@
 	}
 
 	// ~450m box around centre → roughly the 5-min-walk radius from the wireframe.
+	// Heavy bottom padding keeps the user + nearby stops in the upper (visible)
+	// half of the map, above the bottom sheet that overlays it.
 	function fit() {
 		if (!map) return;
 		const dLat = 450 / 111_000;
 		const dLng = 450 / (111_000 * Math.cos((lat * Math.PI) / 180));
+		const h = map.getContainer().clientHeight || 0;
 		map.fitBounds(
 			[
 				[lng - dLng, lat - dLat],
 				[lng + dLng, lat + dLat]
 			],
-			{ padding: 24, maxZoom: 17, duration: ready ? 500 : 0 }
+			{
+				padding: { top: 36, bottom: Math.round(h * 0.5), left: 32, right: 32 },
+				maxZoom: 17,
+				duration: ready ? 500 : 0
+			}
 		);
 	}
 
@@ -105,25 +112,41 @@
 		fit();
 	}
 
-	onMount(async () => {
-		const maplibregl = (await import('maplibre-gl')).default;
-		await import('maplibre-gl/dist/maplibre-gl.css');
-		const style = getComputedStyle(document.documentElement)
+	function styleUrl() {
+		return getComputedStyle(document.documentElement)
 			.getPropertyValue('--map-style')
 			.trim()
 			.replace(/^['"]|['"]$/g, '');
+	}
+
+	let themeObs: MutationObserver | null = null;
+
+	onMount(async () => {
+		const maplibregl = (await import('maplibre-gl')).default;
+		await import('maplibre-gl/dist/maplibre-gl.css');
 
 		map = new maplibregl.Map({
 			container,
-			style,
+			style: styleUrl(),
 			center: real ? [lng, lat] : NUS_CENTER,
 			zoom: 15.5,
 			attributionControl: false
 		});
-		map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+		map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
 		map.on('load', () => {
 			ready = true;
 			draw();
+		});
+
+		// Re-skin the basemap (and re-add our layers) when the app theme flips.
+		themeObs = new MutationObserver(() => {
+			if (!map) return;
+			map.setStyle(styleUrl());
+			map.once('styledata', () => draw());
+		});
+		themeObs.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-theme']
 		});
 	});
 
@@ -136,7 +159,10 @@
 		if (ready) draw();
 	});
 
-	onDestroy(() => map?.remove());
+	onDestroy(() => {
+		themeObs?.disconnect();
+		map?.remove();
+	});
 </script>
 
 <div bind:this={container} class="h-full w-full"></div>

@@ -21,6 +21,7 @@
 			{@const active = key === selected}
 			<button
 				onclick={() => onSelect(key)}
+				aria-pressed={active}
 				class="rounded-full px-3.5 py-1.5 font-mono text-sm font-bold transition-all
 					{active
 					? 'shadow-card'

@@ -36,7 +36,7 @@
 			return timings.filter(({ busStopCode }) => {
 				if (!busStopCode) return true;
 				const tokens = busStopCode.split('-');
-				return !(tokens.length > 1 && tokens[2] === 'E');
+				return !(tokens.length > 2 && tokens[2] === 'E');
 			});
 		}
 		return timings;
