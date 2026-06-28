@@ -1,31 +1,36 @@
-import { error, fail, type Actions } from '@sveltejs/kit';
-import { fetchStopTimings } from '$lib/server/hewliyang';
+import { fail, type Actions } from '@sveltejs/kit';
+import { fetchStopTimings, type StopResult } from '$lib/server/hewliyang';
 import { routesServingStop, stopCoord } from '$lib/routes';
 import { parseBookmarks } from '$lib/parse';
 import type { BusStopTiming, Bookmark } from '$lib/types';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params, fetch }) => {
-	try {
-		// hewliyang already joins crowding/capacity into each timing upstream, so
-		// this single call returns the fully-resolved { etas, degraded } payload.
-		return await fetchStopTimings(params.stopName, fetch);
-	} catch (e) {
+export const load: PageServerLoad = ({ params, fetch }) => {
+	const code = params.stopName;
+	// Resolved synchronously from the bundled stop directory, so the page shell —
+	// stop name, the routes that serve it — paints instantly.
+	const caption = stopCoord(code)?.caption ?? code;
+	const serving = routesServingStop(code);
+
+	// Stream the slow upstream call instead of blocking navigation on it: returning
+	// the promise unawaited lets SvelteKit 2 flush the shell + skeleton first, then
+	// fill in live timings when hewliyang responds (~1-3s). hewliyang already joins
+	// crowding/capacity into each timing, so this single call resolves the whole
+	// { etas, degraded } payload. On failure we degrade to a "timings unavailable"
+	// payload listing the serving routes rather than throwing — a hard error here
+	// would blank the page the user just navigated to.
+	const timings: Promise<StopResult> = fetchStopTimings(code, fetch).catch((e) => {
 		console.error('Failed to load shuttle timings:', e);
+		const etas: BusStopTiming = {
+			lastUpdated: new Date().toISOString(),
+			busStopName: code,
+			busStopCaption: caption,
+			timings: serving.map((name) => ({ name, arrivalTime: '-', nextArrivalTime: '-' }))
+		};
+		return { etas, degraded: true as const };
+	});
 
-		const serving = routesServingStop(params.stopName);
-		if (serving.length > 0) {
-			const etas: BusStopTiming = {
-				lastUpdated: new Date().toISOString(),
-				busStopName: params.stopName,
-				busStopCaption: stopCoord(params.stopName)?.caption ?? params.stopName,
-				timings: serving.map((name) => ({ name, arrivalTime: '-', nextArrivalTime: '-' }))
-			};
-			return { etas, degraded: true as const };
-		}
-
-		throw error(502, "Couldn't reach the shuttle service. Try again in a moment.");
-	}
+	return { code, caption, serving, timings };
 };
 
 export const actions: Actions = {

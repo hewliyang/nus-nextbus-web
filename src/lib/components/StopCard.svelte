@@ -1,6 +1,13 @@
 <script lang="ts">
 	import Icon from './Icon.svelte';
-	import { routeColor, routeTextColor, routeTerminal, isPublic, baseRoute } from '$lib/routes';
+	import {
+		routeColor,
+		routeTextColor,
+		routeTerminal,
+		isPublic,
+		baseRoute,
+		routesServingStop
+	} from '$lib/routes';
 	import { onMount, type Snippet } from 'svelte';
 	import type { Timing } from '$lib/types';
 
@@ -99,6 +106,10 @@
 		const n = mins(s.arrivalTime);
 		return n !== null && n > 0 && n < FAR_MIN;
 	};
+
+	// Routes that serve this stop, known statically — used to shape the loading
+	// skeleton so the card holds its final size before arrivals land (no shift).
+	const servingRoutes = $derived(routesServingStop(code));
 </script>
 
 <div class="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
@@ -144,11 +155,27 @@
 				</li>
 			{/each}
 		</ul>
+	{:else if loading}
+		<ul aria-label="Loading arrivals" aria-busy="true">
+			{#each servingRoutes as name (name)}
+				{@const label = isPublic(name) ? name.slice(4) : name}
+				<li class="flex items-center gap-3 border-b border-border px-3.5 py-2.5 last:border-0">
+					<span
+						class="grid h-7 min-w-[1.9rem] shrink-0 place-items-center rounded-md px-1 font-mono text-xs font-bold"
+						style="background: {routeColor(name)}; color: {routeTextColor(name)}"
+					>
+						{label}
+					</span>
+					<span class="h-3 w-28 max-w-[55%] animate-pulse rounded bg-surface-2"></span>
+					<span class="ml-auto h-4 w-9 animate-pulse rounded bg-surface-2"></span>
+				</li>
+			{:else}
+				<li class="px-3.5 py-3"><span class="block h-4 w-32 animate-pulse rounded bg-surface-2"></span></li>
+			{/each}
+		</ul>
 	{:else}
 		<p class="px-3.5 py-3 text-[13px] text-muted">
-			{#if loading}
-				Loading arrivals…
-			{:else if failed}
+			{#if failed}
 				Couldn’t load arrivals.
 			{:else}
 				No buses running now.
