@@ -4,10 +4,9 @@
 	import { onMount } from 'svelte';
 	import { stops } from '$lib/data';
 	import { nearestStops } from '$lib/geo';
-	import { NUS_CENTER, routeKeysSorted } from '$lib/routes';
+	import { NUS_CENTER, routeKeysSorted, routesServingStop, routeColor, routeTextColor } from '$lib/routes';
 	import Icon from '$lib/components/Icon.svelte';
-	import NearbyMap from '$lib/components/NearbyMap.svelte';
-	import RouteMap from '$lib/components/RouteMap.svelte';
+	import HomeMap from '$lib/components/HomeMap.svelte';
 	import Segmented from '$lib/components/Segmented.svelte';
 	import Snackbar from '$lib/components/Snackbar.svelte';
 	import StopCard from '$lib/components/StopCard.svelte';
@@ -46,11 +45,6 @@
 	const allNearby = $derived(nearestStops(userLat, userLng, 12));
 	const visibleNearby = $derived(allNearby.slice(0, limit));
 	const canLoadMore = $derived(limit < allNearby.length);
-	const mapStops = $derived(
-		allNearby
-			.filter((s) => s.distanceM < 700)
-			.map((s) => ({ code: s.name, lat: s.latitude, lng: s.longitude }))
-	);
 
 	function requestLocation() {
 		if (typeof navigator === 'undefined' || !navigator.geolocation) {
@@ -149,13 +143,10 @@
 </script>
 
 <div class="relative h-full w-full">
-	<!-- MAP background (full-bleed) -->
+	<!-- MAP background (full-bleed) — one shared instance; layers + zoom-frame
+	     switch with the view, so toggling Stops/Routes never re-creates the map. -->
 	<div class="absolute inset-0">
-		{#if view === 'stops'}
-			<NearbyMap lat={userLat} lng={userLng} real={userReal} stops={mapStops} />
-		{:else}
-			<RouteMap route={selectedRoute} arrows fillBottom />
-		{/if}
+		<HomeMap {view} lat={userLat} lng={userLng} real={userReal} route={selectedRoute} />
 	</div>
 
 	<!-- location snackbar floats just above the sheet -->
@@ -202,7 +193,7 @@
 						<span class="text-muted"><Icon name="search" size={17} /></span>
 						<input
 							type="search"
-							placeholder="Get Me Somewhere"
+							placeholder="Search bus stops"
 							aria-label="Search stops"
 							bind:value={searchTerm}
 							class="w-full bg-transparent py-3 text-[15px] text-ink placeholder:text-muted focus:outline-none"
@@ -231,14 +222,27 @@
 			{#if view === 'stops'}
 				{#if searching}
 					{#if searchResults.length > 0}
-						<ul class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+						<ul class="space-y-2">
 							{#each searchResults as stop (stop.name)}
+								{@const servingRoutes = routesServingStop(stop.name)}
 								<li>
 									<a
 										href="/stop/{stop.name}"
-										class="flex h-full items-center rounded-xl border border-border bg-surface px-3.5 py-3 text-[14px] font-medium leading-tight text-ink shadow-card transition-all hover:-translate-y-0.5 hover:border-border-strong"
+										class="flex items-center gap-3 rounded-xl border border-border bg-surface px-3.5 py-3 text-[14px] font-medium leading-tight text-ink shadow-card transition-all hover:-translate-y-0.5 hover:border-border-strong"
 									>
-										{stop.caption}
+										<span class="min-w-0 flex-1 truncate">{stop.caption}</span>
+										{#if servingRoutes.length > 0}
+											<span class="flex shrink-0 flex-wrap items-center justify-end gap-1">
+												{#each servingRoutes as r (r)}
+													<span
+														class="grid h-6 w-6 place-items-center rounded-md font-mono text-[10px] font-bold"
+														style="background: {routeColor(r)}; color: {routeTextColor(r)}"
+													>
+														{r}
+													</span>
+												{/each}
+											</span>
+										{/if}
 									</a>
 								</li>
 							{/each}

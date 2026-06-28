@@ -1,6 +1,17 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { routeColor, routeStops, routeLine, NUS_CENTER } from '$lib/routes';
+	import { routeColor, routeLine, NUS_CENTER } from '$lib/routes';
+	import {
+		styleUrl,
+		toHex,
+		dimColor,
+		setSquareIcon,
+		STOP_SIZE,
+		ensureArrowImage,
+		routeLineFC,
+		routeStopFC,
+		stopLabelPaint
+	} from '$lib/mapkit';
 	import type { GeoJSONSource, Map as MlMap } from 'maplibre-gl';
 
 	interface Props {
@@ -17,103 +28,23 @@
 	let map: MlMap | null = null;
 	let ready = $state(false);
 
-	function toHex(color: string): string {
-		const c = document.createElement('canvas');
-		c.width = c.height = 1;
-		const ctx = c.getContext('2d');
-		if (!ctx) return '#5566c4';
-		ctx.fillStyle = color;
-		ctx.fillRect(0, 0, 1, 1);
-		const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
-		return '#' + [r, g, b].map((n) => n.toString(16).padStart(2, '0')).join('');
-	}
-
-	function isDark() {
-		return document.documentElement.getAttribute('data-theme') === 'dark';
-	}
-
-	function dimColor() {
-		const v = getComputedStyle(document.documentElement)
-			.getPropertyValue('--border-strong')
-			.trim();
-		return v ? toHex(v) : '#b8bcc8';
-	}
-
-	// Small white chevron baked to a canvas, placed along the line + auto-rotated
-	// by maplibre to show travel direction.
-	function ensureArrowImage() {
-		if (!map || map.hasImage('route-arrow')) return;
-		const s = 20;
-		const cnv = document.createElement('canvas');
-		cnv.width = cnv.height = s;
-		const ctx = cnv.getContext('2d');
-		if (!ctx) return;
-		ctx.translate(s / 2, s / 2);
-		ctx.beginPath();
-		ctx.moveTo(-3, -5);
-		ctx.lineTo(5, 0);
-		ctx.lineTo(-3, 5);
-		ctx.closePath();
-		ctx.fillStyle = '#ffffff';
-		ctx.fill();
-		ctx.lineWidth = 1.5;
-		ctx.strokeStyle = 'rgba(20,22,34,0.45)';
-		ctx.stroke();
-		map.addImage('route-arrow', ctx.getImageData(0, 0, s, s));
+	// Rounded-square stop markers, baked per visual state in the current route
+	// colour (re-baked each draw so a route/theme change recolours them).
+	function bakeStopIcons(color: string, dim: string) {
+		if (!map) return;
+		setSquareIcon(map, 'rstop-normal', { fill: '#ffffff', stroke: color, size: STOP_SIZE.normal });
+		setSquareIcon(map, 'rstop-active', { fill: color, stroke: color, size: STOP_SIZE.active });
+		setSquareIcon(map, 'rstop-passed', { fill: dim, stroke: dim, size: STOP_SIZE.normal });
 	}
 
 	function draw() {
 		if (!map) return;
 		const color = toHex(routeColor(route));
 		const dim = dimColor();
-		const line = routeLine(route);
-		const stops = routeStops(route);
+		bakeStopIcons(color, dim);
 
-		const activeIdx = activeStop ? stops.findIndex((s) => s.code === activeStop) : -1;
-
-		const lineFeatures =
-			activeIdx > 0
-				? [
-						{
-							type: 'Feature' as const,
-							properties: { color: dim, passed: true },
-							geometry: {
-								type: 'LineString' as const,
-								coordinates: line.slice(0, activeIdx + 1)
-							}
-						},
-						{
-							type: 'Feature' as const,
-							properties: { color, passed: false },
-							geometry: {
-								type: 'LineString' as const,
-								coordinates: line.slice(activeIdx)
-							}
-						}
-					]
-				: [
-						{
-							type: 'Feature' as const,
-							properties: { color, passed: false },
-							geometry: { type: 'LineString' as const, coordinates: line }
-						}
-					];
-		const lineData = {
-			type: 'FeatureCollection' as const,
-			features: lineFeatures
-		};
-		const stopData = {
-			type: 'FeatureCollection' as const,
-			features: stops.map((s, i) => ({
-				type: 'Feature' as const,
-				properties: {
-					name: s.name,
-					active: s.code === activeStop,
-					passed: activeIdx > 0 && i < activeIdx
-				},
-				geometry: { type: 'Point' as const, coordinates: [s.lng, s.lat] }
-			}))
-		};
+		const lineData = routeLineFC(route, activeStop);
+		const stopData = routeStopFC(route, activeStop);
 
 		const lineSrc = map.getSource('route-line') as GeoJSONSource | undefined;
 		const stopSrc = map.getSource('route-stops') as GeoJSONSource | undefined;
@@ -143,7 +74,7 @@
 				}
 			});
 			if (arrows) {
-				ensureArrowImage();
+				ensureArrowImage(map);
 				map.addLayer({
 					id: 'route-arrows',
 					type: 'symbol',
@@ -161,24 +92,22 @@
 				});
 			}
 			map.addLayer({
-				id: 'stop-dots',
-				type: 'circle',
+				id: 'stop-squares',
+				type: 'symbol',
 				source: 'route-stops',
-				paint: {
-					'circle-radius': ['case', ['get', 'active'], 8, 5],
-					'circle-color': [
+				layout: {
+					'icon-image': [
 						'case',
 						['get', 'active'],
-						color,
+						'rstop-active',
 						['get', 'passed'],
-						dim,
-						'#ffffff'
+						'rstop-passed',
+						'rstop-normal'
 					],
-					'circle-stroke-color': ['case', ['get', 'passed'], dim, color],
-					'circle-stroke-width': 2.5,
-					'circle-opacity': ['case', ['get', 'passed'], 0.6, 1],
-					'circle-stroke-opacity': ['case', ['get', 'passed'], 0.6, 1]
-				}
+					'icon-allow-overlap': true,
+					'icon-ignore-placement': true
+				},
+				paint: { 'icon-opacity': ['case', ['get', 'passed'], 0.6, 1] }
 			});
 			map.addLayer({
 				id: 'stop-labels',
@@ -192,48 +121,11 @@
 					'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
 					'text-optional': true
 				},
-				paint: {
-					'text-color': isDark() ? '#e6e7ee' : '#2a2d3a',
-					'text-halo-color': isDark() ? '#1b1c24' : '#ffffff',
-					'text-halo-width': 1.5
-				}
+				paint: stopLabelPaint()
 			});
-		} else {
-			map.setPaintProperty('route-path', 'line-color', ['get', 'color']);
-			map.setPaintProperty('route-path', 'line-opacity', [
-				'case',
-				['get', 'passed'],
-				0.55,
-				1
-			]);
-			map.setPaintProperty('stop-dots', 'circle-stroke-color', [
-				'case',
-				['get', 'passed'],
-				dim,
-				color
-			]);
-			map.setPaintProperty('stop-dots', 'circle-color', [
-				'case',
-				['get', 'active'],
-				color,
-				['get', 'passed'],
-				dim,
-				'#ffffff'
-			]);
-			map.setPaintProperty('stop-dots', 'circle-opacity', [
-				'case',
-				['get', 'passed'],
-				0.6,
-				1
-			]);
-			map.setPaintProperty('stop-dots', 'circle-stroke-opacity', [
-				'case',
-				['get', 'passed'],
-				0.6,
-				1
-			]);
 		}
 
+		const line = routeLine(route);
 		if (line.length) {
 			const lngs = line.map((p) => p[0]);
 			const lats = line.map((p) => p[1]);
@@ -249,13 +141,6 @@
 				{ padding, maxZoom: 16, duration: ready ? 600 : 0 }
 			);
 		}
-	}
-
-	function styleUrl() {
-		return getComputedStyle(document.documentElement)
-			.getPropertyValue('--map-style')
-			.trim()
-			.replace(/^['"]|['"]$/g, '');
 	}
 
 	let themeObs: MutationObserver | null = null;
