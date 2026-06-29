@@ -80,3 +80,18 @@ export function routeStops(route: string): MapStop[] {
 }
 
 export const NUS_CENTER: [number, number] = [103.7764, 1.2966];
+
+/** Routes sorted alphabetically — used for the Routes-view chips. */
+export const routeKeysSorted = [...routeKeys].sort();
+
+/**
+ * The route's final stop ("destination") label. NUS routes are loops; the
+ * `seq: 32767` entry marks the terminus the bus returns to, so the highest-seq
+ * stop is the natural destination to surface on a card.
+ */
+export function routeTerminal(route: string): string {
+	const list = routes[route] ?? [];
+	if (list.length === 0) return '';
+	const sorted = [...list].sort((a, b) => a.seq - b.seq);
+	return sorted[sorted.length - 1].stop_name;
+}

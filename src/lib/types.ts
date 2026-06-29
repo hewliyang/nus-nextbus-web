@@ -13,14 +13,6 @@ export type Timing = {
 	nextArrivalTime_ridership?: number;
 };
 
-export type ActiveBus = {
-	route: string;
-	vehplate: string;
-	occupancy: number;
-	capacity: number;
-	ridership: number;
-};
-
 export type BusStopTiming = {
 	lastUpdated: string;
 	busStopName: string;
@@ -50,6 +42,9 @@ export type SearchStop = {
 	longitude: number;
 };
 
-export type SearchStopWithTerms = SearchStop & { searchTerms: string };
+export type RouteScheduleEntry = { first: string; last: string };
+export type RouteSchedule = { weekday: RouteScheduleEntry; weekend: RouteScheduleEntry };
+/** Per-route first/last bus timings. Sparse — routes without data are omitted. */
+export type SchedulesMap = Record<string, RouteSchedule>;
 
 export type ColorTheme = 'light' | 'dark';

@@ -1,0 +1,6 @@
+{
+	"D2": {
+		"weekday": { "first": "7:30 AM", "last": "12:30 AM" },
+		"weekend": { "first": "9:00 AM", "last": "8:00 PM" }
+	}
+}

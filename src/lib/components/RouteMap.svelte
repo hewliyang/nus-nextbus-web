@@ -1,93 +1,50 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { routeColor, routeStops, routeLine, NUS_CENTER } from '$lib/routes';
+	import { routeColor, routeLine, NUS_CENTER } from '$lib/routes';
+	import {
+		styleUrl,
+		toHex,
+		dimColor,
+		setSquareIcon,
+		STOP_SIZE,
+		ensureArrowImage,
+		routeLineFC,
+		routeStopFC,
+		stopLabelPaint
+	} from '$lib/mapkit';
 	import type { GeoJSONSource, Map as MlMap } from 'maplibre-gl';
 
 	interface Props {
 		route: string;
 		activeStop?: string | null;
+		arrows?: boolean;
+		/** Pad the fit toward the top so the line sits above an overlaying sheet. */
+		fillBottom?: boolean;
 	}
 
-	let { route, activeStop = null }: Props = $props();
+	let { route, activeStop = null, arrows = false, fillBottom = false }: Props = $props();
 
 	let container: HTMLDivElement;
 	let map: MlMap | null = null;
 	let ready = $state(false);
 
-	function toHex(color: string): string {
-		const c = document.createElement('canvas');
-		c.width = c.height = 1;
-		const ctx = c.getContext('2d');
-		if (!ctx) return '#5566c4';
-		ctx.fillStyle = color;
-		ctx.fillRect(0, 0, 1, 1);
-		const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
-		return '#' + [r, g, b].map((n) => n.toString(16).padStart(2, '0')).join('');
-	}
-
-	function isDark() {
-		return document.documentElement.getAttribute('data-theme') === 'dark';
-	}
-
-	function dimColor() {
-		const v = getComputedStyle(document.documentElement)
-			.getPropertyValue('--border-strong')
-			.trim();
-		return v ? toHex(v) : '#b8bcc8';
+	// Rounded-square stop markers, baked per visual state in the current route
+	// colour (re-baked each draw so a route/theme change recolours them).
+	function bakeStopIcons(color: string, dim: string) {
+		if (!map) return;
+		setSquareIcon(map, 'rstop-normal', { fill: '#ffffff', stroke: color, size: STOP_SIZE.normal });
+		setSquareIcon(map, 'rstop-active', { fill: color, stroke: color, size: STOP_SIZE.active });
+		setSquareIcon(map, 'rstop-passed', { fill: dim, stroke: dim, size: STOP_SIZE.normal });
 	}
 
 	function draw() {
 		if (!map) return;
 		const color = toHex(routeColor(route));
 		const dim = dimColor();
-		const line = routeLine(route);
-		const stops = routeStops(route);
+		bakeStopIcons(color, dim);
 
-		const activeIdx = activeStop ? stops.findIndex((s) => s.code === activeStop) : -1;
-
-		const lineFeatures =
-			activeIdx > 0
-				? [
-						{
-							type: 'Feature' as const,
-							properties: { color: dim, passed: true },
-							geometry: {
-								type: 'LineString' as const,
-								coordinates: line.slice(0, activeIdx + 1)
-							}
-						},
-						{
-							type: 'Feature' as const,
-							properties: { color, passed: false },
-							geometry: {
-								type: 'LineString' as const,
-								coordinates: line.slice(activeIdx)
-							}
-						}
-					]
-				: [
-						{
-							type: 'Feature' as const,
-							properties: { color, passed: false },
-							geometry: { type: 'LineString' as const, coordinates: line }
-						}
-					];
-		const lineData = {
-			type: 'FeatureCollection' as const,
-			features: lineFeatures
-		};
-		const stopData = {
-			type: 'FeatureCollection' as const,
-			features: stops.map((s, i) => ({
-				type: 'Feature' as const,
-				properties: {
-					name: s.name,
-					active: s.code === activeStop,
-					passed: activeIdx > 0 && i < activeIdx
-				},
-				geometry: { type: 'Point' as const, coordinates: [s.lng, s.lat] }
-			}))
-		};
+		const lineData = routeLineFC(route, activeStop);
+		const stopData = routeStopFC(route, activeStop);
 
 		const lineSrc = map.getSource('route-line') as GeoJSONSource | undefined;
 		const stopSrc = map.getSource('route-stops') as GeoJSONSource | undefined;
@@ -116,25 +73,41 @@
 					'line-opacity': ['case', ['get', 'passed'], 0.55, 1]
 				}
 			});
+			if (arrows) {
+				ensureArrowImage(map);
+				map.addLayer({
+					id: 'route-arrows',
+					type: 'symbol',
+					source: 'route-line',
+					layout: {
+						'symbol-placement': 'line',
+						'symbol-spacing': 64,
+						'icon-image': 'route-arrow',
+						'icon-size': 0.85,
+						'icon-rotation-alignment': 'map',
+						'icon-allow-overlap': true,
+						'icon-ignore-placement': true
+					},
+					paint: { 'icon-opacity': ['case', ['get', 'passed'], 0.4, 1] }
+				});
+			}
 			map.addLayer({
-				id: 'stop-dots',
-				type: 'circle',
+				id: 'stop-squares',
+				type: 'symbol',
 				source: 'route-stops',
-				paint: {
-					'circle-radius': ['case', ['get', 'active'], 8, 5],
-					'circle-color': [
+				layout: {
+					'icon-image': [
 						'case',
 						['get', 'active'],
-						color,
+						'rstop-active',
 						['get', 'passed'],
-						dim,
-						'#ffffff'
+						'rstop-passed',
+						'rstop-normal'
 					],
-					'circle-stroke-color': ['case', ['get', 'passed'], dim, color],
-					'circle-stroke-width': 2.5,
-					'circle-opacity': ['case', ['get', 'passed'], 0.6, 1],
-					'circle-stroke-opacity': ['case', ['get', 'passed'], 0.6, 1]
-				}
+					'icon-allow-overlap': true,
+					'icon-ignore-placement': true
+				},
+				paint: { 'icon-opacity': ['case', ['get', 'passed'], 0.6, 1] }
 			});
 			map.addLayer({
 				id: 'stop-labels',
@@ -148,80 +121,56 @@
 					'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
 					'text-optional': true
 				},
-				paint: {
-					'text-color': isDark() ? '#e6e7ee' : '#2a2d3a',
-					'text-halo-color': isDark() ? '#1b1c24' : '#ffffff',
-					'text-halo-width': 1.5
-				}
+				paint: stopLabelPaint()
 			});
-		} else {
-			map.setPaintProperty('route-path', 'line-color', ['get', 'color']);
-			map.setPaintProperty('route-path', 'line-opacity', [
-				'case',
-				['get', 'passed'],
-				0.55,
-				1
-			]);
-			map.setPaintProperty('stop-dots', 'circle-stroke-color', [
-				'case',
-				['get', 'passed'],
-				dim,
-				color
-			]);
-			map.setPaintProperty('stop-dots', 'circle-color', [
-				'case',
-				['get', 'active'],
-				color,
-				['get', 'passed'],
-				dim,
-				'#ffffff'
-			]);
-			map.setPaintProperty('stop-dots', 'circle-opacity', [
-				'case',
-				['get', 'passed'],
-				0.6,
-				1
-			]);
-			map.setPaintProperty('stop-dots', 'circle-stroke-opacity', [
-				'case',
-				['get', 'passed'],
-				0.6,
-				1
-			]);
 		}
 
+		const line = routeLine(route);
 		if (line.length) {
 			const lngs = line.map((p) => p[0]);
 			const lats = line.map((p) => p[1]);
+			const h = map.getContainer().clientHeight || 0;
+			const padding = fillBottom
+				? { top: 44, bottom: Math.round(h * 0.45), left: 40, right: 40 }
+				: { top: 48, bottom: 48, left: 48, right: 48 };
 			map.fitBounds(
 				[
 					[Math.min(...lngs), Math.min(...lats)],
 					[Math.max(...lngs), Math.max(...lats)]
 				],
-				{ padding: 48, maxZoom: 16, duration: ready ? 600 : 0 }
+				{ padding, maxZoom: 16, duration: ready ? 600 : 0 }
 			);
 		}
 	}
 
+	let themeObs: MutationObserver | null = null;
+
 	onMount(async () => {
 		const maplibregl = (await import('maplibre-gl')).default;
 		await import('maplibre-gl/dist/maplibre-gl.css');
-		const style = getComputedStyle(document.documentElement)
-			.getPropertyValue('--map-style')
-			.trim()
-			.replace(/^['"]|['"]$/g, '');
 
 		map = new maplibregl.Map({
 			container,
-			style,
+			style: styleUrl(),
 			center: NUS_CENTER,
 			zoom: 13.5,
 			attributionControl: false
 		});
-		map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+		map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
 		map.on('load', () => {
 			ready = true;
 			draw();
+		});
+
+		// Re-skin the basemap (and re-add our layers) when the app theme flips.
+		themeObs = new MutationObserver(() => {
+			if (!map) return;
+			map.setStyle(styleUrl());
+			map.once('styledata', () => draw());
+		});
+		themeObs.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-theme']
 		});
 	});
 
@@ -229,7 +178,10 @@
 		if (ready && route) draw();
 	});
 
-	onDestroy(() => map?.remove());
+	onDestroy(() => {
+		themeObs?.disconnect();
+		map?.remove();
+	});
 </script>
 
 <div bind:this={container} class="h-full w-full"></div>

@@ -1,136 +1,36 @@
-import { error, fail, type Actions } from '@sveltejs/kit';
-import { fmsFetch } from '$lib/server/nextbus';
-import type { ActiveBusResponse, FmsShuttle, ShuttleServiceResponse } from '$lib/server/fms-types';
+import { fail, type Actions } from '@sveltejs/kit';
+import { fetchStopTimings, type StopResult } from '$lib/server/hewliyang';
 import { routesServingStop, stopCoord } from '$lib/routes';
 import { parseBookmarks } from '$lib/parse';
-import type { BusStopTiming, ActiveBus, Bookmark, Timing } from '$lib/types';
+import type { BusStopTiming, Bookmark } from '$lib/types';
 import type { PageServerLoad } from './$types';
 
-function shuttleToTiming(shuttle: FmsShuttle): Timing {
-	const etas = shuttle._etas ?? [];
-	const timing: Timing = {
-		name: shuttle.name,
-		arrivalTime: shuttle.arrivalTime,
-		nextArrivalTime: shuttle.nextArrivalTime,
-		arrivalTime_ts: etas[0]?.ts,
-		nextArrivalTime_ts: etas[1]?.ts
-	};
-	if (shuttle.arrivalTime_veh_plate || shuttle.nextArrivalTime_veh_plate) {
-		timing.busStopCode = shuttle.busstopcode;
-		timing.arrivalTime_veh_plate = shuttle.arrivalTime_veh_plate;
-		timing.nextArrivalTime_veh_plate = shuttle.nextArrivalTime_veh_plate;
-	}
-	return timing;
-}
+export const load: PageServerLoad = ({ params, fetch }) => {
+	const code = params.stopName;
+	// Resolved synchronously from the bundled stop directory, so the page shell —
+	// stop name, the routes that serve it — paints instantly.
+	const caption = stopCoord(code)?.caption ?? code;
+	const serving = routesServingStop(code);
 
-export const load: PageServerLoad = async ({ params }) => {
-	async function get_etas(stop: string): Promise<BusStopTiming> {
-		const res = await fmsFetch<ShuttleServiceResponse>('ShuttleService', { busstopname: stop });
-
-		const result = res.ShuttleServiceResult;
-		if (!result) {
-			throw new Error(`ShuttleService error: ${JSON.stringify(res).slice(0, 120)}`);
-		}
-		const shuttles = result.shuttles ?? [];
-
-		return {
-			lastUpdated: result.Timestamp ?? result.TimeStamp ?? new Date().toISOString(),
-			busStopName: result.name,
-			busStopCaption: result.caption,
-			timings: shuttles.map(shuttleToTiming)
-		};
-	}
-
-	async function get_active_bus(route: string): Promise<ActiveBus[]> {
-		const res = await fmsFetch<ActiveBusResponse>('ActiveBus', { route_code: route });
-		const buses = res.ActiveBusResult?.activebus ?? [];
-
-		return buses.map((bus) => ({
-			route,
-			vehplate: bus.vehplate,
-			occupancy: bus.loadInfo.occupancy,
-			capacity: bus.loadInfo.capacity,
-			ridership: bus.loadInfo.ridership
-		}));
-	}
-
-	function get_route_list(etas: BusStopTiming): string[] {
-		const res: string[] = [];
-
-		for (const timing of etas.timings) {
-			if (timing.name.startsWith('PUB')) {
-				continue;
-			}
-			res.push(timing.name);
-		}
-
-		return res;
-	}
-
-	function joinCapacityAndRidership(timings: BusStopTiming, vehicles: ActiveBus[][]) {
-		const vehplateToCapacityAndRidership = new Map<
-			string,
-			{ capacity: number; ridership: number }
-		>();
-		for (const vehicleList of vehicles) {
-			for (const vehicle of vehicleList) {
-				vehplateToCapacityAndRidership.set(vehicle.vehplate, {
-					capacity: vehicle.capacity,
-					ridership: vehicle.ridership
-				});
-			}
-		}
-
-		for (const timing of timings.timings) {
-			if (timing.arrivalTime_veh_plate) {
-				const capacityAndRidership = vehplateToCapacityAndRidership.get(
-					timing.arrivalTime_veh_plate
-				);
-				if (capacityAndRidership) {
-					timing.arrivalTime_capacity = capacityAndRidership.capacity;
-					timing.arrivalTime_ridership = capacityAndRidership.ridership;
-				}
-			}
-			if (timing.nextArrivalTime_veh_plate) {
-				const capacityAndRidership = vehplateToCapacityAndRidership.get(
-					timing.nextArrivalTime_veh_plate
-				);
-				if (capacityAndRidership) {
-					timing.nextArrivalTime_capacity = capacityAndRidership.capacity;
-					timing.nextArrivalTime_ridership = capacityAndRidership.ridership;
-				}
-			}
-		}
-
-		return timings;
-	}
-
-	try {
-		const timings = await get_etas(params.stopName);
-		const routeList = get_route_list(timings);
-		const routePromises = routeList.map((route) => get_active_bus(route));
-		const ridership = await Promise.all(routePromises);
-
-		return {
-			etas: joinCapacityAndRidership(timings, ridership),
-			degraded: false as const
-		};
-	} catch (e) {
+	// Stream the slow upstream call instead of blocking navigation on it: returning
+	// the promise unawaited lets SvelteKit 2 flush the shell + skeleton first, then
+	// fill in live timings when hewliyang responds (~1-3s). hewliyang already joins
+	// crowding/capacity into each timing, so this single call resolves the whole
+	// { etas, degraded } payload. On failure we degrade to a "timings unavailable"
+	// payload listing the serving routes rather than throwing — a hard error here
+	// would blank the page the user just navigated to.
+	const timings: Promise<StopResult> = fetchStopTimings(code, fetch).catch((e) => {
 		console.error('Failed to load shuttle timings:', e);
+		const etas: BusStopTiming = {
+			lastUpdated: new Date().toISOString(),
+			busStopName: code,
+			busStopCaption: caption,
+			timings: serving.map((name) => ({ name, arrivalTime: '-', nextArrivalTime: '-' }))
+		};
+		return { etas, degraded: true as const };
+	});
 
-		const serving = routesServingStop(params.stopName);
-		if (serving.length > 0) {
-			const etas: BusStopTiming = {
-				lastUpdated: new Date().toISOString(),
-				busStopName: params.stopName,
-				busStopCaption: stopCoord(params.stopName)?.caption ?? params.stopName,
-				timings: serving.map((name) => ({ name, arrivalTime: '-', nextArrivalTime: '-' }))
-			};
-			return { etas, degraded: true as const };
-		}
-
-		throw error(502, "Couldn't reach the NUS shuttle service. Try again in a moment.");
-	}
+	return { code, caption, serving, timings };
 };
 
 export const actions: Actions = {
