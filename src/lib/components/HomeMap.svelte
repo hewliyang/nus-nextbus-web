@@ -2,13 +2,13 @@
 	import { onMount, onDestroy, untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { stops } from '$lib/data';
-	import { NUS_CENTER, routeColor, routeLine, stopCoord } from '$lib/routes';
+	import { NUS_CENTER, routeColor, routeShape, stopCoord } from '$lib/routes';
 	import {
 		styleUrl,
 		toHex,
 		setSquareIcon,
 		STOP_SIZE,
-		ensureArrowImage,
+		setArrowImage,
 		routeLineFC,
 		routeStopFC,
 		stopLabelPaint,
@@ -152,7 +152,8 @@
 			stroke: '#ffffff',
 			size: STOP_SIZE.active
 		});
-		ensureArrowImage(map);
+		// arrowheads inherit the selected route's colour (re-baked on change)
+		setArrowImage(map, 'route-arrow', toHex(routeColor(route)));
 	}
 
 	// ── layer setup (run on load + re-run after a theme reskin) ──
@@ -166,19 +167,23 @@
 		map.addSource('user', { type: 'geojson', data: userFC() });
 
 		// route geometry (Routes view)
+		// Both line layers are offset to the right of the direction of travel:
+		// where the route runs the same road in both directions (or re-crosses a
+		// roundabout), the two passes separate into distinct parallel lines
+		// instead of overprinting each other.
 		map.addLayer({
 			id: 'route-casing',
 			type: 'line',
 			source: 'route-line',
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
-			paint: { 'line-color': '#ffffff', 'line-width': 7, 'line-opacity': 0.9 }
+			paint: { 'line-color': '#ffffff', 'line-width': 7, 'line-opacity': 0.9, 'line-offset': 3.5 }
 		});
 		map.addLayer({
 			id: 'route-path',
 			type: 'line',
 			source: 'route-line',
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
-			paint: { 'line-color': ['get', 'color'], 'line-width': 4 }
+			paint: { 'line-color': ['get', 'color'], 'line-width': 4, 'line-offset': 3.5 }
 		});
 		map.addLayer({
 			id: 'route-arrows',
@@ -186,9 +191,11 @@
 			source: 'route-line',
 			layout: {
 				'symbol-placement': 'line',
-				'symbol-spacing': 64,
+				'symbol-spacing': 80,
 				'icon-image': 'route-arrow',
 				'icon-size': 0.85,
+				// perpendicular shift matching the lines' line-offset (4 x 0.85 ~ 3.5px)
+				'icon-offset': [0, 4],
 				'icon-rotation-alignment': 'map',
 				'icon-allow-overlap': true,
 				'icon-ignore-placement': true
@@ -341,7 +348,7 @@
 		}
 
 		if (view === 'routes') {
-			const line = routeLine(route);
+			const line = routeShape(route);
 			if (!line.length) return;
 			const lngs = line.map((p) => p[0]);
 			const lats = line.map((p) => p[1]);

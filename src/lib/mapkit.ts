@@ -1,5 +1,5 @@
 import type { Map as MlMap } from 'maplibre-gl';
-import { routeColor, routeStops, routeLine } from '$lib/routes';
+import { routeColor, routeStops, routeShape } from '$lib/routes';
 
 // ── theme-aware basemap + colour helpers (shared by every map component) ──
 
@@ -84,6 +84,39 @@ export function setSquareIcon(map: MlMap, name: string, opts: SquareIcon): void 
 // Edge lengths matching the circle radii they replace.
 export const STOP_SIZE = { normal: 10, active: 16, nearby: 12 } as const;
 
+/**
+ * Direction arrowhead in the route's colour with the same white outline as
+ * the line casing, so along the path it reads as the line growing periodic
+ * arrowheads rather than as foreign markers. Re-baked whenever the selected
+ * route (and so its colour) changes.
+ */
+export function setArrowImage(map: MlMap, name: string, fill: string): void {
+	const dpr = Math.min(Math.max(window.devicePixelRatio || 1, 1), 3);
+	const s = 20;
+	const px = Math.round(s * dpr);
+	const cnv = document.createElement('canvas');
+	cnv.width = cnv.height = px;
+	const ctx = cnv.getContext('2d');
+	if (!ctx) return;
+	ctx.scale(dpr, dpr);
+	ctx.translate(s / 2, s / 2);
+	ctx.beginPath();
+	ctx.moveTo(-3.5, -5.5);
+	ctx.lineTo(5.5, 0);
+	ctx.lineTo(-3.5, 5.5);
+	ctx.closePath();
+	// casing first so the outline sits behind the coloured head
+	ctx.lineJoin = 'round';
+	ctx.lineWidth = 3;
+	ctx.strokeStyle = '#ffffff';
+	ctx.stroke();
+	ctx.fillStyle = fill;
+	ctx.fill();
+	const data = ctx.getImageData(0, 0, px, px);
+	if (map.hasImage(name)) map.updateImage(name, data);
+	else map.addImage(name, data, { pixelRatio: dpr });
+}
+
 /** White direction chevron, baked once and rotated along the line by maplibre. */
 export function ensureArrowImage(map: MlMap): void {
 	if (map.hasImage('route-arrow')) return;
@@ -128,22 +161,39 @@ export function stopLabelPaint() {
 export function routeLineFC(route: string, activeStop: string | null = null) {
 	const color = toHex(routeColor(route));
 	const dim = dimColor();
-	const line = routeLine(route);
+	const line = routeShape(route);
 	const stops = routeStops(route);
-	const activeIdx = activeStop ? stops.findIndex((s) => s.code === activeStop) : -1;
+	const active = activeStop ? stops.find((s) => s.code === activeStop) : undefined;
+
+	// The shape is a dense road polyline, so the passed/upcoming split happens
+	// at the shape vertex nearest to the active stop (stop indices no longer
+	// map onto line vertices).
+	let splitIdx = -1;
+	if (active) {
+		let best = Infinity;
+		for (let i = 0; i < line.length; i++) {
+			const dx = line[i][0] - active.lng;
+			const dy = line[i][1] - active.lat;
+			const d = dx * dx + dy * dy;
+			if (d < best) {
+				best = d;
+				splitIdx = i;
+			}
+		}
+	}
 
 	const features =
-		activeIdx > 0
+		splitIdx > 0
 			? [
 					{
 						type: 'Feature' as const,
 						properties: { color: dim, passed: true },
-						geometry: { type: 'LineString' as const, coordinates: line.slice(0, activeIdx + 1) }
+						geometry: { type: 'LineString' as const, coordinates: line.slice(0, splitIdx + 1) }
 					},
 					{
 						type: 'Feature' as const,
 						properties: { color, passed: false },
-						geometry: { type: 'LineString' as const, coordinates: line.slice(activeIdx) }
+						geometry: { type: 'LineString' as const, coordinates: line.slice(splitIdx) }
 					}
 				]
 			: [

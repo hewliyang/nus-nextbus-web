@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { routeColor, routeLine, NUS_CENTER } from '$lib/routes';
+	import { routeColor, routeShape, NUS_CENTER } from '$lib/routes';
 	import {
 		styleUrl,
 		toHex,
 		dimColor,
 		setSquareIcon,
 		STOP_SIZE,
-		ensureArrowImage,
+		setArrowImage,
 		routeLineFC,
 		routeStopFC,
 		stopLabelPaint,
@@ -43,6 +43,7 @@
 		const color = toHex(routeColor(route));
 		const dim = dimColor();
 		bakeStopIcons(color, dim);
+		if (arrows) setArrowImage(map, 'route-arrow', color);
 
 		const lineData = routeLineFC(route, activeStop);
 		const stopData = routeStopFC(route, activeStop);
@@ -56,12 +57,14 @@
 			map.addSource('route-line', { type: 'geojson', data: lineData });
 			map.addSource('route-stops', { type: 'geojson', data: stopData });
 
+			// Offset to the right of the travel direction so out-and-back roads and
+			// roundabout re-crossings render as two distinct parallel lines.
 			map.addLayer({
 				id: 'route-casing',
 				type: 'line',
 				source: 'route-line',
 				layout: { 'line-cap': 'round', 'line-join': 'round' },
-				paint: { 'line-color': '#ffffff', 'line-width': 7, 'line-opacity': 0.9 }
+				paint: { 'line-color': '#ffffff', 'line-width': 7, 'line-opacity': 0.9, 'line-offset': 3.5 }
 			});
 			map.addLayer({
 				id: 'route-path',
@@ -71,20 +74,22 @@
 				paint: {
 					'line-color': ['get', 'color'],
 					'line-width': 4,
+					'line-offset': 3.5,
 					'line-opacity': ['case', ['get', 'passed'], 0.55, 1]
 				}
 			});
 			if (arrows) {
-				ensureArrowImage(map);
 				map.addLayer({
 					id: 'route-arrows',
 					type: 'symbol',
 					source: 'route-line',
 					layout: {
 						'symbol-placement': 'line',
-						'symbol-spacing': 64,
+						'symbol-spacing': 80,
 						'icon-image': 'route-arrow',
 						'icon-size': 0.85,
+						// perpendicular shift matching the lines' line-offset
+						'icon-offset': [0, 4],
 						'icon-rotation-alignment': 'map',
 						'icon-allow-overlap': true,
 						'icon-ignore-placement': true
@@ -126,7 +131,7 @@
 			});
 		}
 
-		const line = routeLine(route);
+		const line = routeShape(route);
 		if (line.length) {
 			const lngs = line.map((p) => p[0]);
 			const lats = line.map((p) => p[1]);

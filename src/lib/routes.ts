@@ -1,5 +1,10 @@
 import { stops, routes } from '$lib/data';
+import routeShapesJson from '$lib/data/routeShapes.json';
 import type { RouteStop } from '$lib/types';
+
+// Road-following polylines, snapped to the road network offline by
+// scripts/fetch_route_shapes.py (re-run it when routes/stops change).
+const routeShapes = routeShapesJson as unknown as Record<string, [number, number][]>;
 
 const ROUTE_COLORS: Record<string, { bg: string; fg: string }> = {
 	A1: { bg: '#FB0101', fg: '#FFFFFF' },
@@ -59,6 +64,15 @@ export function routeLine(route: string): [number, number][] {
 		if (c) pts.push([c.lng, c.lat]);
 	}
 	return pts;
+}
+
+/**
+ * The route's drawable polyline: the dense road-following shape when one was
+ * generated, else the straight stop-to-stop chain as a fallback.
+ */
+export function routeShape(route: string): [number, number][] {
+	const shape = routeShapes[route];
+	return shape && shape.length > 1 ? shape : routeLine(route);
 }
 
 export type MapStop = {
