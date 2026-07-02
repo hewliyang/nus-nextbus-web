@@ -24,9 +24,15 @@
 	let now = $state(Date.now());
 
 	// Resolve the streamed SSR promise into state, resetting on navigation so a
-	// previous stop's data (or overlay) never bleeds into the next.
+	// previous stop's data (or overlay) never bleeds into the next. Guarded by
+	// promise identity: targeted invalidations (star/unstar, theme) rebuild the
+	// merged `data` object without re-running this page's load, and resetting
+	// then would flash the skeleton and discard the fresher `polled` overlay.
+	let lastTimings: PageData['timings'] | undefined;
 	$effect(() => {
 		const pending = data.timings;
+		if (pending === lastTimings) return;
+		lastTimings = pending;
 		let cancelled = false;
 		ssr = null;
 		polled = null;
@@ -176,8 +182,15 @@
 	<div
 		class="relative z-10 -mt-4 flex min-h-0 flex-1 flex-col rounded-t-3xl border-t border-border bg-bg shadow-[0_-10px_40px_-12px_rgba(0,0,0,0.3)]"
 	>
+		<!-- Focusable scroll region: the page no longer scrolls at document level,
+		     so without a tabindex keyboard users couldn't scroll the timings.
+		     (Labelled region + tabindex is the WAI pattern for scroll regions.) -->
+		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<div
-			class="flex-1 overflow-y-auto overscroll-contain px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-5"
+			class="flex-1 overflow-y-auto overscroll-contain px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-5 focus:outline-none"
+			role="region"
+			aria-label="Stop details"
+			tabindex="0"
 		>
 			<section class="fade-up space-y-5">
 				<div class="flex items-start justify-between gap-3">

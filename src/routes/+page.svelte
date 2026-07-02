@@ -60,9 +60,15 @@
 	const canLoadMore = $derived(limit < allNearby.length);
 
 	// Heading flips to "Near map centre" once the cursor has drifted >150 m from
-	// the user's real fix.
+	// its anchor — the user's real fix, or the campus-centre default before any
+	// GPS grant (panning without location must not keep claiming "Nearby").
 	const cursorAdrift = $derived(
-		userReal && getDistance(cursorLat, cursorLng, userLat, userLng) > 150
+		getDistance(
+			cursorLat,
+			cursorLng,
+			userReal ? userLat : NUS_CENTER[1],
+			userReal ? userLng : NUS_CENTER[0]
+		) > 150
 	);
 
 	function requestLocation() {
@@ -172,6 +178,7 @@
 			real={userReal}
 			route={selectedRoute}
 			coveredPct={sheetH}
+			{dragging}
 			onCenterChange={(lng, lat) => {
 				cursorLng = lng;
 				cursorLat = lat;
@@ -179,10 +186,14 @@
 		/>
 	</div>
 
-	<!-- location snackbar floats just above the sheet -->
+	<!-- location snackbar floats just above the sheet. Past the snap threshold
+	     the map is essentially hidden, and riding any higher would collide with
+	     the theme toggle and zoom controls — so it fades out instead. -->
 	{#if view === 'stops' && locStatus !== 'granted'}
 		<div
-			class="absolute inset-x-3 z-20 {dragging ? '' : 'transition-[bottom] duration-300 ease-out'}"
+			class="absolute inset-x-3 z-20 {sheetH > 64
+				? 'pointer-events-none opacity-0'
+				: 'opacity-100'} {dragging ? '' : 'transition-[bottom,opacity] duration-300 ease-out'}"
 			style="bottom: calc({sheetH}% + 0.75rem)"
 		>
 			<Snackbar

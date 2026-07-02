@@ -4,6 +4,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import GitHub from '$lib/icons/github.svelte';
 	import { enhance } from '$app/forms';
+	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { dev } from '$app/environment';
 	import type { SubmitFunction } from '@sveltejs/kit';
@@ -23,9 +24,17 @@
 	const isStopDetail = $derived(pathname.startsWith('/stop/') && !pathname.includes('/route/'));
 	const isFullBleed = $derived(isHome || isStopDetail);
 
+	// Flip the attribute instantly, then reconcile $page.data.theme with a
+	// layout-only invalidation. The action's redirect is deliberately not
+	// followed: the default handling would goto(..., { invalidateAll: true }),
+	// re-running every load — on the stop page that re-fetches the slow
+	// upstream timings and flashes the skeleton just for a theme change.
 	const applyTheme: SubmitFunction = ({ action }) => {
 		const t = action.searchParams.get('theme');
 		if (t) document.documentElement.setAttribute('data-theme', t);
+		return async () => {
+			await invalidate('app:theme');
+		};
 	};
 </script>
 

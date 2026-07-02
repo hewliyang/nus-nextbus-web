@@ -74,38 +74,40 @@
 	<!-- first / last bus (hidden when no schedule data for this route) -->
 	{#if schedule}
 		<div class="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
-			<table class="w-full text-[13px]">
-				<thead>
-					<tr class="border-b border-border text-xs uppercase tracking-wide text-muted">
-						<th class="px-3.5 py-2 text-left font-semibold" aria-label="Service"></th>
-						<th class="px-2.5 py-2 text-right font-semibold">Weekdays</th>
-						<th class="px-2.5 py-2 text-right font-semibold">Sat</th>
-						<th class="px-2.5 py-2 text-right font-semibold">Sun & PH</th>
-					</tr>
-				</thead>
-				<tbody class="tabular-nums">
-					<tr class="border-b border-border">
-						<td class="px-3.5 py-2.5 font-medium text-ink-soft">First bus</td>
-						<td class="px-2.5 py-2.5 text-right text-ink">{schedule.weekday.first ?? '–'}</td>
-						<td class="px-2.5 py-2.5 text-right text-ink">
-							{schedule.saturday.noService ? '–' : schedule.saturday.first}
-						</td>
-						<td class="px-2.5 py-2.5 text-right text-ink">
-							{schedule.sundayPh.noService ? '–' : schedule.sundayPh.first}
-						</td>
-					</tr>
-					<tr>
-						<td class="px-3.5 py-2.5 font-medium text-ink-soft">Last bus</td>
-						<td class="px-2.5 py-2.5 text-right text-ink">{schedule.weekday.last ?? '–'}</td>
-						<td class="px-2.5 py-2.5 text-right text-ink">
-							{schedule.saturday.noService ? '–' : schedule.saturday.last}
-						</td>
-						<td class="px-2.5 py-2.5 text-right text-ink">
-							{schedule.sundayPh.noService ? '–' : schedule.sundayPh.last}
-						</td>
-					</tr>
-				</tbody>
-			</table>
+			<div class="overflow-x-auto">
+				<table class="w-full whitespace-nowrap text-[13px]">
+					<thead>
+						<tr class="border-b border-border text-xs uppercase tracking-wide text-muted">
+							<th class="px-3.5 py-2 text-left font-semibold" aria-label="Service"></th>
+							<th class="px-2.5 py-2 text-right font-semibold">Weekdays</th>
+							<th class="px-2.5 py-2 text-right font-semibold">Sat</th>
+							<th class="px-2.5 py-2 text-right font-semibold">Sun & PH</th>
+						</tr>
+					</thead>
+					<tbody class="tabular-nums">
+						<tr class="border-b border-border">
+							<td class="px-3.5 py-2.5 font-medium text-ink-soft">First bus</td>
+							<td class="px-2.5 py-2.5 text-right text-ink">{schedule.weekday.first ?? '–'}</td>
+							<td class="px-2.5 py-2.5 text-right text-ink">
+								{schedule.saturday.noService ? '–' : schedule.saturday.first}
+							</td>
+							<td class="px-2.5 py-2.5 text-right text-ink">
+								{schedule.sundayPh.noService ? '–' : schedule.sundayPh.first}
+							</td>
+						</tr>
+						<tr>
+							<td class="px-3.5 py-2.5 font-medium text-ink-soft">Last bus</td>
+							<td class="px-2.5 py-2.5 text-right text-ink">{schedule.weekday.last ?? '–'}</td>
+							<td class="px-2.5 py-2.5 text-right text-ink">
+								{schedule.saturday.noService ? '–' : schedule.saturday.last}
+							</td>
+							<td class="px-2.5 py-2.5 text-right text-ink">
+								{schedule.sundayPh.noService ? '–' : schedule.sundayPh.last}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 			{#if footnote}
 				<p class="border-t border-border px-3.5 py-2 text-[11px] text-muted">{footnote}</p>
 			{/if}

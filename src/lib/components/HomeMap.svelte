@@ -37,6 +37,12 @@
 		 */
 		coveredPct?: number;
 		/**
+		 * True while the host is actively dragging its sheet. Gates the
+		 * crosshair's snap transition (so it tracks the finger 1:1) and defers
+		 * centre re-reporting until the drag settles.
+		 */
+		dragging?: boolean;
+		/**
 		 * Stop code for the stop-focus mode (used by /stop/[stopName]): only the
 		 * nearby-stop layers show, the focused stop gets its own highlighted
 		 * marker, and the frame is a tight box around it. Home behaviour is
@@ -52,8 +58,18 @@
 		route,
 		onCenterChange,
 		focus,
-		coveredPct = 0
+		coveredPct = 0,
+		dragging = false
 	}: Props = $props();
+
+	// The reported point matches the crosshair: the centre of the strip left
+	// visible above the sheet (container centre when uncovered).
+	function reportCenter() {
+		if (!map || focus) return;
+		const el = map.getContainer();
+		const c = map.unproject([el.clientWidth / 2, (el.clientHeight * (100 - coveredPct)) / 200]);
+		onCenterChange?.(c.lng, c.lat);
+	}
 
 	// Focus mode behaves as the Stops view for layer visibility.
 	const effView = $derived(focus ? 'stops' : view);
@@ -408,13 +424,7 @@
 		map.on('moveend', () => {
 			const src = map?.getSource('nearby-stops') as GeoJSONSource | undefined;
 			src?.setData(nearbyFC());
-			if (!focus && map) {
-				// The reported point matches the crosshair: the centre of the strip
-				// left visible above the sheet (container centre when uncovered).
-				const el = map.getContainer();
-				const c = map.unproject([el.clientWidth / 2, (el.clientHeight * (100 - coveredPct)) / 200]);
-				onCenterChange?.(c.lng, c.lat);
-			}
+			reportCenter();
 		});
 
 		// Re-skin the basemap (and re-add our layers) when the app theme flips.
@@ -455,6 +465,16 @@
 		firstFit = false;
 	});
 
+	// Resizing the sheet moves the crosshair without any map movement (no
+	// 'moveend'), so the reported point must follow coveredPct too — otherwise
+	// the Nearby ranking stays anchored to where the crosshair used to be.
+	// Deferred while dragging so the list isn't re-ranked per pointermove.
+	$effect(() => {
+		void coveredPct;
+		if (!ready || dragging) return;
+		reportCenter();
+	});
+
 	onDestroy(() => {
 		themeObs?.disconnect();
 		map?.remove();
@@ -469,7 +489,9 @@
 	     Routes view and in stop-focus mode). -->
 	{#if view === 'stops' && !focus}
 		<div
-			class="pointer-events-none absolute left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transition-[top] duration-300 ease-out"
+			class="pointer-events-none absolute left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 {dragging
+				? ''
+				: 'transition-[top] duration-300 ease-out'}"
 			style="top: {(100 - coveredPct) / 2}%"
 			aria-hidden="true"
 		>
