@@ -186,16 +186,17 @@
 		map.addSource('user', { type: 'geojson', data: userFC() });
 
 		// route geometry (Routes view)
-		// Both line layers are offset to the right of the direction of travel:
-		// where the route runs the same road in both directions (or re-crosses a
-		// roundabout), the two passes separate into distinct parallel lines
-		// instead of overprinting each other.
+		// Both line layers are offset to the LEFT of the direction of travel.
+		// Singapore drives on the left, so a bus keeps to the left of the road;
+		// a negative line-offset places each pass over the lane the bus actually
+		// uses, and where a route runs the same road both ways the two passes
+		// separate onto their correct sides instead of overprinting.
 		map.addLayer({
 			id: 'route-casing',
 			type: 'line',
 			source: 'route-line',
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
-			paint: { 'line-color': '#ffffff', 'line-width': 7, 'line-opacity': 0.9, 'line-offset': 3.5 }
+			paint: { 'line-color': '#ffffff', 'line-width': 7, 'line-opacity': 0.9, 'line-offset': -3.5 }
 		});
 		map.addLayer({
 			id: 'route-path',
@@ -205,7 +206,7 @@
 			paint: {
 				'line-color': ['get', 'color'],
 				'line-width': 4,
-				'line-offset': 3.5,
+				'line-offset': -3.5,
 				'line-opacity': ['case', ['get', 'passed'], 0.55, 1]
 			}
 		});
@@ -215,11 +216,13 @@
 			source: 'route-line',
 			layout: {
 				'symbol-placement': 'line',
-				'symbol-spacing': 80,
+				// Wider spacing thins the arrowheads so the line reads less
+				// cluttered while still showing travel direction often enough.
+				'symbol-spacing': 130,
 				'icon-image': 'route-arrow',
 				'icon-size': 0.85,
-				// perpendicular shift matching the lines' line-offset (4 x 0.85 ~ 3.5px)
-				'icon-offset': [0, 4],
+				// perpendicular shift matching the lines' left line-offset (4 x 0.85 ~ 3.5px)
+				'icon-offset': [0, -4],
 				'icon-rotation-alignment': 'map',
 				'icon-allow-overlap': true,
 				'icon-ignore-placement': true
