@@ -156,7 +156,6 @@
 			zoom: 13.5,
 			attributionControl: false
 		});
-		map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
 		map.on('load', () => {
 			ready = true;
 			draw();

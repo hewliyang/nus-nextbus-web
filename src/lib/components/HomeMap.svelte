@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { stops } from '$lib/data';
 	import { NUS_CENTER, routeColor, routeLine, stopCoord } from '$lib/routes';
-	import Icon from '$lib/components/Icon.svelte';
 	import {
 		styleUrl,
 		toHex,
@@ -359,18 +358,31 @@
 		} else {
 			const dLat = 450 / 111_000;
 			const dLng = 450 / (111_000 * Math.cos((lat * Math.PI) / 180));
+			// Bottom padding matches the actual sheet height (untracked — the
+			// reconcile effect must not refit on every sheet drag), clamped so
+			// padding never exceeds the container, so the frame's centre lands
+			// under the crosshair at any sheet position.
+			const covered = Math.min(
+				untrack(() => coveredPct),
+				75
+			);
 			map.fitBounds(
 				[
 					[lng - dLng, lat - dLat],
 					[lng + dLng, lat + dLat]
 				],
 				{
-					padding: { top: 36, bottom: Math.round(h * 0.5), left: 32, right: 32 },
+					padding: { top: 36, bottom: Math.round((h * covered) / 100), left: 32, right: 32 },
 					maxZoom: 17,
 					duration
 				}
 			);
 		}
+	}
+
+	/** Re-frame on the current lat/lng (the user's fix) — the recentre button. */
+	export function recenter() {
+		fitView(true);
 	}
 
 	let themeObs: MutationObserver | null = null;
@@ -386,7 +398,6 @@
 			zoom: 15.5,
 			attributionControl: false
 		});
-		map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
 
 		map.on('load', () => {
 			addEverything();
@@ -422,6 +433,10 @@
 		// re-ranks the Nearby list, remounting StopCards that each fetch /api/stop,
 		// so continuous updates would spam the API while dragging.
 		map.on('moveend', () => {
+			// The sheet-drag compensation pans in tiny jumps, each firing a
+			// synchronous moveend; the geo point under the crosshair is invariant
+			// then, so skip the marker/centre work until the gesture settles.
+			if (dragging) return;
 			const src = map?.getSource('nearby-stops') as GeoJSONSource | undefined;
 			src?.setData(nearbyFC());
 			reportCenter();
@@ -465,14 +480,24 @@
 		firstFit = false;
 	});
 
-	// Resizing the sheet moves the crosshair without any map movement (no
-	// 'moveend'), so the reported point must follow coveredPct too — otherwise
-	// the Nearby ranking stays anchored to where the crosshair used to be.
-	// Deferred while dragging so the list isn't re-ranked per pointermove.
+	// Sheet-drag compensation: when the sheet rises by d% the crosshair's screen
+	// position rises by d/2% of the container — pan the map by the same pixel
+	// delta so the crosshair stays glued to the same geographic point and the
+	// Nearby ranking never changes underneath it. Instant jumps while the finger
+	// is down (1:1 tracking); one eased pan matching the sheet's 300ms snap
+	// otherwise. Only meaningful where the crosshair exists (home Stops view).
+	let lastCovered: number | null = null;
 	$effect(() => {
-		void coveredPct;
-		if (!ready || dragging) return;
-		reportCenter();
+		const covered = coveredPct;
+		const prev = lastCovered;
+		lastCovered = covered;
+		if (prev === null || prev === covered || !ready || !map) return;
+		if (untrack(() => effView) !== 'stops' || focus) return;
+		const k = (map.getContainer().clientHeight * (covered - prev)) / 200;
+		map.panBy(
+			[0, k],
+			dragging ? { duration: 0 } : { duration: 300, easing: (t) => 1 - Math.pow(1 - t, 3) }
+		);
 	});
 
 	onDestroy(() => {
@@ -495,11 +520,22 @@
 			style="top: {(100 - coveredPct) / 2}%"
 			aria-hidden="true"
 		>
-			<div
-				class="grid h-10 w-10 place-items-center rounded-full border border-border bg-surface/95 text-ink shadow-[0_2px_12px_rgba(0,0,0,0.28)]"
-			>
-				<Icon name="crosshair" size={26} />
-			</div>
+			<!-- Bare 4-line reticle; the halo stroke (bg token) keeps it readable
+			     on any basemap without a backing puck. -->
+			<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-linecap="round">
+				<path
+					d="M12 2v6M12 16v6M2 12h6M16 12h6"
+					class="text-bg"
+					stroke="currentColor"
+					stroke-width="4.5"
+				/>
+				<path
+					d="M12 2v6M12 16v6M2 12h6M16 12h6"
+					class="text-ink"
+					stroke="currentColor"
+					stroke-width="2"
+				/>
+			</svg>
 		</div>
 	{/if}
 </div>

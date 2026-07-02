@@ -54,6 +54,15 @@
 	// refits the map around the user; that fit's moveend updates the cursor.
 	let cursorLat = $state(NUS_CENTER[1]);
 	let cursorLng = $state(NUS_CENTER[0]);
+	let homeMap: HomeMap | undefined = $state();
+
+	// Recentre button: with a fix, re-frame on it (the fit's moveend pulls the
+	// cursor back to the user); without one, ask for location first — the grant
+	// path already recentres via the lat/lng-tracking effect in HomeMap.
+	function recenterOnUser() {
+		if (userReal) homeMap?.recenter();
+		else requestLocation();
+	}
 
 	const allNearby = $derived(nearestStops(cursorLat, cursorLng, 12));
 	const visibleNearby = $derived(allNearby.slice(0, limit));
@@ -172,6 +181,7 @@
 	     switch with the view, so toggling Stops/Routes never re-creates the map. -->
 	<div class="absolute inset-0">
 		<HomeMap
+			bind:this={homeMap}
 			{view}
 			lat={userLat}
 			lng={userLng}
@@ -185,6 +195,17 @@
 			}}
 		/>
 	</div>
+
+	<!-- recentre on the user — sits under the layout's floating theme toggle -->
+	{#if view === 'stops'}
+		<button
+			onclick={recenterOnUser}
+			class="absolute right-3 top-[3.75rem] z-20 grid h-10 w-10 place-items-center rounded-full border border-border bg-surface/90 text-ink-soft shadow-card backdrop-blur-md transition-colors hover:bg-surface"
+			aria-label="Recentre on your location"
+		>
+			<Icon name="navigation" size={17} />
+		</button>
+	{/if}
 
 	<!-- location snackbar floats just above the sheet. Past the snap threshold
 	     the map is essentially hidden, and riding any higher would collide with
