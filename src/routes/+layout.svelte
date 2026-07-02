@@ -14,9 +14,8 @@
 	// viewport (no header/footer/container chrome). Other pages keep the column.
 	const isHome = $derived(pathname === '/');
 	// The stop detail page is a full-bleed map strip + drawer with its own back
-	// link + title + actions, so it shares the home shell (its route sub-page
-	// keeps the column + header chrome).
-	const isStopDetail = $derived(pathname.startsWith('/stop/') && !pathname.includes('/route/'));
+	// link + title + actions, so it shares the home shell.
+	const isStopDetail = $derived(pathname.startsWith('/stop/'));
 	const isFullBleed = $derived(isHome || isStopDetail);
 </script>
 

@@ -317,7 +317,7 @@
 										</span>
 									{:else}
 										<a
-											href="/stop/{busStopName}/route/{name}#current"
+											href="/?view=routes&route={name}&stop={busStopName}"
 											class="grid h-12 w-12 place-items-center rounded-xl font-mono text-base font-bold shadow-sm transition-transform hover:scale-105"
 											style="background: {routeColor(name)}; color: {routeTextColor(name)}"
 											aria-label="View route {label}"
@@ -386,7 +386,7 @@
 											</span>
 										{:else}
 											<a
-												href="/stop/{busStopName}/route/{name}#current"
+												href="/?view=routes&route={name}&stop={busStopName}"
 												class="flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3.5 font-mono text-sm font-bold text-ink-soft transition-colors hover:bg-surface-2"
 											>
 												<span

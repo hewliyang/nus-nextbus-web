@@ -10,6 +10,7 @@
 	import {
 		NUS_CENTER,
 		routeKeysSorted,
+		routeStops,
 		routesServingStop,
 		routeColor,
 		routeTextColor
@@ -28,6 +29,12 @@
 	const view = $derived($page.url.searchParams.get('view') === 'routes' ? 'routes' : 'stops');
 	const rawRoute = $derived($page.url.searchParams.get('route'));
 	const selectedRoute = $derived(rawRoute && routeKeysSorted.includes(rawRoute) ? rawRoute : 'D2');
+	// Optional highlighted stop (/?view=routes&route=D2&stop=COM3 from a stop
+	// page's route badge) — honoured only when the stop is on the selected route.
+	const rawStop = $derived($page.url.searchParams.get('stop'));
+	const selectedStop = $derived(
+		rawStop && routeStops(selectedRoute).some((s) => s.code === rawStop) ? rawStop : null
+	);
 
 	const navOpts = { replaceState: true, noScroll: true, keepFocus: true };
 	function setView(v: string) {
@@ -40,6 +47,9 @@
 		const u = new URL($page.url);
 		u.searchParams.set('view', 'routes');
 		u.searchParams.set('route', r);
+		// The highlight belongs to the route it arrived with — picking another
+		// route clears it rather than dimming an unrelated prefix of stops.
+		u.searchParams.delete('stop');
 		goto(u, navOpts);
 	}
 
@@ -208,6 +218,7 @@
 			lng={userLng}
 			real={userReal}
 			route={selectedRoute}
+			activeStop={selectedStop}
 			coveredPct={sheetH}
 			{dragging}
 			onCenterChange={(lng, lat) => {
@@ -373,7 +384,7 @@
 					</div>
 				{/if}
 			{:else}
-				<RoutesView selected={selectedRoute} onSelect={setRoute} />
+				<RoutesView selected={selectedRoute} onSelect={setRoute} current={selectedStop} />
 			{/if}
 		</div>
 	</div>

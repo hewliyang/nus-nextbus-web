@@ -6,6 +6,7 @@
 	import {
 		styleUrl,
 		toHex,
+		dimColor,
 		setSquareIcon,
 		STOP_SIZE,
 		setArrowImage,
@@ -25,6 +26,11 @@
 		real?: boolean;
 		/** Route shown in the Routes view. */
 		route: string;
+		/**
+		 * Highlighted stop on that route (Routes-view deep link from a stop page):
+		 * the line and stops before it dim, the stop itself gets a bigger marker.
+		 */
+		activeStop?: string | null;
 		/** Fired after each pan/zoom settles ('moveend') with the map centre. */
 		onCenterChange?: (lng: number, lat: number) => void;
 		/**
@@ -56,6 +62,7 @@
 		lng,
 		real = false,
 		route,
+		activeStop = null,
 		onCenterChange,
 		focus,
 		coveredPct = 0,
@@ -137,9 +144,21 @@
 
 	function bakeIcons() {
 		if (!map) return;
+		const lineColor = toHex(routeColor(route));
+		const dim = dimColor();
 		setSquareIcon(map, 'home-route-stop', {
 			fill: '#ffffff',
-			stroke: toHex(routeColor(route)),
+			stroke: lineColor,
+			size: STOP_SIZE.normal
+		});
+		setSquareIcon(map, 'home-route-stop-active', {
+			fill: lineColor,
+			stroke: lineColor,
+			size: STOP_SIZE.active
+		});
+		setSquareIcon(map, 'home-route-stop-passed', {
+			fill: dim,
+			stroke: dim,
 			size: STOP_SIZE.normal
 		});
 		setSquareIcon(map, 'home-nearby-stop', {
@@ -153,15 +172,15 @@
 			size: STOP_SIZE.active
 		});
 		// arrowheads inherit the selected route's colour (re-baked on change)
-		setArrowImage(map, 'route-arrow', toHex(routeColor(route)));
+		setArrowImage(map, 'route-arrow', lineColor);
 	}
 
 	// ── layer setup (run on load + re-run after a theme reskin) ──
 	function addEverything() {
 		if (!map) return;
 		bakeIcons();
-		map.addSource('route-line', { type: 'geojson', data: routeLineFC(route) });
-		map.addSource('route-stops', { type: 'geojson', data: routeStopFC(route) });
+		map.addSource('route-line', { type: 'geojson', data: routeLineFC(route, activeStop) });
+		map.addSource('route-stops', { type: 'geojson', data: routeStopFC(route, activeStop) });
 		map.addSource('nearby-stops', { type: 'geojson', data: nearbyFC() });
 		map.addSource('focus-stop', { type: 'geojson', data: focusFC() });
 		map.addSource('user', { type: 'geojson', data: userFC() });
@@ -183,7 +202,12 @@
 			type: 'line',
 			source: 'route-line',
 			layout: { 'line-cap': 'round', 'line-join': 'round' },
-			paint: { 'line-color': ['get', 'color'], 'line-width': 4, 'line-offset': 3.5 }
+			paint: {
+				'line-color': ['get', 'color'],
+				'line-width': 4,
+				'line-offset': 3.5,
+				'line-opacity': ['case', ['get', 'passed'], 0.55, 1]
+			}
 		});
 		map.addLayer({
 			id: 'route-arrows',
@@ -199,17 +223,26 @@
 				'icon-rotation-alignment': 'map',
 				'icon-allow-overlap': true,
 				'icon-ignore-placement': true
-			}
+			},
+			paint: { 'icon-opacity': ['case', ['get', 'passed'], 0.4, 1] }
 		});
 		map.addLayer({
 			id: 'route-stop-squares',
 			type: 'symbol',
 			source: 'route-stops',
 			layout: {
-				'icon-image': 'home-route-stop',
+				'icon-image': [
+					'case',
+					['get', 'active'],
+					'home-route-stop-active',
+					['get', 'passed'],
+					'home-route-stop-passed',
+					'home-route-stop'
+				],
 				'icon-allow-overlap': true,
 				'icon-ignore-placement': true
-			}
+			},
+			paint: { 'icon-opacity': ['case', ['get', 'passed'], 0.6, 1] }
 		});
 
 		// nearby stops (Stops view)
@@ -472,14 +505,19 @@
 	$effect(() => {
 		void view;
 		void route;
+		void activeStop;
 		void lat;
 		void lng;
 		void real;
 		void focus;
 		if (!ready || !map) return;
 		bakeIcons();
-		(map.getSource('route-line') as GeoJSONSource | undefined)?.setData(routeLineFC(route));
-		(map.getSource('route-stops') as GeoJSONSource | undefined)?.setData(routeStopFC(route));
+		(map.getSource('route-line') as GeoJSONSource | undefined)?.setData(
+			routeLineFC(route, activeStop)
+		);
+		(map.getSource('route-stops') as GeoJSONSource | undefined)?.setData(
+			routeStopFC(route, activeStop)
+		);
 		(map.getSource('nearby-stops') as GeoJSONSource | undefined)?.setData(nearbyFC());
 		(map.getSource('focus-stop') as GeoJSONSource | undefined)?.setData(focusFC());
 		(map.getSource('user') as GeoJSONSource | undefined)?.setData(userFC());

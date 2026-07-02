@@ -6,12 +6,28 @@
 	interface Props {
 		selected: string;
 		onSelect: (route: string) => void;
+		/** Stop code to highlight on the rail (deep link from a stop's route badge). */
+		current?: string | null;
 	}
-	let { selected, onSelect }: Props = $props();
+	let { selected, onSelect, current = null }: Props = $props();
 
 	// Stops in travel order; drop the seq:32767 loop-back duplicate of the origin.
 	const stops = $derived(routeStops(selected).filter((s) => s.seq !== 32767));
 	const schedule = $derived(schedules[selected]);
+	const color = $derived(routeColor(selected));
+
+	// Rail state: with a highlighted stop, everything before it dims and the
+	// rail lights up in the route colour from that stop onward; without one,
+	// the whole rail is coloured.
+	const currentIdx = $derived(current ? stops.findIndex((s) => s.code === current) : -1);
+	const hasCurrent = $derived(currentIdx >= 0);
+	const segColor = (i: number) => (!hasCurrent || i >= currentIdx ? color : 'var(--border-strong)');
+
+	// Bring the highlighted stop into view when landing from a deep link.
+	let rowEls: HTMLElement[] = [];
+	$effect(() => {
+		if (currentIdx >= 0) rowEls[currentIdx]?.scrollIntoView({ block: 'center', inline: 'nearest' });
+	});
 
 	// Footnote: call out no-service days and terminal/notes, when present.
 	const footnote = $derived.by(() => {
@@ -46,26 +62,58 @@
 		{/each}
 	</div>
 
-	<!-- stop list (terminal → terminal) -->
+	<!-- stop list (terminal → terminal) threaded by the route-coloured rail -->
 	<div class="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
-		<div class="flex items-center justify-between border-b border-border px-3.5 py-2.5">
+		<div class="border-b border-border px-3.5 py-2.5">
 			<h2 class="text-xs font-semibold uppercase tracking-wide text-muted">{stops.length} stops</h2>
-			<span class="flex items-center gap-1.5 text-xs font-medium text-muted">
-				<span class="h-2.5 w-2.5 rounded-full" style="background: {routeColor(selected)}"></span>
-				Line {selected}
-			</span>
 		</div>
 		<ul>
-			{#each stops as stop (stop.code)}
-				<li class="border-b border-border last:border-0">
+			{#each stops as stop, i (`${stop.code}-${stop.seq}`)}
+				{@const isCurrent = i === currentIdx}
+				{@const passed = hasCurrent && i < currentIdx}
+				<li bind:this={rowEls[i]}>
 					<a
 						href="/stop/{stop.code}"
-						class="flex items-center gap-2.5 px-3.5 py-3 transition-colors hover:bg-surface-2"
+						class="flex items-center gap-3 px-3.5 py-3 transition-colors hover:bg-surface-2"
+						aria-current={isCurrent ? 'true' : undefined}
 					>
-						<span class="shrink-0 text-muted"><Icon name="bus" size={16} /></span>
-						<span class="min-w-0 flex-1 truncate text-[0.875rem] font-medium text-ink"
-							>{stop.name}</span
+						<!-- rail column: line segments meet edge-to-edge across rows -->
+						<span
+							class="relative flex w-5 shrink-0 items-center justify-center self-stretch"
+							aria-hidden="true"
 						>
+							{#if i > 0}
+								<span
+									class="absolute left-1/2 top-0 h-1/2 w-[3px] -translate-x-1/2"
+									style="background: {segColor(i - 1)}"
+								></span>
+							{/if}
+							{#if i < stops.length - 1}
+								<span
+									class="absolute bottom-0 left-1/2 h-1/2 w-[3px] -translate-x-1/2"
+									style="background: {segColor(i)}"
+								></span>
+							{/if}
+							<span
+								class="relative z-10 border-2
+									{isCurrent ? 'h-[1.125rem] w-[1.125rem] rounded-[5px]' : 'h-3 w-3 rounded-[4px]'}"
+								style="background: {isCurrent ? color : 'var(--surface)'};
+									border-color: {passed ? 'var(--border-strong)' : color};
+									{isCurrent ? `box-shadow: 0 0 0 4px color-mix(in oklch, ${color} 22%, transparent);` : ''}"
+							></span>
+						</span>
+						<span
+							class="min-w-0 flex-1 truncate text-[0.875rem]
+								{isCurrent ? 'font-semibold text-ink' : passed ? 'font-medium text-muted' : 'font-medium text-ink'}"
+						>
+							{stop.name}
+						</span>
+						{#if isCurrent}
+							<span
+								class="shrink-0 rounded-full px-2 py-0.5 text-[0.5625rem] font-semibold uppercase tracking-wide"
+								style="background: {color}; color: {routeTextColor(selected)}">Here</span
+							>
+						{/if}
 						<span class="shrink-0 text-muted"><Icon name="chevron" size={15} /></span>
 					</a>
 				</li>
