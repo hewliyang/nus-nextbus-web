@@ -30,7 +30,28 @@ export const actions: Actions = {
 
 		try {
 			const bookmarksOld = parseBookmarks(cookies.get('bookmarks') || '[]');
-			const bookmarksNew: Bookmark[] = [...bookmarksOld, { caption, name: id }];
+			// Filter first so re-submitting (e.g. a stale form) never duplicates an entry.
+			const bookmarksNew: Bookmark[] = [
+				...bookmarksOld.filter((b) => b.name !== id),
+				{ caption, name: id }
+			];
+			cookies.set('bookmarks', JSON.stringify(bookmarksNew), {
+				path: '/',
+				maxAge: 60 * 60 * 24 * 365
+			});
+		} catch (err) {
+			console.error(err);
+			return fail(500, { message: 'Something went wrong' });
+		}
+		return { status: 200 };
+	},
+	removeBookmark: async ({ url, cookies }) => {
+		const id = url.searchParams.get('id');
+		if (!id) return fail(400, { message: 'Invalid Request' });
+
+		try {
+			const bookmarksOld = parseBookmarks(cookies.get('bookmarks') || '[]');
+			const bookmarksNew = bookmarksOld.filter(({ name }) => name !== id);
 			cookies.set('bookmarks', JSON.stringify(bookmarksNew), {
 				path: '/',
 				maxAge: 60 * 60 * 24 * 365
