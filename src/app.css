@@ -55,6 +55,42 @@ html {
 	-webkit-tap-highlight-color: transparent;
 }
 
+/* ─────────────────────────────────────────────
+   UI size — root font-size steps driven by the
+   data-uisize attribute (cookie-persisted, set
+   server-side to avoid a flash). All type and
+   spacing is rem-based so the whole UI scales;
+   the map canvas intentionally does not.
+   Step 4 puts 15px body text at 24px — large-
+   print territory, readable with presbyopia at
+   arm's length without glasses.
+   ───────────────────────────────────────────── */
+html[data-uisize='1'] {
+	font-size: 115%;
+}
+html[data-uisize='2'] {
+	font-size: 130%;
+}
+html[data-uisize='3'] {
+	font-size: 145%;
+}
+html[data-uisize='4'] {
+	font-size: 160%;
+}
+/* At the two largest sizes, rows get tight: drop nice-to-have details
+   (vehicle plates, secondary labels) so the essentials stay on one line. */
+html[data-uisize='3'] .ui-opt,
+html[data-uisize='4'] .ui-opt {
+	display: none;
+}
+
+/* Belt-and-braces with the viewport meta: allow scrolling/panning but no
+   browser pinch-zoom of the page (the map canvas opts out on its own). */
+html,
+body {
+	touch-action: pan-x pan-y;
+}
+
 body {
 	font-feature-settings: 'cv05', 'cv08', 'ss01';
 }

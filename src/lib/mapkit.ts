@@ -106,6 +106,12 @@ export function ensureArrowImage(map: MlMap): void {
 	map.addImage('route-arrow', ctx.getImageData(0, 0, s, s));
 }
 
+/** Root font scale (the data-uisize setting) — map labels are canvas-drawn,
+ *  so they must follow the app-wide UI size explicitly. */
+export function uiFontScale(): number {
+	return (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16) / 16;
+}
+
 /** Theme-aware paint for stop labels — identical across Stops and Routes views. */
 export function stopLabelPaint() {
 	return {

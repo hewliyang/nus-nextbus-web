@@ -5,6 +5,8 @@
 	import { stops } from '$lib/data';
 	import { nearestStops } from '$lib/geo';
 	import { getDistance } from '$lib/stores/utils';
+	import { setPref } from '$lib/prefs';
+	import type { LocPref } from '$lib/parse';
 	import {
 		NUS_CENTER,
 		routeKeysSorted,
@@ -93,6 +95,8 @@
 				userReal = true;
 				locStatus = 'granted';
 				limit = 3;
+				// The successful choice survives the session: next visit auto-locates.
+				setPref('locpref', 'on');
 			},
 			(err) => {
 				locStatus = err.code === err.PERMISSION_DENIED ? 'denied' : 'unavailable';
@@ -101,8 +105,25 @@
 		);
 	}
 
+	// The saved location decision ('on' | 'off' | 'hide' | null) plus a local
+	// override so dismissing the banner hides it without waiting on a reload.
+	const locPref = $derived($page.data.locPref as LocPref);
+	let bannerHidden = $state(false);
+	const showBanner = $derived(
+		!bannerHidden && locPref !== 'hide' && locPref !== 'off' && locStatus !== 'granted'
+	);
+	function dismissBanner() {
+		bannerHidden = true;
+		setPref('locpref', 'hide');
+	}
+
 	onMount(() => {
 		mounted = true;
+		if (locPref === 'off') return; // the user said no — don't auto-locate
+		if (locPref === 'on') {
+			requestLocation();
+			return;
+		}
 		if ('permissions' in navigator) {
 			navigator.permissions
 				.query({ name: 'geolocation' as PermissionName })
@@ -196,11 +217,20 @@
 		/>
 	</div>
 
-	<!-- recentre on the user — sits under the layout's floating theme toggle -->
+	<!-- settings — top-left over the map (dark mode + UI size + location live there) -->
+	<a
+		href="/settings"
+		class="absolute left-3 top-3 z-30 grid h-10 w-10 place-items-center rounded-full border border-border bg-surface/90 text-ink-soft shadow-card backdrop-blur-md transition-colors hover:bg-surface"
+		aria-label="Settings"
+	>
+		<Icon name="settings" size={18} />
+	</a>
+
+	<!-- recentre on the user — top-right over the map -->
 	{#if view === 'stops'}
 		<button
 			onclick={recenterOnUser}
-			class="absolute right-3 top-[3.75rem] z-20 grid h-10 w-10 place-items-center rounded-full border border-border bg-surface/90 text-ink-soft shadow-card backdrop-blur-md transition-colors hover:bg-surface"
+			class="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full border border-border bg-surface/90 text-ink-soft shadow-card backdrop-blur-md transition-colors hover:bg-surface"
 			aria-label="Recentre on your location"
 		>
 			<Icon name="navigation" size={17} />
@@ -209,8 +239,8 @@
 
 	<!-- location snackbar floats just above the sheet. Past the snap threshold
 	     the map is essentially hidden, and riding any higher would collide with
-	     the theme toggle and zoom controls — so it fades out instead. -->
-	{#if view === 'stops' && locStatus !== 'granted'}
+	     the top controls — so it fades out instead. -->
+	{#if view === 'stops' && showBanner}
 		<div
 			class="absolute inset-x-3 z-20 {sheetH > 64
 				? 'pointer-events-none opacity-0'
@@ -222,6 +252,7 @@
 				actionLabel={snackAction}
 				loading={locStatus === 'locating'}
 				onAction={requestLocation}
+				onClose={dismissBanner}
 			/>
 		</div>
 	{/if}
@@ -261,14 +292,15 @@
 							placeholder="Search bus stops"
 							aria-label="Search stops"
 							bind:value={searchTerm}
-							class="w-full bg-transparent py-3 text-[15px] text-ink placeholder:text-muted focus:outline-none"
+							class="w-full bg-transparent py-3 text-[0.9375rem] text-ink placeholder:text-muted focus:outline-none"
 						/>
 					</div>
 					<a
 						href="/starred"
-						class="flex h-[50px] shrink-0 items-center gap-1.5 rounded-xl border border-border bg-surface px-3.5 text-[13px] font-semibold text-ink-soft shadow-card transition-colors hover:bg-surface-2"
+						aria-label="Starred stops"
+						class="flex h-[3.125rem] shrink-0 items-center gap-1.5 rounded-xl border border-border bg-surface px-3.5 text-[0.8125rem] font-semibold text-ink-soft shadow-card transition-colors hover:bg-surface-2"
 					>
-						<Icon name="star" size={16} /> Starred
+						<Icon name="star" size={16} /> <span class="ui-opt">Starred</span>
 					</a>
 				</div>
 			{/if}
@@ -293,14 +325,14 @@
 								<li>
 									<a
 										href="/stop/{stop.name}"
-										class="flex items-center gap-3 rounded-xl border border-border bg-surface px-3.5 py-3 text-[14px] font-medium leading-tight text-ink shadow-card transition-all hover:-translate-y-0.5 hover:border-border-strong"
+										class="flex items-center gap-3 rounded-xl border border-border bg-surface px-3.5 py-3 text-[0.875rem] font-medium leading-tight text-ink shadow-card transition-all hover:-translate-y-0.5 hover:border-border-strong"
 									>
 										<span class="min-w-0 flex-1 truncate">{stop.caption}</span>
 										{#if servingRoutes.length > 0}
 											<span class="flex shrink-0 flex-wrap items-center justify-end gap-1">
 												{#each servingRoutes as r (r)}
 													<span
-														class="grid h-6 w-6 place-items-center rounded-md font-mono text-[10px] font-bold"
+														class="grid h-6 w-6 place-items-center rounded-md font-mono text-[0.625rem] font-bold"
 														style="background: {routeColor(r)}; color: {routeTextColor(r)}"
 													>
 														{r}
@@ -330,7 +362,7 @@
 							{#if canLoadMore}
 								<button
 									onclick={() => (limit += 3)}
-									class="w-full rounded-xl border border-border bg-surface py-3 text-[13px] font-semibold text-ink-soft shadow-card transition-colors hover:bg-surface-2"
+									class="w-full rounded-xl border border-border bg-surface py-3 text-[0.8125rem] font-semibold text-ink-soft shadow-card transition-colors hover:bg-surface-2"
 								>
 									Show more stops
 								</button>

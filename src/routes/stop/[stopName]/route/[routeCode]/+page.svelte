@@ -18,9 +18,10 @@
 	<div class="flex items-center justify-between gap-3">
 		<a
 			href="/stop/{stopName}"
-			class="inline-flex items-center gap-1 text-[13px] font-medium text-muted transition-colors hover:text-ink"
+			class="inline-flex items-center gap-1 text-[0.8125rem] font-medium text-muted transition-colors hover:text-ink"
 		>
-			<Icon name="arrow-left" size={15} /> {caption}
+			<Icon name="arrow-left" size={15} />
+			{caption}
 		</a>
 		<span
 			class="grid h-10 w-10 place-items-center rounded-xl font-mono text-base font-bold shadow-card"

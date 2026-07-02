@@ -197,7 +197,7 @@
 					<div class="min-w-0">
 						<a
 							href="/"
-							class="mb-2 inline-flex items-center gap-1 text-[13px] font-medium text-muted transition-colors hover:text-ink"
+							class="mb-2 inline-flex items-center gap-1 text-[0.8125rem] font-medium text-muted transition-colors hover:text-ink"
 						>
 							<Icon name="arrow-left" size={15} /> Stops
 						</a>
@@ -311,7 +311,7 @@
 								>
 									{#if isPublic(name)}
 										<span
-											class="grid h-12 w-12 place-items-center rounded-xl border border-border bg-surface-2 text-center font-mono text-[13px] font-bold leading-none text-ink-soft"
+											class="grid h-12 w-12 place-items-center rounded-xl border border-border bg-surface-2 text-center font-mono text-[0.8125rem] font-bold leading-none text-ink-soft"
 										>
 											{label}
 										</span>
@@ -346,7 +346,7 @@
 
 									<div class="flex flex-col gap-1.5 border-l border-border pl-3">
 										<div class="flex items-baseline gap-1">
-											<span class="text-[10px] font-medium uppercase tracking-wide text-muted"
+											<span class="text-[0.625rem] font-medium uppercase tracking-wide text-muted"
 												>next</span
 											>
 											<span class="text-lg font-semibold tabular-nums tracking-tight text-ink-soft">
@@ -380,7 +380,7 @@
 												class="flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3.5 font-mono text-sm font-bold text-muted"
 											>
 												<span
-													class="grid h-6 w-6 place-items-center rounded-full bg-surface-2 text-[11px]"
+													class="grid h-6 w-6 place-items-center rounded-full bg-surface-2 text-[0.6875rem]"
 													>{label}</span
 												>
 											</span>
@@ -390,7 +390,7 @@
 												class="flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3.5 font-mono text-sm font-bold text-ink-soft transition-colors hover:bg-surface-2"
 											>
 												<span
-													class="grid h-6 w-6 place-items-center rounded-full text-[11px]"
+													class="grid h-6 w-6 place-items-center rounded-full text-[0.6875rem]"
 													style="background: {routeColor(name)}; color: {routeTextColor(name)}"
 													>{label}</span
 												>

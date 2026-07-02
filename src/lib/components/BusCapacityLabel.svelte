@@ -39,7 +39,8 @@
 				</span>
 			{/each}
 		</div>
-		<span class="font-mono text-[10px] font-medium uppercase tracking-wide text-muted">
+		<!-- ui-opt: dropped at the two largest UI sizes to keep rows on one line -->
+		<span class="ui-opt font-mono text-[0.625rem] font-medium uppercase tracking-wide text-muted">
 			{veh_plate}
 		</span>
 	</div>

@@ -3,17 +3,12 @@
 	import '@fontsource-variable/inter';
 	import Icon from '$lib/components/Icon.svelte';
 	import GitHub from '$lib/icons/github.svelte';
-	import { enhance } from '$app/forms';
-	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { dev } from '$app/environment';
-	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { Snippet } from 'svelte';
 
 	let { children }: { children: Snippet } = $props();
 
-	const theme = $derived($page.data.theme);
-	const nextTheme = $derived(theme === 'dark' ? 'light' : 'dark');
 	const pathname = $derived($page.url.pathname);
 	// The home page is a full-bleed map + bottom sheet, so it owns the whole
 	// viewport (no header/footer/container chrome). Other pages keep the column.
@@ -23,19 +18,6 @@
 	// keeps the column + header chrome).
 	const isStopDetail = $derived(pathname.startsWith('/stop/') && !pathname.includes('/route/'));
 	const isFullBleed = $derived(isHome || isStopDetail);
-
-	// Flip the attribute instantly, then reconcile $page.data.theme with a
-	// layout-only invalidation. The action's redirect is deliberately not
-	// followed: the default handling would goto(..., { invalidateAll: true }),
-	// re-running every load — on the stop page that re-fetches the slow
-	// upstream timings and flashes the skeleton just for a theme change.
-	const applyTheme: SubmitFunction = ({ action }) => {
-		const t = action.searchParams.get('theme');
-		if (t) document.documentElement.setAttribute('data-theme', t);
-		return async () => {
-			await invalidate('app:theme');
-		};
-	};
 </script>
 
 <svelte:head>
@@ -51,17 +33,6 @@
 {#if isFullBleed}
 	<div class="relative mx-auto h-[100dvh] w-full max-w-xl overflow-hidden bg-bg">
 		{@render children()}
-
-		<!-- floating theme toggle over the map -->
-		<form method="POST" use:enhance={applyTheme} class="absolute right-3 top-3 z-30">
-			<button
-				formaction="/?/setTheme&theme={nextTheme}&redirectTo={pathname}"
-				class="grid h-10 w-10 place-items-center rounded-full border border-border bg-surface/90 text-ink-soft shadow-card backdrop-blur-md transition-colors hover:bg-surface"
-				aria-label="Toggle {nextTheme} mode"
-			>
-				<Icon name={theme === 'dark' ? 'sun' : 'moon'} size={18} />
-			</button>
-		</form>
 	</div>
 {:else}
 	<div class="mx-auto flex min-h-[100dvh] w-full max-w-xl flex-col px-4 sm:px-5">
@@ -78,15 +49,14 @@
 				/>
 			</a>
 
-			<form method="POST" use:enhance={applyTheme}>
-				<button
-					formaction="/?/setTheme&theme={nextTheme}&redirectTo={pathname}"
-					class="grid h-9 w-9 place-items-center rounded-full border border-border bg-surface text-ink-soft shadow-sm transition-colors hover:bg-surface-2"
-					aria-label="Toggle {nextTheme} mode"
-				>
-					<Icon name={theme === 'dark' ? 'sun' : 'moon'} size={17} />
-				</button>
-			</form>
+			<!-- the dark-mode toggle lives on the Settings page now -->
+			<a
+				href="/settings"
+				class="grid h-9 w-9 place-items-center rounded-full border border-border bg-surface text-ink-soft shadow-sm transition-colors hover:bg-surface-2"
+				aria-label="Settings"
+			>
+				<Icon name="settings" size={17} />
+			</a>
 		</header>
 
 		<main class="flex-1 pb-3 pt-3">

@@ -10,7 +10,8 @@
 		ensureArrowImage,
 		routeLineFC,
 		routeStopFC,
-		stopLabelPaint
+		stopLabelPaint,
+		uiFontScale
 	} from '$lib/mapkit';
 	import type { GeoJSONSource, Map as MlMap } from 'maplibre-gl';
 
@@ -115,7 +116,7 @@
 				source: 'route-stops',
 				layout: {
 					'text-field': ['get', 'name'],
-					'text-size': 11,
+					'text-size': 11 * uiFontScale(),
 					'text-offset': [0, 1.2],
 					'text-anchor': 'top',
 					'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],

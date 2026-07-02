@@ -116,7 +116,7 @@
 	<div class="flex items-center gap-2 border-b border-border px-3.5 py-3">
 		<a href="/stop/{code}" class="flex min-w-0 flex-1 items-center gap-2.5">
 			<span class="shrink-0 text-accent"><Icon name="bus" size={18} /></span>
-			<span class="truncate text-[15px] font-semibold text-ink">{caption}</span>
+			<span class="truncate text-[0.9375rem] font-semibold text-ink">{caption}</span>
 		</a>
 		{#if extra}{@render extra()}{/if}
 		<button
@@ -148,12 +148,15 @@
 						>
 							{label}
 						</span>
-						<span class="min-w-0 flex-1 truncate text-[13px] text-ink-soft"
+						<span class="min-w-0 flex-1 truncate text-[0.8125rem] text-ink-soft"
 							>{routeTerminal(rt)}</span
 						>
 						<span class="shrink-0 whitespace-nowrap text-right">
-							<span class="text-[15px] font-semibold tabular-nums text-ink">{arrivalText(s)}</span>
-							{#if showUnit(s)}<span class="ml-1 text-[11px] font-medium text-muted">min</span>{/if}
+							<span class="text-[0.9375rem] font-semibold tabular-nums text-ink"
+								>{arrivalText(s)}</span
+							>
+							{#if showUnit(s)}<span class="ml-1 text-[0.6875rem] font-medium text-muted">min</span
+								>{/if}
 						</span>
 					</a>
 				</li>
@@ -180,7 +183,7 @@
 			{/each}
 		</ul>
 	{:else}
-		<p class="px-3.5 py-3 text-[13px] text-muted">
+		<p class="px-3.5 py-3 text-[0.8125rem] text-muted">
 			{#if failed}
 				Couldn’t load arrivals.
 			{:else}

@@ -31,7 +31,7 @@
 	<div>
 		<a
 			href="/"
-			class="mb-2 inline-flex items-center gap-1 text-[13px] font-medium text-muted transition-colors hover:text-ink"
+			class="mb-2 inline-flex items-center gap-1 text-[0.8125rem] font-medium text-muted transition-colors hover:text-ink"
 		>
 			<Icon name="arrow-left" size={15} /> Home
 		</a>

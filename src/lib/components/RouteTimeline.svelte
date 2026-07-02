@@ -38,41 +38,41 @@
 
 	const cells = $derived(
 		stops.map((stop, i): Cell => {
-		const row = Math.floor(i / COLS);
-		const inRow = i % COLS;
-		const col = row % 2 === 0 ? inRow : COLS - 1 - inRow;
+			const row = Math.floor(i / COLS);
+			const inRow = i % COLS;
+			const col = row % 2 === 0 ? inRow : COLS - 1 - inRow;
 
-		const next = stops[i + 1];
-		let hRight = false;
-		let hLeft = false;
-		let vDown = false;
-		if (next) {
-			const nRow = Math.floor((i + 1) / COLS);
-			if (nRow === row) {
-				if (row % 2 === 0) hRight = true;
-				else hLeft = true;
-			} else {
-				vDown = true;
+			const next = stops[i + 1];
+			let hRight = false;
+			let hLeft = false;
+			let vDown = false;
+			if (next) {
+				const nRow = Math.floor((i + 1) / COLS);
+				if (nRow === row) {
+					if (row % 2 === 0) hRight = true;
+					else hLeft = true;
+				} else {
+					vDown = true;
+				}
 			}
-		}
-		const prevRow = i > 0 ? Math.floor((i - 1) / COLS) : row;
-		const vUp = i > 0 && prevRow !== row;
+			const prevRow = i > 0 ? Math.floor((i - 1) / COLS) : row;
+			const vUp = i > 0 && prevRow !== row;
 
-		return {
-			stop,
-			i,
-			row,
-			col,
-			isCurrent: i === currentIdx,
-			upcoming: currentIdx >= 0 && i >= currentIdx,
-			hRight,
-			hLeft,
-			vDown,
-			vUp,
-			hActive: segActive(i),
-			vDownActive: segActive(i),
-			vUpActive: segActive(i - 1)
-		};
+			return {
+				stop,
+				i,
+				row,
+				col,
+				isCurrent: i === currentIdx,
+				upcoming: currentIdx >= 0 && i >= currentIdx,
+				hRight,
+				hLeft,
+				vDown,
+				vUp,
+				hActive: segActive(i),
+				vDownActive: segActive(i),
+				vUpActive: segActive(i - 1)
+			};
 		})
 	);
 
@@ -86,10 +86,7 @@
 		grid-template-rows: repeat({rowCount}, {CELL_H}px);"
 >
 	{#each cells as c (c.i)}
-		<div
-			class="relative"
-			style="grid-row: {c.row + 1}; grid-column: {c.col + 1};"
-		>
+		<div class="relative" style="grid-row: {c.row + 1}; grid-column: {c.col + 1};">
 			{#if c.hRight}
 				<span
 					class="absolute h-[3px] w-full -translate-y-1/2 rounded-full"
@@ -126,16 +123,14 @@
 			>
 				<span
 					class="absolute z-10 rounded-full transition-transform group-hover:scale-110
-						{c.isCurrent ? 'h-[18px] w-[18px]' : 'h-3 w-3'}"
+						{c.isCurrent ? 'h-[1.125rem] w-[1.125rem]' : 'h-3 w-3'}"
 					style="top: {NODE_Y}px; left: 50%; transform: translate(-50%, -50%);
 						background: {c.upcoming ? color : 'var(--surface)'};
 						border: 2px solid {c.upcoming ? color : 'var(--border-strong)'};
-						{c.isCurrent
-						? `box-shadow: 0 0 0 4px color-mix(in oklch, ${color} 22%, transparent);`
-						: ''}"
+						{c.isCurrent ? `box-shadow: 0 0 0 4px color-mix(in oklch, ${color} 22%, transparent);` : ''}"
 				></span>
 				<span
-					class="absolute left-1/2 w-[calc(100%-8px)] -translate-x-1/2 px-0.5 text-center text-[11px] font-medium leading-tight
+					class="absolute left-1/2 w-[calc(100%-8px)] -translate-x-1/2 px-0.5 text-center text-[0.6875rem] font-medium leading-tight
 						{c.isCurrent ? 'text-ink' : 'text-ink-soft group-hover:text-ink'}"
 					style="top: {NODE_Y + 16}px;
 						display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"
@@ -144,7 +139,7 @@
 				</span>
 				{#if c.isCurrent}
 					<span
-						class="absolute left-1/2 -translate-x-1/2 rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide"
+						class="absolute left-1/2 -translate-x-1/2 rounded-full px-2 py-0.5 text-[0.5625rem] font-semibold uppercase tracking-wide"
 						style="bottom: 6px; background: {color}; color: {textColor};">Here</span
 					>
 				{/if}

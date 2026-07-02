@@ -63,7 +63,9 @@
 						class="flex items-center gap-2.5 px-3.5 py-3 transition-colors hover:bg-surface-2"
 					>
 						<span class="shrink-0 text-muted"><Icon name="bus" size={16} /></span>
-						<span class="min-w-0 flex-1 truncate text-[14px] font-medium text-ink">{stop.name}</span>
+						<span class="min-w-0 flex-1 truncate text-[0.875rem] font-medium text-ink"
+							>{stop.name}</span
+						>
 						<span class="shrink-0 text-muted"><Icon name="chevron" size={15} /></span>
 					</a>
 				</li>
@@ -75,7 +77,7 @@
 	{#if schedule}
 		<div class="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
 			<div class="overflow-x-auto">
-				<table class="w-full whitespace-nowrap text-[13px]">
+				<table class="w-full whitespace-nowrap text-[0.8125rem]">
 					<thead>
 						<tr class="border-b border-border text-xs uppercase tracking-wide text-muted">
 							<th class="px-3.5 py-2 text-left font-semibold" aria-label="Service"></th>
@@ -109,7 +111,7 @@
 				</table>
 			</div>
 			{#if footnote}
-				<p class="border-t border-border px-3.5 py-2 text-[11px] text-muted">{footnote}</p>
+				<p class="border-t border-border px-3.5 py-2 text-[0.6875rem] text-muted">{footnote}</p>
 			{/if}
 		</div>
 	{/if}
