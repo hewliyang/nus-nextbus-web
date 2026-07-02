@@ -17,9 +17,11 @@
 	// The home page is a full-bleed map + bottom sheet, so it owns the whole
 	// viewport (no header/footer/container chrome). Other pages keep the column.
 	const isHome = $derived(pathname === '/');
-	// The stop detail page has its own back link + title + actions, so the global
-	// header is redundant chrome there (its route sub-page keeps the header).
+	// The stop detail page is a full-bleed map strip + drawer with its own back
+	// link + title + actions, so it shares the home shell (its route sub-page
+	// keeps the column + header chrome).
 	const isStopDetail = $derived(pathname.startsWith('/stop/') && !pathname.includes('/route/'));
+	const isFullBleed = $derived(isHome || isStopDetail);
 
 	const applyTheme: SubmitFunction = ({ action }) => {
 		const t = action.searchParams.get('theme');
@@ -37,14 +39,14 @@
 	{/if}
 </svelte:head>
 
-{#if isHome}
+{#if isFullBleed}
 	<div class="relative mx-auto h-[100dvh] w-full max-w-xl overflow-hidden bg-bg">
 		{@render children()}
 
 		<!-- floating theme toggle over the map -->
 		<form method="POST" use:enhance={applyTheme} class="absolute right-3 top-3 z-30">
 			<button
-				formaction="/?/setTheme&theme={nextTheme}&redirectTo=/"
+				formaction="/?/setTheme&theme={nextTheme}&redirectTo={pathname}"
 				class="grid h-10 w-10 place-items-center rounded-full border border-border bg-surface/90 text-ink-soft shadow-card backdrop-blur-md transition-colors hover:bg-surface"
 				aria-label="Toggle {nextTheme} mode"
 			>
@@ -54,33 +56,31 @@
 	</div>
 {:else}
 	<div class="mx-auto flex min-h-[100dvh] w-full max-w-xl flex-col px-4 sm:px-5">
-		{#if !isStopDetail}
-			<header
-				class="sticky top-0 z-30 -mx-4 mb-1 flex items-center justify-between gap-3 bg-bg/85 px-4 py-3 backdrop-blur-md sm:-mx-5 sm:px-5"
-			>
-				<a href="/" class="shrink-0">
-					<img
-						src="/logo.png"
-						alt="NUS NextBus"
-						class="h-9 w-9 rounded-lg object-cover shadow-sm"
-						width="36"
-						height="36"
-					/>
-				</a>
+		<header
+			class="sticky top-0 z-30 -mx-4 mb-1 flex items-center justify-between gap-3 bg-bg/85 px-4 py-3 backdrop-blur-md sm:-mx-5 sm:px-5"
+		>
+			<a href="/" class="shrink-0">
+				<img
+					src="/logo.png"
+					alt="NUS NextBus"
+					class="h-9 w-9 rounded-lg object-cover shadow-sm"
+					width="36"
+					height="36"
+				/>
+			</a>
 
-				<form method="POST" use:enhance={applyTheme}>
-					<button
-						formaction="/?/setTheme&theme={nextTheme}&redirectTo={pathname}"
-						class="grid h-9 w-9 place-items-center rounded-full border border-border bg-surface text-ink-soft shadow-sm transition-colors hover:bg-surface-2"
-						aria-label="Toggle {nextTheme} mode"
-					>
-						<Icon name={theme === 'dark' ? 'sun' : 'moon'} size={17} />
-					</button>
-				</form>
-			</header>
-		{/if}
+			<form method="POST" use:enhance={applyTheme}>
+				<button
+					formaction="/?/setTheme&theme={nextTheme}&redirectTo={pathname}"
+					class="grid h-9 w-9 place-items-center rounded-full border border-border bg-surface text-ink-soft shadow-sm transition-colors hover:bg-surface-2"
+					aria-label="Toggle {nextTheme} mode"
+				>
+					<Icon name={theme === 'dark' ? 'sun' : 'moon'} size={17} />
+				</button>
+			</form>
+		</header>
 
-		<main class="flex-1 pb-3 {isStopDetail ? 'pt-[max(0.75rem,env(safe-area-inset-top))]' : 'pt-3'}">
+		<main class="flex-1 pb-3 pt-3">
 			{@render children()}
 		</main>
 
@@ -96,7 +96,9 @@
 			<span class="font-mono font-medium">
 				<a href="https://hewliyang.com" class="transition-colors hover:text-ink">hewliyang</a>
 				and
-				<a href="https://github.com/ianfromdover" class="transition-colors hover:text-ink">ianfromdover</a>
+				<a href="https://github.com/ianfromdover" class="transition-colors hover:text-ink"
+					>ianfromdover</a
+				>
 				· {new Date().getFullYear()}
 			</span>
 		</footer>

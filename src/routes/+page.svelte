@@ -4,7 +4,14 @@
 	import { onMount } from 'svelte';
 	import { stops } from '$lib/data';
 	import { nearestStops } from '$lib/geo';
-	import { NUS_CENTER, routeKeysSorted, routesServingStop, routeColor, routeTextColor } from '$lib/routes';
+	import { getDistance } from '$lib/stores/utils';
+	import {
+		NUS_CENTER,
+		routeKeysSorted,
+		routesServingStop,
+		routeColor,
+		routeTextColor
+	} from '$lib/routes';
 	import Icon from '$lib/components/Icon.svelte';
 	import HomeMap from '$lib/components/HomeMap.svelte';
 	import Segmented from '$lib/components/Segmented.svelte';
@@ -42,9 +49,21 @@
 	let limit = $state(3);
 	let mounted = $state(false);
 
-	const allNearby = $derived(nearestStops(userLat, userLng, 12));
+	// The crosshair cursor: wherever the map centre settles. The Nearby list
+	// ranks around it, so panning the map re-ranks the drawer. Granting location
+	// refits the map around the user; that fit's moveend updates the cursor.
+	let cursorLat = $state(NUS_CENTER[1]);
+	let cursorLng = $state(NUS_CENTER[0]);
+
+	const allNearby = $derived(nearestStops(cursorLat, cursorLng, 12));
 	const visibleNearby = $derived(allNearby.slice(0, limit));
 	const canLoadMore = $derived(limit < allNearby.length);
+
+	// Heading flips to "Near map centre" once the cursor has drifted >150 m from
+	// the user's real fix.
+	const cursorAdrift = $derived(
+		userReal && getDistance(cursorLat, cursorLng, userLat, userLng) > 150
+	);
 
 	function requestLocation() {
 		if (typeof navigator === 'undefined' || !navigator.geolocation) {
@@ -146,12 +165,26 @@
 	<!-- MAP background (full-bleed) — one shared instance; layers + zoom-frame
 	     switch with the view, so toggling Stops/Routes never re-creates the map. -->
 	<div class="absolute inset-0">
-		<HomeMap {view} lat={userLat} lng={userLng} real={userReal} route={selectedRoute} />
+		<HomeMap
+			{view}
+			lat={userLat}
+			lng={userLng}
+			real={userReal}
+			route={selectedRoute}
+			coveredPct={sheetH}
+			onCenterChange={(lng, lat) => {
+				cursorLng = lng;
+				cursorLat = lat;
+			}}
+		/>
 	</div>
 
 	<!-- location snackbar floats just above the sheet -->
 	{#if view === 'stops' && locStatus !== 'granted'}
-		<div class="absolute inset-x-3 z-20" style="bottom: min(calc({sheetH}% + 0.75rem), 72%)">
+		<div
+			class="absolute inset-x-3 z-20 {dragging ? '' : 'transition-[bottom] duration-300 ease-out'}"
+			style="bottom: calc({sheetH}% + 0.75rem)"
+		>
 			<Snackbar
 				message={snackText}
 				actionLabel={snackAction}
@@ -203,7 +236,7 @@
 						href="/starred"
 						class="flex h-[50px] shrink-0 items-center gap-1.5 rounded-xl border border-border bg-surface px-3.5 text-[13px] font-semibold text-ink-soft shadow-card transition-colors hover:bg-surface-2"
 					>
-						<Icon name="bookmark" size={16} /> Starred
+						<Icon name="star" size={16} /> Starred
 					</a>
 				</div>
 			{/if}
@@ -255,7 +288,9 @@
 					{/if}
 				{:else}
 					<div class="space-y-2.5">
-						<h2 class="px-1 text-xs font-semibold uppercase tracking-wide text-muted">Nearby</h2>
+						<h2 class="px-1 text-xs font-semibold uppercase tracking-wide text-muted">
+							{cursorAdrift ? 'Near map centre' : 'Nearby'}
+						</h2>
 						{#if mounted}
 							{#each visibleNearby as stop (stop.name)}
 								<StopCard code={stop.name} caption={stop.caption} />

@@ -159,6 +159,7 @@ export function routeStopFC(route: string, activeStop: string | null = null) {
 			type: 'Feature' as const,
 			properties: {
 				name: s.name,
+				code: s.code,
 				active: s.code === activeStop,
 				passed: activeIdx > 0 && i < activeIdx
 			},

@@ -1,8 +1,10 @@
 <script lang="ts">
 	import BusCapacityLabel from '$lib/components/BusCapacityLabel.svelte';
+	import HomeMap from '$lib/components/HomeMap.svelte';
 	import Icon from '$lib/components/Icon.svelte';
-	import { routeColor, routeTextColor, isPublic } from '$lib/routes';
+	import { routeColor, routeTextColor, isPublic, stopCoord, NUS_CENTER } from '$lib/routes';
 	import { enhance } from '$app/forms';
+	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
@@ -41,6 +43,12 @@
 	const degraded = $derived(current?.degraded ?? false);
 	const busStopName = $derived(data.code);
 	const busStopCaption = $derived(current?.etas.busStopCaption ?? data.caption);
+
+	// Map strip: centre the focused-stop frame on this stop's coordinates
+	// (campus centre if the code is unknown).
+	const coords = $derived(stopCoord(data.code));
+	const mapLat = $derived(coords?.lat ?? NUS_CENTER[1]);
+	const mapLng = $derived(coords?.lng ?? NUS_CENTER[0]);
 	const lastUpdated = $derived(current?.etas.lastUpdated ?? null);
 	const timings = $derived(current?.etas.timings ?? []);
 
@@ -70,6 +78,29 @@
 
 	const bookmark_objs: Bookmark[] = $derived($page.data.bookmarks);
 	const alreadyBookmarked = $derived(bookmark_objs.map((o) => o.name).includes(busStopName));
+
+	// Optimistic star toggle: flip the icon on submit, then reconcile with the
+	// layout's cookie-derived list via invalidate('app:bookmarks') — never
+	// invalidateAll(), which would re-fetch the slow upstream timings and flash
+	// the page back to skeleton.
+	let starOverride = $state<boolean | null>(null);
+	let starBusy = $state(false);
+	const starred = $derived(starOverride ?? alreadyBookmarked);
+	const starSubmit: import('@sveltejs/kit').SubmitFunction = ({ cancel }) => {
+		if (starBusy) {
+			cancel();
+			return;
+		}
+		starBusy = true;
+		starOverride = !alreadyBookmarked;
+		return async ({ result }) => {
+			if (result.type === 'success') {
+				await invalidate('app:bookmarks');
+			}
+			starOverride = null;
+			starBusy = false;
+		};
+	};
 
 	function relative(d: Date, nowMs: number) {
 		const s = Math.round((nowMs - d.getTime()) / 1000);
@@ -135,200 +166,231 @@
 	}
 </script>
 
-<section class="fade-up space-y-5">
-	<div class="flex items-start justify-between gap-3">
-		<div class="min-w-0">
-			<a
-				href="/"
-				class="mb-2 inline-flex items-center gap-1 text-[13px] font-medium text-muted transition-colors hover:text-ink"
-			>
-				<Icon name="arrow-left" size={15} /> Stops
-			</a>
-			<h1 class="text-2xl font-semibold leading-tight tracking-tight text-ink">
-				{busStopCaption}
-			</h1>
-			<p class="mt-1 flex items-center gap-1.5 text-xs text-muted">
-				{#if loading}
-					<span
-						class="inline-block h-2 w-2 animate-pulse rounded-full bg-border-strong"
-						aria-hidden="true"
-					></span>
-					Loading live timings…
-				{:else if degraded}
-					<Icon name="clock" size={13} /> Live timings unavailable
-				{:else}
-					<span
-						class="inline-block h-2 w-2 rounded-full bg-ok transition-opacity {refreshing
-							? 'opacity-40'
-							: 'opacity-100'}"
-						aria-hidden="true"
-					></span>
-					Live · updated {updatedLabel}
-				{/if}
-			</p>
-		</div>
-
-		<div class="flex shrink-0 items-center gap-1.5">
-			<form action="?/addBookmark&id={busStopName}&caption={busStopCaption}" method="POST" use:enhance>
-				<button
-					disabled={alreadyBookmarked}
-					class="grid h-10 w-10 place-items-center rounded-xl border shadow-card transition-colors
-						{alreadyBookmarked
-						? 'border-accent/30 bg-accent-soft text-accent'
-						: 'border-border bg-surface text-ink-soft hover:bg-surface-2'}"
-					aria-label={alreadyBookmarked ? 'Bookmarked' : 'Add bookmark'}
-				>
-					<Icon name={alreadyBookmarked ? 'bookmark-fill' : 'bookmark'} size={18} />
-				</button>
-			</form>
-			<button
-				onclick={refresh}
-				class="grid h-10 w-10 place-items-center rounded-xl border border-border bg-surface text-ink-soft shadow-card transition-colors hover:bg-surface-2"
-				aria-label="Refresh now"
-			>
-				<Icon name="refresh" size={17} />
-			</button>
-		</div>
+<div class="flex h-full w-full flex-col">
+	<!-- MAP strip pinned to the top ~20% of the viewport, focused on this stop -->
+	<div class="h-[20dvh] min-h-32 shrink-0">
+		<HomeMap view="stops" route="D2" lat={mapLat} lng={mapLng} focus={data.code} />
 	</div>
 
-	{#if loading}
-		<!-- Skeleton: one shimmer row per route that serves this stop, matching the
-		     live row layout so live data swaps in with no layout shift. -->
-		<ul class="space-y-2">
-			{#each data.serving as name (name)}
-				{@const label = isPublic(name) ? name.slice(4) : name}
-				<li
-					class="grid grid-cols-[auto_1fr_1fr] items-center gap-3 rounded-2xl border border-border bg-surface p-3 shadow-card"
-				>
-					<span
-						class="grid h-12 w-12 place-items-center rounded-xl font-mono text-base font-bold shadow-sm"
-						style="background: {routeColor(name)}; color: {routeTextColor(name)}"
-					>
-						{label}
-					</span>
-					<div class="flex flex-col gap-2">
-						<span class="h-6 w-12 animate-pulse rounded-md bg-surface-2"></span>
-						<span class="h-3 w-16 animate-pulse rounded bg-surface-2"></span>
-					</div>
-					<div class="flex flex-col gap-2 border-l border-border pl-3">
-						<span class="h-5 w-10 animate-pulse rounded-md bg-surface-2"></span>
-						<span class="h-3 w-16 animate-pulse rounded bg-surface-2"></span>
-					</div>
-				</li>
-			{:else}
-				<li class="h-20 animate-pulse rounded-2xl border border-border bg-surface shadow-card"></li>
-			{/each}
-		</ul>
-	{:else}
-		{#if liveShuttles.length === 0}
-			<div class="flex flex-col items-center gap-2 py-12 text-center">
-				<span class="text-muted"><Icon name="bus" size={28} /></span>
-				<p class="text-sm font-medium text-ink">
-					{degraded ? 'Live timings are down' : 'No buses running right now'}
-				</p>
-				<p class="max-w-xs text-xs text-muted">
-					{degraded
-						? "The shuttle service isn't responding. The routes serving this stop are below."
-						: 'Nothing is currently arriving at this stop. Check back closer to operating hours.'}
-				</p>
-			</div>
-		{/if}
-
-		{#if liveShuttles.length > 0}
-			<ul class="space-y-2">
-				{#each liveShuttles as { name, arrivalTime, nextArrivalTime, arrivalTime_ts, nextArrivalTime_ts, arrivalTime_ridership, arrivalTime_veh_plate, arrivalTime_capacity, nextArrivalTime_capacity, nextArrivalTime_ridership, nextArrivalTime_veh_plate } (name)}
-					{@const arr = fmt(arrivalTime, arrivalTime_ts)}
-					{@const nxt = fmt(nextArrivalTime, nextArrivalTime_ts)}
-					{@const label = isPublic(name) ? name.slice(4) : name}
-					<li
-						class="grid grid-cols-[auto_1fr_1fr] items-center gap-3 rounded-2xl border border-border bg-surface p-3 shadow-card"
-					>
-						{#if isPublic(name)}
-							<span
-								class="grid h-12 w-12 place-items-center rounded-xl border border-border bg-surface-2 text-center font-mono text-[13px] font-bold leading-none text-ink-soft"
-							>
-								{label}
-							</span>
-						{:else}
-							<a
-								href="/stop/{busStopName}/route/{name}#current"
-								class="grid h-12 w-12 place-items-center rounded-xl font-mono text-base font-bold shadow-sm transition-transform hover:scale-105"
-								style="background: {routeColor(name)}; color: {routeTextColor(name)}"
-								aria-label="View route {label}"
-							>
-								{label}
-							</a>
-						{/if}
-
-						<div class="flex flex-col gap-1.5">
-							<div class="flex items-baseline gap-1">
+	<!-- DRAWER: overlaps the map slightly and holds the whole page content -->
+	<div
+		class="relative z-10 -mt-4 flex min-h-0 flex-1 flex-col rounded-t-3xl border-t border-border bg-bg shadow-[0_-10px_40px_-12px_rgba(0,0,0,0.3)]"
+	>
+		<div
+			class="flex-1 overflow-y-auto overscroll-contain px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-5"
+		>
+			<section class="fade-up space-y-5">
+				<div class="flex items-start justify-between gap-3">
+					<div class="min-w-0">
+						<a
+							href="/"
+							class="mb-2 inline-flex items-center gap-1 text-[13px] font-medium text-muted transition-colors hover:text-ink"
+						>
+							<Icon name="arrow-left" size={15} /> Stops
+						</a>
+						<h1 class="text-2xl font-semibold leading-tight tracking-tight text-ink">
+							{busStopCaption}
+						</h1>
+						<p class="mt-1 flex items-center gap-1.5 text-xs text-muted">
+							{#if loading}
 								<span
-									class="text-xl font-semibold tabular-nums tracking-tight
-										{arr.value === 'Arr' ? 'text-ok' : 'text-ink'}"
-								>
-									{arr.value}
-								</span>
-								{#if arr.unit}<span class="text-xs font-medium text-muted">{arr.unit}</span>{/if}
-							</div>
-							<BusCapacityLabel
-								capacity={arrivalTime_capacity}
-								veh_plate={arrivalTime_veh_plate}
-								ridership={arrivalTime_ridership}
-							/>
-						</div>
-
-						<div class="flex flex-col gap-1.5 border-l border-border pl-3">
-							<div class="flex items-baseline gap-1">
-								<span class="text-[10px] font-medium uppercase tracking-wide text-muted">next</span>
-								<span class="text-lg font-semibold tabular-nums tracking-tight text-ink-soft">
-									{nxt.value}
-								</span>
-								{#if nxt.unit}<span class="text-xs font-medium text-muted">{nxt.unit}</span>{/if}
-							</div>
-							<BusCapacityLabel
-								capacity={nextArrivalTime_capacity}
-								veh_plate={nextArrivalTime_veh_plate}
-								ridership={nextArrivalTime_ridership}
-							/>
-						</div>
-					</li>
-				{/each}
-			</ul>
-		{/if}
-
-		{#if idleRoutes.length > 0}
-			<div class="space-y-2.5">
-				<h2 class="px-1 text-xs font-semibold uppercase tracking-wide text-muted">
-					Serves this stop · not running
-				</h2>
-				<ul class="flex flex-wrap gap-2">
-					{#each idleRoutes as name}
-						{@const label = isPublic(name) ? name.slice(4) : name}
-						<li>
-							{#if isPublic(name)}
-								<span
-									class="flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3.5 font-mono text-sm font-bold text-muted"
-								>
-									<span class="grid h-6 w-6 place-items-center rounded-full bg-surface-2 text-[11px]"
-										>{label}</span
-									>
-								</span>
+									class="inline-block h-2 w-2 animate-pulse rounded-full bg-border-strong"
+									aria-hidden="true"
+								></span>
+								Loading live timings…
+							{:else if degraded}
+								<Icon name="clock" size={13} /> Live timings unavailable
 							{:else}
-								<a
-									href="/stop/{busStopName}/route/{name}#current"
-									class="flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3.5 font-mono text-sm font-bold text-ink-soft transition-colors hover:bg-surface-2"
-								>
-									<span
-										class="grid h-6 w-6 place-items-center rounded-full text-[11px]"
-										style="background: {routeColor(name)}; color: {routeTextColor(name)}">{label}</span
-									>
-									Route
-								</a>
+								<span
+									class="inline-block h-2 w-2 rounded-full bg-ok transition-opacity {refreshing
+										? 'opacity-40'
+										: 'opacity-100'}"
+									aria-hidden="true"
+								></span>
+								Live · updated {updatedLabel}
 							{/if}
-						</li>
-					{/each}
-				</ul>
-			</div>
-		{/if}
-	{/if}
-</section>
+						</p>
+					</div>
+
+					<div class="flex shrink-0 items-center gap-1.5">
+						<form
+							action={starred
+								? `?/removeBookmark&id=${busStopName}`
+								: `?/addBookmark&id=${busStopName}&caption=${busStopCaption}`}
+							method="POST"
+							use:enhance={starSubmit}
+						>
+							<button
+								class="grid h-10 w-10 place-items-center rounded-xl border shadow-card transition-colors
+						{starred
+									? 'border-accent/30 bg-accent-soft text-accent'
+									: 'border-border bg-surface text-ink-soft hover:bg-surface-2'}"
+								aria-label={starred ? 'Unstar this stop' : 'Star this stop'}
+							>
+								<Icon name={starred ? 'star-fill' : 'star'} size={18} />
+							</button>
+						</form>
+						<button
+							onclick={refresh}
+							class="grid h-10 w-10 place-items-center rounded-xl border border-border bg-surface text-ink-soft shadow-card transition-colors hover:bg-surface-2"
+							aria-label="Refresh now"
+						>
+							<Icon name="refresh" size={17} />
+						</button>
+					</div>
+				</div>
+
+				{#if loading}
+					<!-- Skeleton: one shimmer row per route that serves this stop, matching the
+		     live row layout so live data swaps in with no layout shift. -->
+					<ul class="space-y-2">
+						{#each data.serving as name (name)}
+							{@const label = isPublic(name) ? name.slice(4) : name}
+							<li
+								class="grid grid-cols-[auto_1fr_1fr] items-center gap-3 rounded-2xl border border-border bg-surface p-3 shadow-card"
+							>
+								<span
+									class="grid h-12 w-12 place-items-center rounded-xl font-mono text-base font-bold shadow-sm"
+									style="background: {routeColor(name)}; color: {routeTextColor(name)}"
+								>
+									{label}
+								</span>
+								<div class="flex flex-col gap-2">
+									<span class="h-6 w-12 animate-pulse rounded-md bg-surface-2"></span>
+									<span class="h-3 w-16 animate-pulse rounded bg-surface-2"></span>
+								</div>
+								<div class="flex flex-col gap-2 border-l border-border pl-3">
+									<span class="h-5 w-10 animate-pulse rounded-md bg-surface-2"></span>
+									<span class="h-3 w-16 animate-pulse rounded bg-surface-2"></span>
+								</div>
+							</li>
+						{:else}
+							<li
+								class="h-20 animate-pulse rounded-2xl border border-border bg-surface shadow-card"
+							></li>
+						{/each}
+					</ul>
+				{:else}
+					{#if liveShuttles.length === 0}
+						<div class="flex flex-col items-center gap-2 py-12 text-center">
+							<span class="text-muted"><Icon name="bus" size={28} /></span>
+							<p class="text-sm font-medium text-ink">
+								{degraded ? 'Live timings are down' : 'No buses running right now'}
+							</p>
+							<p class="max-w-xs text-xs text-muted">
+								{degraded
+									? "The shuttle service isn't responding. The routes serving this stop are below."
+									: 'Nothing is currently arriving at this stop. Check back closer to operating hours.'}
+							</p>
+						</div>
+					{/if}
+
+					{#if liveShuttles.length > 0}
+						<ul class="space-y-2">
+							<!-- Key includes the index: a route can serve a stop twice per loop
+						     (two timings with the same name), and duplicate keys throw. -->
+							{#each liveShuttles as { name, arrivalTime, nextArrivalTime, arrivalTime_ts, nextArrivalTime_ts, arrivalTime_ridership, arrivalTime_veh_plate, arrivalTime_capacity, nextArrivalTime_capacity, nextArrivalTime_ridership, nextArrivalTime_veh_plate }, i (`${name}|${i}`)}
+								{@const arr = fmt(arrivalTime, arrivalTime_ts)}
+								{@const nxt = fmt(nextArrivalTime, nextArrivalTime_ts)}
+								{@const label = isPublic(name) ? name.slice(4) : name}
+								<li
+									class="grid grid-cols-[auto_1fr_1fr] items-center gap-3 rounded-2xl border border-border bg-surface p-3 shadow-card"
+								>
+									{#if isPublic(name)}
+										<span
+											class="grid h-12 w-12 place-items-center rounded-xl border border-border bg-surface-2 text-center font-mono text-[13px] font-bold leading-none text-ink-soft"
+										>
+											{label}
+										</span>
+									{:else}
+										<a
+											href="/stop/{busStopName}/route/{name}#current"
+											class="grid h-12 w-12 place-items-center rounded-xl font-mono text-base font-bold shadow-sm transition-transform hover:scale-105"
+											style="background: {routeColor(name)}; color: {routeTextColor(name)}"
+											aria-label="View route {label}"
+										>
+											{label}
+										</a>
+									{/if}
+
+									<div class="flex flex-col gap-1.5">
+										<div class="flex items-baseline gap-1">
+											<span
+												class="text-xl font-semibold tabular-nums tracking-tight
+										{arr.value === 'Arr' ? 'text-ok' : 'text-ink'}"
+											>
+												{arr.value}
+											</span>
+											{#if arr.unit}<span class="text-xs font-medium text-muted">{arr.unit}</span
+												>{/if}
+										</div>
+										<BusCapacityLabel
+											capacity={arrivalTime_capacity}
+											veh_plate={arrivalTime_veh_plate}
+											ridership={arrivalTime_ridership}
+										/>
+									</div>
+
+									<div class="flex flex-col gap-1.5 border-l border-border pl-3">
+										<div class="flex items-baseline gap-1">
+											<span class="text-[10px] font-medium uppercase tracking-wide text-muted"
+												>next</span
+											>
+											<span class="text-lg font-semibold tabular-nums tracking-tight text-ink-soft">
+												{nxt.value}
+											</span>
+											{#if nxt.unit}<span class="text-xs font-medium text-muted">{nxt.unit}</span
+												>{/if}
+										</div>
+										<BusCapacityLabel
+											capacity={nextArrivalTime_capacity}
+											veh_plate={nextArrivalTime_veh_plate}
+											ridership={nextArrivalTime_ridership}
+										/>
+									</div>
+								</li>
+							{/each}
+						</ul>
+					{/if}
+
+					{#if idleRoutes.length > 0}
+						<div class="space-y-2.5">
+							<h2 class="px-1 text-xs font-semibold uppercase tracking-wide text-muted">
+								Serves this stop · not running
+							</h2>
+							<ul class="flex flex-wrap gap-2">
+								{#each idleRoutes as name}
+									{@const label = isPublic(name) ? name.slice(4) : name}
+									<li>
+										{#if isPublic(name)}
+											<span
+												class="flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3.5 font-mono text-sm font-bold text-muted"
+											>
+												<span
+													class="grid h-6 w-6 place-items-center rounded-full bg-surface-2 text-[11px]"
+													>{label}</span
+												>
+											</span>
+										{:else}
+											<a
+												href="/stop/{busStopName}/route/{name}#current"
+												class="flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3.5 font-mono text-sm font-bold text-ink-soft transition-colors hover:bg-surface-2"
+											>
+												<span
+													class="grid h-6 w-6 place-items-center rounded-full text-[11px]"
+													style="background: {routeColor(name)}; color: {routeTextColor(name)}"
+													>{label}</span
+												>
+												Route
+											</a>
+										{/if}
+									</li>
+								{/each}
+							</ul>
+						</div>
+					{/if}
+				{/if}
+			</section>
+		</div>
+	</div>
+</div>

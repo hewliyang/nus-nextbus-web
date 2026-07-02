@@ -132,7 +132,9 @@
 
 	{#if live.length > 0}
 		<ul>
-			{#each live as s (s.name)}
+			<!-- Key includes the index: a route can serve a stop twice per loop (two
+		     timings sharing a name), and duplicate keys throw. -->
+			{#each live as s, i (`${s.name}|${i}`)}
 				{@const rt = baseRoute(s.name)}
 				{@const label = isPublic(s.name) ? s.name.slice(4) : s.name}
 				<li class="border-b border-border last:border-0">
@@ -146,7 +148,9 @@
 						>
 							{label}
 						</span>
-						<span class="min-w-0 flex-1 truncate text-[13px] text-ink-soft">{routeTerminal(rt)}</span>
+						<span class="min-w-0 flex-1 truncate text-[13px] text-ink-soft"
+							>{routeTerminal(rt)}</span
+						>
 						<span class="shrink-0 whitespace-nowrap text-right">
 							<span class="text-[15px] font-semibold tabular-nums text-ink">{arrivalText(s)}</span>
 							{#if showUnit(s)}<span class="ml-1 text-[11px] font-medium text-muted">min</span>{/if}
@@ -170,7 +174,9 @@
 					<span class="ml-auto h-4 w-9 animate-pulse rounded bg-surface-2"></span>
 				</li>
 			{:else}
-				<li class="px-3.5 py-3"><span class="block h-4 w-32 animate-pulse rounded bg-surface-2"></span></li>
+				<li class="px-3.5 py-3">
+					<span class="block h-4 w-32 animate-pulse rounded bg-surface-2"></span>
+				</li>
 			{/each}
 		</ul>
 	{:else}
