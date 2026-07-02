@@ -50,9 +50,15 @@ export type SearchStop = {
 	longitude: number;
 };
 
-export type RouteScheduleEntry = { first: string; last: string };
-export type RouteSchedule = { weekday: RouteScheduleEntry; weekend: RouteScheduleEntry };
-/** Per-route first/last bus timings. Sparse — routes without data are omitted. */
+export type RouteScheduleEntry = { first: string | null; last: string | null; noService?: boolean };
+export type RouteSchedule = {
+	weekday: RouteScheduleEntry;
+	saturday: RouteScheduleEntry;
+	sundayPh: RouteScheduleEntry;
+	terminal?: string;
+	notes?: string;
+};
+/** Per-route first/last bus timings — departures from the route's reference terminal. */
 export type SchedulesMap = Record<string, RouteSchedule>;
 
 export type ColorTheme = 'light' | 'dark';

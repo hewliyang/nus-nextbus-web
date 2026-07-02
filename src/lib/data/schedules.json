@@ -1,6 +1,52 @@
 {
+	"A1": {
+		"weekday": { "first": "7:15 AM", "last": "11:00 PM" },
+		"saturday": { "first": "7:15 AM", "last": "11:00 PM" },
+		"sundayPh": { "first": "9:07 AM", "last": "11:00 PM" },
+		"terminal": "Kent Ridge Bus Terminal"
+	},
+	"A2": {
+		"weekday": { "first": "7:15 AM", "last": "11:00 PM" },
+		"saturday": { "first": "7:15 AM", "last": "11:00 PM" },
+		"sundayPh": { "first": "9:00 AM", "last": "11:00 PM" },
+		"terminal": "Kent Ridge Bus Terminal"
+	},
+	"D1": {
+		"weekday": { "first": "7:15 AM", "last": "11:00 PM" },
+		"saturday": { "first": "7:20 AM", "last": "11:00 PM" },
+		"sundayPh": { "first": "9:10 AM", "last": "11:00 PM" },
+		"terminal": "COM3",
+		"notes": "During vacation, the first weekday bus is 7:20 AM."
+	},
 	"D2": {
-		"weekday": { "first": "7:30 AM", "last": "12:30 AM" },
-		"weekend": { "first": "9:00 AM", "last": "8:00 PM" }
+		"weekday": { "first": "7:15 AM", "last": "11:00 PM" },
+		"saturday": { "first": "7:15 AM", "last": "11:00 PM" },
+		"sundayPh": { "first": "9:00 AM", "last": "11:00 PM" },
+		"terminal": "COM3"
+	},
+	"K": {
+		"weekday": { "first": "7:04 AM", "last": "11:04 PM" },
+		"saturday": { "first": "7:04 AM", "last": "7:44 PM" },
+		"sundayPh": { "first": null, "last": null, "noService": true },
+		"terminal": "PGP Terminal"
+	},
+	"P": {
+		"weekday": { "first": "8:20 AM", "last": "5:25 PM" },
+		"saturday": { "first": null, "last": null, "noService": true },
+		"sundayPh": { "first": null, "last": null, "noService": true },
+		"terminal": "Kent Vale",
+		"notes": "Last bus from Bukit Timah Campus is 6:05 PM."
+	},
+	"R1": {
+		"weekday": { "first": "7:40 AM", "last": "7:30 PM" },
+		"saturday": { "first": null, "last": null, "noService": true },
+		"sundayPh": { "first": null, "last": null, "noService": true },
+		"terminal": "Kent Vale"
+	},
+	"R2": {
+		"weekday": { "first": "8:20 AM", "last": "7:30 PM" },
+		"saturday": { "first": null, "last": null, "noService": true },
+		"sundayPh": { "first": null, "last": null, "noService": true },
+		"terminal": "PGP Terminal"
 	}
 }
