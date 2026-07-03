@@ -74,7 +74,7 @@
 				<li bind:this={rowEls[i]}>
 					<a
 						href="/stop/{stop.code}"
-						class="flex items-center gap-3 px-3.5 py-3 transition-colors hover:bg-surface-2"
+						class="flex items-center gap-3 px-3.5 transition-colors hover:bg-surface-2"
 						aria-current={isCurrent ? 'true' : undefined}
 					>
 						<!-- rail column: line segments meet edge-to-edge across rows -->
@@ -103,7 +103,7 @@
 							></span>
 						</span>
 						<span
-							class="min-w-0 flex-1 truncate text-[0.875rem]
+							class="min-w-0 flex-1 truncate py-3 text-[0.875rem]
 								{isCurrent ? 'font-semibold text-ink' : passed ? 'font-medium text-muted' : 'font-medium text-ink'}"
 						>
 							{stop.name}
