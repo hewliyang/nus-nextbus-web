@@ -1,5 +1,6 @@
 import { stops, routes } from '$lib/data';
 import routeShapesJson from '$lib/data/routeShapes.json';
+import { smoothLine } from '$lib/smooth';
 import type { RouteStop } from '$lib/types';
 
 // Road-following polylines, snapped to the road network offline by
@@ -66,13 +67,25 @@ export function routeLine(route: string): [number, number][] {
 	return pts;
 }
 
+// Smoothed shapes are memoised — the spline is deterministic per route and gets
+// asked for on every map render (line, arrows, bounds).
+const smoothCache = new Map<string, [number, number][]>();
+
 /**
  * The route's drawable polyline: the dense road-following shape when one was
- * generated, else the straight stop-to-stop chain as a fallback.
+ * generated, else the straight stop-to-stop chain as a fallback. The result is
+ * run through a centripetal Catmull–Rom spline (see `smoothLine`) so the drawn
+ * line reads as a smooth curve rather than a chain of angular road segments,
+ * while still tracing the road beneath.
  */
 export function routeShape(route: string): [number, number][] {
+	const cached = smoothCache.get(route);
+	if (cached) return cached;
 	const shape = routeShapes[route];
-	return shape && shape.length > 1 ? shape : routeLine(route);
+	const raw = shape && shape.length > 1 ? shape : routeLine(route);
+	const smoothed = smoothLine(raw);
+	smoothCache.set(route, smoothed);
+	return smoothed;
 }
 
 export type MapStop = {
