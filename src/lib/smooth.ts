@@ -143,7 +143,12 @@ export function catmullRom(points: Pt[], step: number): Pt[] {
  */
 export function smoothLine(points: Pt[], zoom: number): Pt[] {
 	if (points.length <= 2) return points.slice();
-	const d = degPerPx(lodBucket(zoom));
-	const ctrl = simplify(points, (CTRL_PX[lodBucket(zoom)] ?? 3) * d);
+	const bucket = lodBucket(zoom);
+	const d = degPerPx(bucket);
+	// Control budget one level finer than the on-screen bucket (z13 draws with
+	// z14's control points, and so on) — the absolute tolerance comes from the
+	// finer bucket so the control-point count matches it exactly.
+	const fine = Math.min(bucket + 1, LOD_MAX);
+	const ctrl = simplify(points, (CTRL_PX[fine] ?? 3) * degPerPx(fine));
 	return simplify(catmullRom(ctrl, 4 * d), 0.25 * d);
 }
