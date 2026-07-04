@@ -11,8 +11,10 @@
 	}
 	let { selected, onSelect, current = null }: Props = $props();
 
-	// Stops in travel order; drop the seq:32767 loop-back duplicate of the origin.
-	const stops = $derived(routeStops(selected).filter((s) => s.seq !== 32767));
+	// Stops in travel order; the seq:32767 entry is the loop-back to the origin
+	// terminal, shown at the bottom so the list reads terminal → terminal.
+	const stops = $derived(routeStops(selected));
+	const uniqueStops = $derived(stops.filter((s) => s.seq !== 32767).length);
 	const schedule = $derived(schedules[selected]);
 	const color = $derived(routeColor(selected));
 
@@ -65,7 +67,7 @@
 	<!-- stop list (terminal → terminal) threaded by the route-coloured rail -->
 	<div class="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
 		<div class="border-b border-border px-3.5 py-2.5">
-			<h2 class="text-xs font-semibold uppercase tracking-wide text-muted">{stops.length} stops</h2>
+			<h2 class="text-xs font-semibold uppercase tracking-wide text-muted">{uniqueStops} stops</h2>
 		</div>
 		<ul>
 			{#each stops as stop, i (`${stop.code}-${stop.seq}`)}
