@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { stops } from '$lib/data';
 	import { NUS_CENTER, routeColor, routeShape, stopCoord } from '$lib/routes';
+	import { lodBucket } from '$lib/smooth';
 	import {
 		styleUrl,
 		toHex,
@@ -85,6 +86,9 @@
 	let map: MlMap | null = null;
 	let ready = $state(false);
 	let firstFit = true;
+	// LOD bucket the route line was last rendered at — the moveend handler
+	// re-renders the curve only when the zoom crosses into a different bucket.
+	let lastLodBucket = -1;
 
 	const STOP_COLOR = '#0d9488'; // teal — distinct from the blue user dot
 	const USER_COLOR = '#2f6df6';
@@ -179,7 +183,11 @@
 	function addEverything() {
 		if (!map) return;
 		bakeIcons();
-		map.addSource('route-line', { type: 'geojson', data: routeLineFC(route, activeStop) });
+		lastLodBucket = lodBucket(map.getZoom());
+		map.addSource('route-line', {
+			type: 'geojson',
+			data: routeLineFC(route, activeStop, map.getZoom())
+		});
 		map.addSource('route-stops', { type: 'geojson', data: routeStopFC(route, activeStop) });
 		map.addSource('nearby-stops', { type: 'geojson', data: nearbyFC() });
 		map.addSource('focus-stop', { type: 'geojson', data: focusFC() });
@@ -484,6 +492,18 @@
 			const src = map?.getSource('nearby-stops') as GeoJSONSource | undefined;
 			src?.setData(nearbyFC());
 			reportCenter();
+			// Re-render the route curve when the zoom settles in a different LOD
+			// bucket: fewer control points (smoother arcs) zoomed out, the full
+			// road-hugging trace zoomed in.
+			if (map && effView === 'routes') {
+				const z = map.getZoom();
+				if (lodBucket(z) !== lastLodBucket) {
+					lastLodBucket = lodBucket(z);
+					(map.getSource('route-line') as GeoJSONSource | undefined)?.setData(
+						routeLineFC(route, activeStop, z)
+					);
+				}
+			}
 		});
 
 		// Re-skin the basemap (and re-add our layers) when the app theme flips.
@@ -515,8 +535,9 @@
 		void focus;
 		if (!ready || !map) return;
 		bakeIcons();
+		lastLodBucket = lodBucket(map.getZoom());
 		(map.getSource('route-line') as GeoJSONSource | undefined)?.setData(
-			routeLineFC(route, activeStop)
+			routeLineFC(route, activeStop, map.getZoom())
 		);
 		(map.getSource('route-stops') as GeoJSONSource | undefined)?.setData(
 			routeStopFC(route, activeStop)

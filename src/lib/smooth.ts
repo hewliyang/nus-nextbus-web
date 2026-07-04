@@ -1,13 +1,39 @@
-// Turns a dense, angular road polyline into a smooth curve.
+// Turns a dense, angular road polyline into a smooth curve at a zoom-dependent
+// level of detail.
 //
 // maplibre can only stroke straight-segment LineStrings, so "bezier" here means:
-// thin the polyline down to a few control points (Douglas–Peucker), then run a
-// centripetal Catmull–Rom spline — equivalent to a chain of cubic Béziers — back
-// through those points and re-sample it. Fewer control points give a smoother,
-// less jittery curve; the centripetal parameterisation guarantees it never loops
-// or overshoots, so the curve still hugs the road beneath.
+// thin the polyline down to a few control points (Douglas–Peucker), run a
+// centripetal Catmull–Rom spline — equivalent to a chain of cubic Béziers whose
+// handles are collinear through every control point, so the curve is
+// tangent-continuous and never shows a corner at a joint — back through those
+// points, and re-sample it densely enough that the drawn chords preserve that
+// smoothness.
+//
+// All tolerances are constant in *screen pixels*, so they scale with zoom:
+// zoomed out the control budget collapses to just enough points to roughly map
+// the road direction (maximally smooth); zoomed in it keeps every raw vertex so
+// the line hugs the actual carriageway.
 
 type Pt = [number, number];
+
+/** Longitude degrees per screen pixel at a given zoom (maplibre 512px tiles). */
+function degPerPx(zoom: number): number {
+	return 360 / (512 * 2 ** zoom);
+}
+
+// Control-point thinning budget (screen px) per zoom bucket. Grows aggressively
+// as you zoom out: at z13–15 only the road direction survives; at z17+ the
+// full raw trace is kept. Values tuned visually against the A1 mockups in
+// claude-mockups/.
+const CTRL_PX: Record<number, number> = { 13: 24, 14: 16, 15: 10, 16: 6, 17: 3, 18: 3 };
+
+/** Zoom buckets the smoothing is computed at — callers cache per bucket. */
+export const LOD_MIN = 13;
+export const LOD_MAX = 18;
+
+export function lodBucket(zoom: number): number {
+	return Math.max(LOD_MIN, Math.min(LOD_MAX, Math.round(zoom)));
+}
 
 // Perpendicular distance from `p` to the segment a→b, in coordinate units.
 function segDist(p: Pt, a: Pt, b: Pt): number {
@@ -56,12 +82,14 @@ export function simplify(points: Pt[], tol: number): Pt[] {
 }
 
 /**
- * Centripetal Catmull–Rom spline through `points`, sampled adaptively: longer
- * spans get more samples (roughly one every `step` degrees) so straights stay
- * cheap while curves stay smooth. Passes through every control point, so the
- * curve still lands on the road wherever a control point does.
+ * Centripetal Catmull–Rom spline through `points`, sampled adaptively: roughly
+ * one sample every `step` degrees along each span (capped at 96 so degenerate
+ * spans stay bounded). The centripetal parameterisation guarantees no cusps or
+ * self-intersections, and tangent continuity at every control point means the
+ * only way a joint can read as a corner is under-sampling — hence the caller
+ * passes a fine, zoom-scaled `step`.
  */
-export function catmullRom(points: Pt[], step = 8e-5): Pt[] {
+export function catmullRom(points: Pt[], step: number): Pt[] {
 	if (points.length <= 2) return points.slice();
 	const out: Pt[] = [points[0]];
 	const alpha = 0.5; // centripetal — no cusps or self-intersections
@@ -83,7 +111,7 @@ export function catmullRom(points: Pt[], step = 8e-5): Pt[] {
 		}
 
 		const span = Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
-		const n = Math.max(2, Math.min(24, Math.ceil(span / step)));
+		const n = Math.max(2, Math.min(96, Math.ceil(span / step)));
 		for (let j = 1; j <= n; j++) {
 			const t = t1 + ((t2 - t1) * j) / n;
 			const a1x = ((t1 - t) / (t1 - t0)) * p0[0] + ((t - t0) / (t1 - t0)) * p1[0];
@@ -105,18 +133,17 @@ export function catmullRom(points: Pt[], step = 8e-5): Pt[] {
 }
 
 /**
- * Smooth a raw road polyline for drawing, in three passes:
- *   1. thin the trace to control points (`ctrlTol` ≈ 3.3 m) — fewer control
- *      points make the spline read smoother and strip road-trace jitter, while
- *      keeping every real turn so the curve still matches the road (mean drift
- *      off the raw trace stays ~2 m);
- *   2. run a centripetal Catmull–Rom spline through them;
- *   3. thin the dense spline samples back down (`outTol` ≈ 1.1 m) — points on
- *      near-straight arcs are redundant once the joints are rounded, so dropping
- *      them yields a lighter curve than the raw polyline without any visible
- *      change to its shape.
+ * Smooth a raw road polyline for drawing at a given zoom, in three passes:
+ *   1. thin the trace to control points (`CTRL_PX[bucket]` screen px) — the
+ *      zoomed-out budgets keep only enough points to roughly map the road
+ *      direction, which is what makes the far view read as flowing arcs;
+ *   2. run the centripetal Catmull–Rom spline through them, sampled every 4px;
+ *   3. thin the dense samples back down at 0.25px — sub-pixel, so it sheds
+ *      redundant points on straights without re-introducing visible chords.
  */
-export function smoothLine(points: Pt[], ctrlTol = 3e-5, outTol = 1e-5): Pt[] {
+export function smoothLine(points: Pt[], zoom: number): Pt[] {
 	if (points.length <= 2) return points.slice();
-	return simplify(catmullRom(simplify(points, ctrlTol)), outTol);
+	const d = degPerPx(lodBucket(zoom));
+	const ctrl = simplify(points, (CTRL_PX[lodBucket(zoom)] ?? 3) * d);
+	return simplify(catmullRom(ctrl, 4 * d), 0.25 * d);
 }

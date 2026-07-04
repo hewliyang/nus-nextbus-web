@@ -134,12 +134,14 @@ export function stopLabelPaint() {
 
 // ── route geometry → GeoJSON (consumed by HomeMap) ──
 // `activeStop` splits the line/stops into "passed" (dimmed) and upcoming parts;
-// pass null for a single, fully-coloured route.
+// pass null for a single, fully-coloured route. `zoom` picks the smoothing LOD
+// (see smoothLine) — pass the map's current zoom so the curve's detail matches
+// what is on screen.
 
-export function routeLineFC(route: string, activeStop: string | null = null) {
+export function routeLineFC(route: string, activeStop: string | null = null, zoom = 16) {
 	const color = toHex(routeColor(route));
 	const dim = dimColor();
-	const line = routeShape(route);
+	const line = routeShape(route, zoom);
 	const stops = routeStops(route);
 	const active = activeStop ? stops.find((s) => s.code === activeStop) : undefined;
 
