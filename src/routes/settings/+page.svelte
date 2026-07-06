@@ -49,6 +49,13 @@
 </script>
 
 <section class="fade-up space-y-4">
+	<a
+		href="/"
+		class="-ml-2 inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-[0.8125rem] font-medium text-muted transition-colors hover:bg-surface-2 hover:text-ink"
+	>
+		<Icon name="arrow-left" size={15} /> Home
+	</a>
+
 	<!-- Appearance -->
 	<div class="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
 		<h2
