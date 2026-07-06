@@ -28,18 +28,6 @@
 </script>
 
 <section class="fade-up space-y-4">
-	<div>
-		<a
-			href="/"
-			class="mb-2 inline-flex items-center gap-1 text-[0.8125rem] font-medium text-muted transition-colors hover:text-ink"
-		>
-			<Icon name="arrow-left" size={15} /> Home
-		</a>
-		<h1 class="flex items-center gap-2 text-2xl font-semibold tracking-tight text-ink">
-			<Icon name="star-fill" size={20} /> Starred stops
-		</h1>
-	</div>
-
 	{#if visible.length > 0}
 		<div class="space-y-2.5">
 			{#each visible as bm (bm.name)}
