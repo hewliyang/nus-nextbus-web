@@ -48,7 +48,7 @@
 	];
 </script>
 
-<section class="fade-up space-y-4">
+<section class="fade-up space-y-3">
 	<a
 		href="/"
 		class="-ml-2 inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-[0.8125rem] font-medium text-muted transition-colors hover:bg-surface-2 hover:text-ink"
@@ -57,24 +57,24 @@
 	</a>
 
 	<!-- Appearance -->
-	<div class="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
+	<div class="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
 		<h2
-			class="border-b border-border px-3.5 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted"
+			class="border-b border-border px-3 py-2 text-[0.6875rem] font-semibold uppercase tracking-wide text-muted"
 		>
 			Appearance
 		</h2>
 
-		<div class="flex items-center justify-between gap-3 border-b border-border px-3.5 py-3">
-			<span class="flex items-center gap-2.5 text-[0.9375rem] font-medium text-ink">
+		<div class="flex min-h-10 items-center justify-between gap-3 border-b border-border px-3 py-1.5">
+			<span class="flex items-center gap-2.5 text-[0.875rem] font-medium text-ink">
 				<span class="text-muted"><Icon name={themeDark ? 'moon' : 'sun'} size={17} /></span>
 				Dark mode
 			</span>
 			<Switch checked={themeDark} label="Dark mode" onToggle={toggleTheme} />
 		</div>
 
-		<div class="space-y-3 px-3.5 py-3">
+		<div class="space-y-2.5 px-3 py-2.5">
 			<div class="flex items-center justify-between gap-3">
-				<span class="text-[0.9375rem] font-medium text-ink">UI size</span>
+				<span class="text-[0.875rem] font-medium text-ink">UI size</span>
 				<div class="flex items-center gap-2">
 					<button
 						onclick={() => setStep(uiStep - 1)}
@@ -100,22 +100,22 @@
 
 			<!-- static preview card (the whole app rescales live as you tap +/-) -->
 			<div class="overflow-hidden rounded-xl border border-border bg-bg" aria-hidden="true">
-				<div class="flex items-center gap-2.5 border-b border-border px-3.5 py-3">
-					<span class="shrink-0 text-accent"><Icon name="bus" size={18} /></span>
-					<span class="truncate text-[0.9375rem] font-semibold text-ink">Central Library</span>
+				<div class="flex min-h-10 items-center gap-2.5 border-b border-border px-3 py-1">
+					<span class="shrink-0 text-accent"><Icon name="bus" size={17} /></span>
+					<span class="truncate text-[0.875rem] font-semibold text-ink">Central Library</span>
 				</div>
 				<ul>
 					{#each sampleRows as r (r.route)}
-						<li class="flex items-center gap-3 border-b border-border px-3.5 py-2.5 last:border-0">
+						<li class="flex min-h-10 items-center gap-2.5 border-b border-border px-3 py-1 last:border-0">
 							<span
-								class="grid h-7 min-w-[1.9rem] shrink-0 place-items-center rounded-md px-1 font-mono text-xs font-bold"
+								class="grid h-6 min-w-[1.75rem] shrink-0 place-items-center rounded-md px-1 font-mono text-[0.6875rem] font-bold"
 								style="background: {routeColor(r.route)}; color: {routeTextColor(r.route)}"
 							>
 								{r.route}
 							</span>
-							<span class="min-w-0 flex-1 truncate text-[0.8125rem] text-ink-soft">{r.dest}</span>
+							<span class="min-w-0 flex-1 truncate text-xs text-ink-soft">{r.dest}</span>
 							<span class="shrink-0 whitespace-nowrap text-right">
-								<span class="text-[0.9375rem] font-semibold tabular-nums text-ink">{r.eta}</span>
+								<span class="text-[0.875rem] font-semibold tabular-nums text-ink">{r.eta}</span>
 								<span class="ml-1 text-[0.6875rem] font-medium text-muted">min</span>
 							</span>
 						</li>
@@ -130,20 +130,20 @@
 	</div>
 
 	<!-- Location -->
-	<div class="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
+	<div class="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
 		<h2
-			class="border-b border-border px-3.5 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted"
+			class="border-b border-border px-3 py-2 text-[0.6875rem] font-semibold uppercase tracking-wide text-muted"
 		>
 			Location
 		</h2>
-		<div class="flex items-center justify-between gap-3 px-3.5 py-3">
-			<span class="flex items-center gap-2.5 text-[0.9375rem] font-medium text-ink">
+		<div class="flex min-h-10 items-center justify-between gap-3 px-3 py-1.5">
+			<span class="flex items-center gap-2.5 text-[0.875rem] font-medium text-ink">
 				<span class="text-muted"><Icon name="pin" size={17} /></span>
 				Enable location
 			</span>
 			<Switch checked={locOn} label="Enable location" onToggle={toggleLocation} />
 		</div>
-		<p class="border-t border-border px-3.5 py-2 text-[0.6875rem] leading-relaxed text-muted">
+		<p class="border-t border-border px-3 py-1.5 text-[0.6875rem] leading-relaxed text-muted">
 			Sorts the home screen by the stops nearest to you. Remembered on this device; your browser may
 			still ask for permission.
 		</p>

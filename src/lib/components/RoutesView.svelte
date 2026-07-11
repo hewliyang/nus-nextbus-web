@@ -8,8 +8,10 @@
 		onSelect: (route: string) => void;
 		/** Stop code to highlight on the rail (deep link from a stop's route badge). */
 		current?: string | null;
+		/** Routes available after an optional parent-level search filter. */
+		routeOptions?: string[];
 	}
-	let { selected, onSelect, current = null }: Props = $props();
+	let { selected, onSelect, current = null, routeOptions = routeKeysSorted }: Props = $props();
 
 	// Stops in travel order; the seq:32767 entry is the loop-back to the origin
 	// terminal, shown at the bottom so the list reads terminal → terminal.
@@ -48,15 +50,13 @@
 <div class="space-y-4">
 	<!-- route chips (alphabetical, wrapping) -->
 	<div class="flex flex-wrap gap-2">
-		{#each routeKeysSorted as key}
+		{#each routeOptions as key}
 			{@const active = key === selected}
 			<button
 				onclick={() => onSelect(key)}
 				aria-pressed={active}
 				class="rounded-full px-3.5 py-1.5 font-mono text-sm font-bold transition-all
-					{active
-					? 'shadow-card'
-					: 'border border-border bg-surface text-ink-soft hover:bg-surface-2'}"
+					{active ? 'shadow-card' : 'border border-border bg-surface text-ink-soft hover:bg-surface-2'}"
 				style={active ? `background: ${routeColor(key)}; color: ${routeTextColor(key)}` : ''}
 			>
 				{key}

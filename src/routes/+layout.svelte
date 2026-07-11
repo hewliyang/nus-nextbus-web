@@ -29,7 +29,7 @@
 </svelte:head>
 
 {#if isFullBleed}
-	<div class="relative mx-auto h-[100dvh] w-full max-w-xl overflow-hidden bg-bg">
+	<div class="relative mx-auto h-[100dvh] w-full overflow-hidden bg-bg">
 		{@render children()}
 	</div>
 {:else}

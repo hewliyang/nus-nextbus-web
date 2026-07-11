@@ -43,10 +43,10 @@
 	const servingRoutes = $derived(routesServingStop(code));
 </script>
 
-<div class="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
-	<div class="flex items-center gap-2 border-b border-border px-3.5 py-3">
+<div class="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
+	<div class="flex min-h-10 items-center gap-2 border-b border-border px-3 py-1">
 		<a href="/stop/{code}" class="min-w-0 flex-1">
-			<span class="block truncate text-[0.9375rem] font-semibold text-ink">{caption}</span>
+			<span class="block truncate text-[0.875rem] font-semibold text-ink">{caption}</span>
 		</a>
 		{#if extra}{@render extra()}{/if}
 		<button
@@ -70,19 +70,19 @@
 				<li class="border-b border-border last:border-0">
 					<a
 						href="/?view=routes&route={rt}"
-						class="flex items-center gap-3 px-3.5 py-2.5 transition-colors hover:bg-surface-2"
+						class="flex min-h-10 items-center gap-2.5 px-3 py-1 transition-colors hover:bg-surface-2"
 					>
 						<span
-							class="grid h-7 min-w-[1.9rem] shrink-0 place-items-center rounded-md px-1 font-mono text-xs font-bold"
+							class="grid h-6 min-w-[1.75rem] shrink-0 place-items-center rounded-md px-1 font-mono text-[0.6875rem] font-bold"
 							style="background: {routeColor(s.name)}; color: {routeTextColor(s.name)}"
 						>
 							{label}
 						</span>
-						<span class="min-w-0 flex-1 truncate text-[0.8125rem] text-ink-soft"
+						<span class="min-w-0 flex-1 truncate text-xs text-ink-soft"
 							>{routeTerminal(rt)}</span
 						>
 						<span class="shrink-0 whitespace-nowrap text-right">
-							<span class="text-[0.9375rem] font-semibold tabular-nums text-ink"
+							<span class="text-[0.875rem] font-semibold tabular-nums text-ink"
 								>{formatArrivalPair(s)}</span
 							>
 							{#if formatArrival(s.arrivalTime, s.arrivalTime_ts).unit}<span
@@ -97,9 +97,9 @@
 		<ul aria-label="Loading arrivals" aria-busy="true">
 			{#each servingRoutes as name (name)}
 				{@const label = isPublic(name) ? name.slice(4) : name}
-				<li class="flex items-center gap-3 border-b border-border px-3.5 py-2.5 last:border-0">
+				<li class="flex min-h-10 items-center gap-2.5 border-b border-border px-3 py-1 last:border-0">
 					<span
-						class="grid h-7 min-w-[1.9rem] shrink-0 place-items-center rounded-md px-1 font-mono text-xs font-bold"
+						class="grid h-6 min-w-[1.75rem] shrink-0 place-items-center rounded-md px-1 font-mono text-[0.6875rem] font-bold"
 						style="background: {routeColor(name)}; color: {routeTextColor(name)}"
 					>
 						{label}
@@ -108,13 +108,13 @@
 					<span class="ml-auto h-4 w-9 animate-pulse rounded bg-surface-2"></span>
 				</li>
 			{:else}
-				<li class="px-3.5 py-3">
+				<li class="px-3 py-2.5">
 					<span class="block h-4 w-32 animate-pulse rounded bg-surface-2"></span>
 				</li>
 			{/each}
 		</ul>
 	{:else}
-		<p class="px-3.5 py-3 text-[0.8125rem] text-muted">
+		<p class="px-3 py-2.5 text-xs text-muted">
 			{#if arrivals.failed}
 				Couldn’t load arrivals.
 			{:else}

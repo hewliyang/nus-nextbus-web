@@ -46,6 +46,8 @@
 		 * is actually looking at.
 		 */
 		coveredPct?: number;
+		/** The host uses a permanent left sidebar rather than an overlaying sheet. */
+		sidePanel?: boolean;
 		/**
 		 * True while the host is actively dragging its sheet. Gates the
 		 * crosshair's snap transition (so it tracks the finger 1:1) and defers
@@ -71,6 +73,7 @@
 		onCenterChange,
 		focus,
 		coveredPct = 0,
+		sidePanel = false,
 		dragging = false
 	}: Props = $props();
 
@@ -419,7 +422,9 @@
 						[stop.lng + dLng, stop.lat + dLat]
 					],
 					{
-						padding: { top: 44, bottom: Math.round(h * 0.5), left: 40, right: 40 },
+						padding: sidePanel
+							? { top: 56, bottom: 56, left: 56, right: 56 }
+							: { top: 44, bottom: Math.round(h * 0.5), left: 40, right: 40 },
 						maxZoom: 16,
 						duration
 					}
@@ -435,7 +440,9 @@
 					[Math.max(...coords.map((stop) => stop.lng)), Math.max(...coords.map((stop) => stop.lat))]
 				],
 				{
-					padding: { top: 44, bottom: Math.round(h * 0.5), left: 40, right: 40 },
+					padding: sidePanel
+						? { top: 56, bottom: 56, left: 56, right: 56 }
+						: { top: 44, bottom: Math.round(h * 0.5), left: 40, right: 40 },
 					maxZoom: 16,
 					duration
 				}
@@ -451,7 +458,9 @@
 					[Math.max(...lngs), Math.max(...lats)]
 				],
 				{
-					padding: { top: 44, bottom: Math.round(h * 0.45), left: 40, right: 40 },
+					padding: sidePanel
+						? { top: 56, bottom: 56, left: 56, right: 56 }
+						: { top: 44, bottom: Math.round(h * 0.45), left: 40, right: 40 },
 					maxZoom: 16,
 					duration
 				}
@@ -578,6 +587,7 @@
 		void view;
 		void route;
 		void starred;
+		void sidePanel;
 		void activeStop;
 		void lat;
 		void lng;

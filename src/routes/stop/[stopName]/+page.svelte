@@ -141,22 +141,22 @@
 	});
 </script>
 
-<div class="flex h-full w-full flex-col">
+<div class="flex h-full w-full flex-col lg:grid lg:grid-cols-[28rem_minmax(0,1fr)]">
 	<!-- MAP strip pinned to the top ~20% of the viewport, focused on this stop -->
-	<div class="h-[20dvh] min-h-32 shrink-0">
+	<div class="h-[20dvh] min-h-32 shrink-0 lg:col-start-2 lg:row-start-1 lg:h-full">
 		<HomeMap view="stops" route="D2" lat={mapLat} lng={mapLng} focus={data.code} />
 	</div>
 
 	<!-- DRAWER: overlaps the map slightly and holds the whole page content -->
 	<div
-		class="relative z-10 -mt-4 flex min-h-0 flex-1 flex-col rounded-t-3xl border-t border-border bg-bg shadow-[0_-10px_40px_-12px_rgba(0,0,0,0.3)]"
+		class="relative z-10 -mt-4 flex min-h-0 flex-1 flex-col rounded-t-3xl border-t border-border bg-bg shadow-[0_-10px_40px_-12px_rgba(0,0,0,0.3)] lg:col-start-1 lg:row-start-1 lg:mt-0 lg:h-full lg:rounded-none lg:border-r lg:border-t-0 lg:shadow-none"
 	>
 		<!-- Focusable scroll region: the page no longer scrolls at document level,
 		     so without a tabindex keyboard users couldn't scroll the timings.
 		     (Labelled region + tabindex is the WAI pattern for scroll regions.) -->
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<div
-			class="flex-1 overflow-y-auto overscroll-contain px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-5 focus:outline-none"
+			class="flex-1 overflow-y-auto overscroll-contain px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-5 focus:outline-none lg:px-6 lg:pt-6"
 			role="region"
 			aria-label="Stop details"
 			tabindex="0"

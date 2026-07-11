@@ -2,8 +2,8 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { stops } from '$lib/data';
 	import { nearestStops } from '$lib/geo';
+	import { searchBookmarks, searchRoutes, searchStops } from '$lib/search';
 	import { getDistance } from '$lib/stores/utils';
 	import { setPref } from '$lib/prefs';
 	import type { LocPref } from '$lib/parse';
@@ -11,10 +11,7 @@
 	import {
 		NUS_CENTER,
 		routeKeysSorted,
-		routeStops,
-		routesServingStop,
-		routeColor,
-		routeTextColor
+		routeStops
 	} from '$lib/routes';
 	import Icon from '$lib/components/Icon.svelte';
 	import HomeMap from '$lib/components/HomeMap.svelte';
@@ -64,6 +61,7 @@
 	let locStatus = $state<LocationStatus>('idle');
 	let limit = $state(3);
 	let mounted = $state(false);
+	let desktop = $state(false);
 	let loadMoreSentinel = $state<HTMLDivElement>();
 
 	// The crosshair cursor: wherever the map centre settles. The Nearby list
@@ -153,10 +151,16 @@
 
 	onMount(() => {
 		mounted = true;
-		if (locPref === 'off') return; // the user said no — don't auto-locate
+		const media = window.matchMedia('(min-width: 1024px)');
+		const syncDesktop = () => (desktop = media.matches);
+		syncDesktop();
+		media.addEventListener('change', syncDesktop);
+
+		const cleanup = () => media.removeEventListener('change', syncDesktop);
+		if (locPref === 'off') return cleanup; // the user said no — don't auto-locate
 		if (locPref === 'on') {
 			requestLocation();
-			return;
+			return cleanup;
 		}
 		if ('permissions' in navigator) {
 			navigator.permissions
@@ -166,6 +170,7 @@
 				})
 				.catch(() => {});
 		}
+		return cleanup;
 	});
 
 	// ── bottom sheet: drag the grabber between a peek and an expanded snap
@@ -206,17 +211,20 @@
 		sheetH = sheetH > 64 ? PEEK : EXPANDED;
 	}
 
-	// ── search (pure-runes substring; lands on /stop/[code]) ──
-	const searchStops = stops.map((s) => ({
-		stop: s,
-		terms: `${s.caption} ${s.name} ${s.ShortName} ${s.LongName}`.toLowerCase()
-	}));
+	// ── search ──
 	let searchTerm = $state('');
-	const searching = $derived(searchTerm.trim().length > 0);
-	const searchResults = $derived(
-		searching
-			? searchStops.filter((e) => e.terms.includes(searchTerm.toLowerCase())).map((e) => e.stop)
-			: []
+	const query = $derived(searchTerm.trim());
+	const searching = $derived(query.length > 0);
+	const searchResults = $derived(searchStops(query));
+	const starredResults = $derived(searchBookmarks(bookmarks, query));
+	const matchingRoutes = $derived(searchRoutes(query));
+	const activeRoute = $derived(
+		view === 'routes' && searching && !matchingRoutes.includes(selectedRoute)
+			? (matchingRoutes[0] ?? selectedRoute)
+			: selectedRoute
+	);
+	const mappedStarredCodes = $derived(
+		view === 'starred' ? starredResults.map((bookmark) => bookmark.name) : starredCodes
 	);
 
 	const snackText = $derived(
@@ -231,21 +239,22 @@
 	);
 </script>
 
-<div class="relative h-full w-full">
+<div class="relative h-full w-full lg:grid lg:grid-cols-[26rem_minmax(0,1fr)]">
 	<!-- MAP background (full-bleed) — one shared instance; layers + zoom-frame
 	     switch with the view, so toggling Stops/Routes never re-creates the map. -->
-	<div class="absolute inset-0">
+	<div class="absolute inset-0 lg:relative lg:col-start-2 lg:row-start-1">
 		<HomeMap
 			bind:this={homeMap}
 			{view}
-			starred={starredCodes}
+			starred={mappedStarredCodes}
 			lat={userLat}
 			lng={userLng}
 			real={userReal}
-			route={selectedRoute}
+			route={activeRoute}
 			activeStop={selectedStop}
-			coveredPct={sheetH}
-			{dragging}
+			coveredPct={desktop ? 0 : sheetH}
+			sidePanel={desktop}
+			dragging={desktop ? false : dragging}
 			onCenterChange={(lng, lat) => {
 				cursorLng = lng;
 				cursorLat = lat;
@@ -256,7 +265,7 @@
 	<!-- settings — top-left over the map (dark mode + UI size + location live there) -->
 	<a
 		href="/settings"
-		class="absolute left-3 top-3 z-30 grid h-10 w-10 place-items-center rounded-full border border-border bg-surface/90 text-ink-soft shadow-card backdrop-blur-md transition-colors hover:bg-surface"
+		class="absolute left-3 top-3 z-30 grid h-10 w-10 lg:left-[calc(26rem+0.75rem)] place-items-center rounded-full border border-border bg-surface/90 text-ink-soft shadow-card backdrop-blur-md transition-colors hover:bg-surface"
 		aria-label="Settings"
 	>
 		<Icon name="settings" size={18} />
@@ -278,10 +287,11 @@
 	     the top controls — so it fades out instead. -->
 	{#if view === 'stops' && showBanner}
 		<div
-			class="absolute inset-x-3 z-20 {sheetH > 64
+			class="absolute inset-x-3 z-20 lg:left-[calc(26rem+0.75rem)] lg:pointer-events-auto lg:opacity-100 {sheetH >
+			64
 				? 'pointer-events-none opacity-0'
 				: 'opacity-100'} {dragging ? '' : 'transition-[bottom,opacity] duration-300 ease-out'}"
-			style="bottom: calc({sheetH}% + 0.75rem)"
+			style:bottom={desktop ? '0.75rem' : `calc(${sheetH}% + 0.75rem)`}
 		>
 			<Snackbar
 				message={snackText}
@@ -295,14 +305,14 @@
 
 	<!-- BOTTOM SHEET (drawer over the map) -->
 	<div
-		class="absolute inset-x-0 bottom-0 z-10 flex flex-col rounded-t-3xl border-t border-border bg-bg shadow-[0_-10px_40px_-12px_rgba(0,0,0,0.3)] {dragging
+		class="home-panel absolute inset-x-0 bottom-0 z-10 flex flex-col rounded-t-3xl border-t border-border bg-bg shadow-[0_-10px_40px_-12px_rgba(0,0,0,0.3)] lg:relative lg:inset-auto lg:col-start-1 lg:row-start-1 lg:rounded-none lg:border-r lg:border-t-0 lg:shadow-none {dragging
 			? ''
 			: 'transition-[height] duration-300 ease-out'}"
 		style="height: {sheetH}%"
 	>
 		<button
 			type="button"
-			class="flex w-full shrink-0 cursor-grab touch-none justify-center pb-1.5 pt-3 active:cursor-grabbing"
+			class="flex w-full shrink-0 cursor-grab touch-none justify-center pb-1.5 pt-3 active:cursor-grabbing lg:hidden"
 			onpointerdown={grabDown}
 			onpointermove={grabMove}
 			onpointerup={grabEnd}
@@ -314,23 +324,38 @@
 		</button>
 
 		<div
-			class="flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+			class="flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 pb-[max(1rem,env(safe-area-inset-bottom))] lg:px-4 lg:pt-4"
 		>
-			<!-- SEARCH (Stops view only) -->
-			{#if view === 'stops'}
-				<div
-					class="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 shadow-card focus-within:border-accent"
-				>
-					<span class="text-muted"><Icon name="search" size={17} /></span>
-					<input
-						type="search"
-						placeholder="Search bus stops"
-						aria-label="Search stops"
-						bind:value={searchTerm}
-						class="w-full bg-transparent py-3 text-[0.9375rem] text-ink placeholder:text-muted focus:outline-none"
-					/>
-				</div>
-			{/if}
+			<!-- Search follows the active scope: all stops, saved stops, or routes by stop. -->
+			<div
+				class="flex min-h-10 items-center gap-2.5 rounded-xl border border-border bg-surface px-3 shadow-card focus-within:border-accent"
+			>
+				<span class="text-muted"><Icon name="search" size={17} /></span>
+				<input
+					type="search"
+					placeholder={view === 'routes'
+						? 'Search routes or stops'
+						: view === 'starred'
+							? 'Search starred stops'
+							: 'Search bus stops'}
+					aria-label={view === 'routes'
+						? 'Search routes by stop'
+						: view === 'starred'
+							? 'Search starred stops'
+							: 'Search stops'}
+					bind:value={searchTerm}
+					class="w-full bg-transparent py-2 text-[0.875rem] text-ink placeholder:text-muted focus:outline-none"
+				/>
+				{#if searching}
+					<button
+						onclick={() => (searchTerm = '')}
+						class="grid h-7 w-7 shrink-0 place-items-center rounded-md text-muted hover:bg-surface-2 hover:text-ink"
+						aria-label="Clear search"
+					>
+						<Icon name="x" size={14} />
+					</button>
+				{/if}
+			</div>
 
 			<!-- SEGMENTED -->
 			<Segmented
@@ -347,31 +372,11 @@
 			{#if view === 'stops'}
 				{#if searching}
 					{#if searchResults.length > 0}
-						<ul class="space-y-2">
+						<div class="space-y-2">
 							{#each searchResults as stop (stop.name)}
-								{@const servingRoutes = routesServingStop(stop.name)}
-								<li>
-									<a
-										href="/stop/{stop.name}"
-										class="flex items-center gap-3 rounded-xl border border-border bg-surface px-3.5 py-3 text-[0.875rem] font-medium leading-tight text-ink shadow-card transition-all hover:-translate-y-0.5 hover:border-border-strong"
-									>
-										<span class="min-w-0 flex-1 truncate">{stop.caption}</span>
-										{#if servingRoutes.length > 0}
-											<span class="flex shrink-0 flex-wrap items-center justify-end gap-1">
-												{#each servingRoutes as r (r)}
-													<span
-														class="grid h-6 w-6 place-items-center rounded-md font-mono text-[0.625rem] font-bold"
-														style="background: {routeColor(r)}; color: {routeTextColor(r)}"
-													>
-														{r}
-													</span>
-												{/each}
-											</span>
-										{/if}
-									</a>
-								</li>
+								<StopCard code={stop.name} caption={stop.caption} />
 							{/each}
-						</ul>
+						</div>
 					{:else}
 						<div class="flex flex-col items-center gap-2 py-12 text-center">
 							<span class="text-muted"><Icon name="search" size={26} /></span>
@@ -379,10 +384,10 @@
 						</div>
 					{/if}
 				{:else}
-					<div class="space-y-2.5">
-						<h2 class="px-1 text-xs font-semibold uppercase tracking-wide text-muted">
-							{cursorAdrift ? 'Near map centre' : 'Nearby'}
-						</h2>
+					<div class="space-y-2">
+						{#if cursorAdrift}
+							<p class="px-1 text-[0.6875rem] font-medium text-muted">Near map centre</p>
+						{/if}
 						{#if mounted}
 							{#each visibleNearby as stop (stop.name)}
 								<StopCard code={stop.name} caption={stop.caption} />
@@ -402,33 +407,58 @@
 					</div>
 				{/if}
 			{:else if view === 'starred'}
-				{#if bookmarks.length > 0}
-					<div class="space-y-2.5">
-						<h2 class="px-1 text-xs font-semibold uppercase tracking-wide text-muted">
-							Starred stops
-						</h2>
-						{#each bookmarks as bookmark (bookmark.name)}
+				{#if starredResults.length > 0}
+					<div class="space-y-2">
+						{#if searching}
+							<p class="px-1 text-[0.6875rem] font-medium text-muted">
+								{starredResults.length} matching stops
+							</p>
+						{/if}
+						{#each starredResults as bookmark (bookmark.name)}
 							<StopCard code={bookmark.name} caption={bookmark.caption} />
 						{/each}
 					</div>
 				{:else}
 					<div class="flex flex-col items-center gap-2 py-12 text-center">
-						<span class="text-muted"><Icon name="star" size={26} /></span>
-						<p class="text-sm font-medium text-ink">No starred stops yet</p>
-						<p class="max-w-xs text-xs text-muted">
-							Star a stop from its page to keep it here and highlight it on the map.
+						<span class="text-muted"><Icon name={searching ? 'search' : 'star'} size={26} /></span>
+						<p class="text-sm font-medium text-ink">
+							{searching ? 'No starred stops match' : 'No starred stops yet'}
 						</p>
-						<button
-							onclick={() => setView('stops')}
-							class="mt-2 rounded-lg px-3 py-2 text-sm font-semibold text-accent hover:bg-accent-soft"
-						>
-							Browse nearby stops
-						</button>
+						{#if !searching}
+							<p class="max-w-xs text-xs text-muted">
+								Star a stop from its page to keep it here and highlight it on the map.
+							</p>
+							<button
+								onclick={() => setView('stops')}
+								class="mt-2 rounded-lg px-3 py-2 text-sm font-semibold text-accent hover:bg-accent-soft"
+							>
+								Browse nearby stops
+							</button>
+						{/if}
 					</div>
 				{/if}
+			{:else if matchingRoutes.length > 0}
+				<RoutesView
+					selected={activeRoute}
+					onSelect={setRoute}
+					current={selectedStop}
+					routeOptions={matchingRoutes}
+				/>
 			{:else}
-				<RoutesView selected={selectedRoute} onSelect={setRoute} current={selectedStop} />
+				<div class="flex flex-col items-center gap-2 py-12 text-center">
+					<span class="text-muted"><Icon name="search" size={26} /></span>
+					<p class="text-sm font-medium text-ink">No routes serve a matching stop</p>
+					<p class="max-w-xs text-xs text-muted">Try another stop name or code.</p>
+				</div>
 			{/if}
 		</div>
 	</div>
 </div>
+
+<style>
+	@media (min-width: 1024px) {
+		.home-panel {
+			height: 100% !important;
+		}
+	}
+</style>
