@@ -84,6 +84,75 @@ export function setSquareIcon(map: MlMap, name: string, opts: SquareIcon): void 
 // Edge lengths matching the circle radii they replace.
 export const STOP_SIZE = { normal: 10, active: 16, nearby: 12 } as const;
 
+/** A compact bus-stop sign, with an optional star badge for saved stops. */
+export function setStopSignIcon(
+	map: MlMap,
+	name: string,
+	opts: { fill: string; stroke: string; starred?: boolean; active?: boolean }
+): void {
+	const dpr = Math.min(Math.max(window.devicePixelRatio || 1, 1), 3);
+	const width = opts.active ? 22 : 18;
+	const height = opts.active ? 26 : 22;
+	const cnv = document.createElement('canvas');
+	cnv.width = Math.round(width * dpr);
+	cnv.height = Math.round(height * dpr);
+	const ctx = cnv.getContext('2d');
+	if (!ctx) return;
+	ctx.scale(dpr, dpr);
+
+	const panelX = 1.5;
+	const panelY = 1.5;
+	const panelW = width - 3;
+	const panelH = height - 7;
+	ctx.beginPath();
+	ctx.roundRect(panelX, panelY, panelW, panelH, 4);
+	ctx.fillStyle = opts.fill;
+	ctx.fill();
+	ctx.lineWidth = 2;
+	ctx.strokeStyle = opts.stroke;
+	ctx.stroke();
+
+	// A simple transit-stop motif: two windows over a baseline.
+	ctx.strokeStyle = '#ffffff';
+	ctx.lineWidth = 1.4;
+	ctx.beginPath();
+	ctx.moveTo(width * 0.31, panelY + panelH * 0.35);
+	ctx.lineTo(width * 0.31, panelY + panelH * 0.68);
+	ctx.moveTo(width * 0.69, panelY + panelH * 0.35);
+	ctx.lineTo(width * 0.69, panelY + panelH * 0.68);
+	ctx.moveTo(width * 0.24, panelY + panelH * 0.68);
+	ctx.lineTo(width * 0.76, panelY + panelH * 0.68);
+	ctx.stroke();
+
+	ctx.fillStyle = opts.stroke;
+	ctx.fillRect(width / 2 - 1, panelY + panelH, 2, height - panelY - panelH);
+
+	if (opts.starred) {
+		const cx = width - 4;
+		const cy = 4;
+		const outer = opts.active ? 4.5 : 4;
+		ctx.beginPath();
+		for (let i = 0; i < 10; i += 1) {
+			const radius = i % 2 === 0 ? outer : outer * 0.45;
+			const angle = -Math.PI / 2 + (i * Math.PI) / 5;
+			const x = cx + Math.cos(angle) * radius;
+			const y = cy + Math.sin(angle) * radius;
+			if (i === 0) ctx.moveTo(x, y);
+			else ctx.lineTo(x, y);
+		}
+		ctx.closePath();
+		ctx.fillStyle = '#f59e0b';
+		ctx.fill();
+		ctx.lineWidth = 1;
+		ctx.strokeStyle = '#ffffff';
+		ctx.stroke();
+	}
+
+	const data = ctx.getImageData(0, 0, cnv.width, cnv.height);
+	if (map.hasImage(name)) map.updateImage(name, data);
+	else map.addImage(name, data, { pixelRatio: dpr });
+}
+
 /**
  * Direction arrowhead in the route's colour with the same white outline as
  * the line casing, so along the path it reads as the line growing periodic

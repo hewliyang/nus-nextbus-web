@@ -7,6 +7,7 @@
 	import { getDistance } from '$lib/stores/utils';
 	import { setPref } from '$lib/prefs';
 	import type { LocPref } from '$lib/parse';
+	import type { Bookmark } from '$lib/types';
 	import {
 		NUS_CENTER,
 		routeKeysSorted,
@@ -26,7 +27,10 @@
 
 	// view + selected route are URL-driven: deep-linkable, and survive in-place
 	// navigation from a card's route badge (/?view=routes&route=D2).
-	const view = $derived($page.url.searchParams.get('view') === 'routes' ? 'routes' : 'stops');
+	const view = $derived.by<'stops' | 'starred' | 'routes'>(() => {
+		const value = $page.url.searchParams.get('view');
+		return value === 'routes' || value === 'starred' ? value : 'stops';
+	});
 	const rawRoute = $derived($page.url.searchParams.get('route'));
 	const selectedRoute = $derived(rawRoute && routeKeysSorted.includes(rawRoute) ? rawRoute : 'D2');
 	// Optional highlighted stop (/?view=routes&route=D2&stop=COM3 from a stop
@@ -60,6 +64,7 @@
 	let locStatus = $state<LocationStatus>('idle');
 	let limit = $state(3);
 	let mounted = $state(false);
+	let loadMoreSentinel = $state<HTMLDivElement>();
 
 	// The crosshair cursor: wherever the map centre settles. The Nearby list
 	// ranks around it, so panning the map re-ranks the drawer. Granting location
@@ -79,6 +84,25 @@
 	const allNearby = $derived(nearestStops(cursorLat, cursorLng, 12));
 	const visibleNearby = $derived(allNearby.slice(0, limit));
 	const canLoadMore = $derived(limit < allNearby.length);
+
+	// Extend the Nearby list as its tail enters the scroll viewport. Recreating
+	// the observer after each batch also fills unusually tall screens without
+	// requiring an initial manual interaction.
+	$effect(() => {
+		void limit;
+		if (!mounted || !canLoadMore || !loadMoreSentinel) return;
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) limit = Math.min(limit + 3, allNearby.length);
+			},
+			{ rootMargin: '0px 0px 160px' }
+		);
+		observer.observe(loadMoreSentinel);
+		return () => observer.disconnect();
+	});
+
+	const bookmarks = $derived(($page.data.bookmarks ?? []) as Bookmark[]);
+	const starredCodes = $derived(bookmarks.map((bookmark) => bookmark.name));
 
 	// Heading flips to "Near map centre" once the cursor has drifted >150 m from
 	// its anchor — the user's real fix, or the campus-centre default before any
@@ -214,6 +238,7 @@
 		<HomeMap
 			bind:this={homeMap}
 			{view}
+			starred={starredCodes}
 			lat={userLat}
 			lng={userLng}
 			real={userReal}
@@ -293,26 +318,17 @@
 		>
 			<!-- SEARCH (Stops view only) -->
 			{#if view === 'stops'}
-				<div class="flex items-center gap-2">
-					<div
-						class="flex flex-1 items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 shadow-card focus-within:border-accent"
-					>
-						<span class="text-muted"><Icon name="search" size={17} /></span>
-						<input
-							type="search"
-							placeholder="Search bus stops"
-							aria-label="Search stops"
-							bind:value={searchTerm}
-							class="w-full bg-transparent py-3 text-[0.9375rem] text-ink placeholder:text-muted focus:outline-none"
-						/>
-					</div>
-					<a
-						href="/starred"
-						aria-label="Starred stops"
-						class="flex h-[3.125rem] shrink-0 items-center gap-1.5 rounded-xl border border-border bg-surface px-3.5 text-[0.8125rem] font-semibold text-ink-soft shadow-card transition-colors hover:bg-surface-2"
-					>
-						<Icon name="star" size={16} /> <span class="ui-opt">Starred</span>
-					</a>
+				<div
+					class="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 shadow-card focus-within:border-accent"
+				>
+					<span class="text-muted"><Icon name="search" size={17} /></span>
+					<input
+						type="search"
+						placeholder="Search bus stops"
+						aria-label="Search stops"
+						bind:value={searchTerm}
+						class="w-full bg-transparent py-3 text-[0.9375rem] text-ink placeholder:text-muted focus:outline-none"
+					/>
 				</div>
 			{/if}
 
@@ -321,7 +337,8 @@
 				value={view}
 				onSelect={setView}
 				options={[
-					{ value: 'stops', label: 'Stops' },
+					{ value: 'stops', label: 'Nearby' },
+					{ value: 'starred', label: 'Starred' },
 					{ value: 'routes', label: 'Routes' }
 				]}
 			/>
@@ -371,16 +388,42 @@
 								<StopCard code={stop.name} caption={stop.caption} />
 							{/each}
 							{#if canLoadMore}
-								<button
-									onclick={() => (limit += 3)}
-									class="w-full rounded-xl border border-border bg-surface py-3 text-[0.8125rem] font-semibold text-ink-soft shadow-card transition-colors hover:bg-surface-2"
+								<div
+									bind:this={loadMoreSentinel}
+									class="flex h-8 items-center justify-center"
+									aria-label="Loading more nearby stops"
 								>
-									Show more stops
-								</button>
+									<span class="h-1.5 w-1.5 animate-pulse rounded-full bg-border-strong"></span>
+								</div>
 							{/if}
 						{:else}
 							<div class="py-8 text-center text-sm text-muted">Locating nearby stops…</div>
 						{/if}
+					</div>
+				{/if}
+			{:else if view === 'starred'}
+				{#if bookmarks.length > 0}
+					<div class="space-y-2.5">
+						<h2 class="px-1 text-xs font-semibold uppercase tracking-wide text-muted">
+							Starred stops
+						</h2>
+						{#each bookmarks as bookmark (bookmark.name)}
+							<StopCard code={bookmark.name} caption={bookmark.caption} />
+						{/each}
+					</div>
+				{:else}
+					<div class="flex flex-col items-center gap-2 py-12 text-center">
+						<span class="text-muted"><Icon name="star" size={26} /></span>
+						<p class="text-sm font-medium text-ink">No starred stops yet</p>
+						<p class="max-w-xs text-xs text-muted">
+							Star a stop from its page to keep it here and highlight it on the map.
+						</p>
+						<button
+							onclick={() => setView('stops')}
+							class="mt-2 rounded-lg px-3 py-2 text-sm font-semibold text-accent hover:bg-accent-soft"
+						>
+							Browse nearby stops
+						</button>
 					</div>
 				{/if}
 			{:else}

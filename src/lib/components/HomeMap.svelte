@@ -9,6 +9,7 @@
 		toHex,
 		dimColor,
 		setSquareIcon,
+		setStopSignIcon,
 		STOP_SIZE,
 		setArrowImage,
 		routeLineFC,
@@ -20,13 +21,15 @@
 
 	interface Props {
 		/** Which segmented-control tab is active. */
-		view: 'stops' | 'routes';
+		view: 'stops' | 'starred' | 'routes';
 		/** User location (falls back to campus centre when not real). */
 		lat: number;
 		lng: number;
 		real?: boolean;
 		/** Route shown in the Routes view. */
 		route: string;
+		/** Stop codes saved by the user, highlighted in Stops and isolated in Starred. */
+		starred?: string[];
 		/**
 		 * Highlighted stop on that route (Routes-view deep link from a stop page):
 		 * the line and stops before it dim, the stop itself gets a bigger marker.
@@ -63,6 +66,7 @@
 		lng,
 		real = false,
 		route,
+		starred = [],
 		activeStop = null,
 		onCenterChange,
 		focus,
@@ -81,6 +85,7 @@
 
 	// Focus mode behaves as the Stops view for layer visibility.
 	const effView = $derived(focus ? 'stops' : view);
+	const starredSet = $derived(new Set(starred));
 
 	let container: HTMLDivElement;
 	let map: MlMap | null = null;
@@ -117,13 +122,18 @@
 		// The focused stop (stop-focus mode) is rendered by its own source/layer
 		// pair, so it is excluded here to avoid a doubled marker + label.
 		const inView = b
-			? stops.filter((s) => s.name !== focus && b.contains([s.longitude, s.latitude]))
+			? stops.filter(
+					(s) =>
+						s.name !== focus &&
+						(view !== 'starred' || starredSet.has(s.name)) &&
+						b.contains([s.longitude, s.latitude])
+				)
 			: [];
 		return {
 			type: 'FeatureCollection' as const,
 			features: inView.map((s) => ({
 				type: 'Feature' as const,
-				properties: { name: s.caption, code: s.name },
+				properties: { name: s.caption, code: s.name, starred: starredSet.has(s.name) },
 				geometry: { type: 'Point' as const, coordinates: [s.longitude, s.latitude] }
 			}))
 		};
@@ -165,15 +175,20 @@
 			stroke: dim,
 			size: STOP_SIZE.normal
 		});
-		setSquareIcon(map, 'home-nearby-stop', {
+		setStopSignIcon(map, 'home-nearby-stop', {
 			fill: STOP_COLOR,
-			stroke: '#ffffff',
-			size: STOP_SIZE.nearby
+			stroke: '#ffffff'
 		});
-		setSquareIcon(map, 'home-focus-stop', {
+		setStopSignIcon(map, 'home-starred-stop', {
 			fill: STOP_COLOR,
 			stroke: '#ffffff',
-			size: STOP_SIZE.active
+			starred: true
+		});
+		setStopSignIcon(map, 'home-focus-stop', {
+			fill: STOP_COLOR,
+			stroke: '#ffffff',
+			active: true,
+			starred: focus ? starredSet.has(focus) : false
 		});
 		// arrowheads inherit the selected route's colour (re-baked on change)
 		setArrowImage(map, 'route-arrow', lineColor);
@@ -262,7 +277,7 @@
 			type: 'symbol',
 			source: 'nearby-stops',
 			layout: {
-				'icon-image': 'home-nearby-stop',
+				'icon-image': ['case', ['get', 'starred'], 'home-starred-stop', 'home-nearby-stop'],
 				'icon-allow-overlap': true,
 				'icon-ignore-placement': true
 			}
@@ -363,7 +378,7 @@
 		}
 		for (const id of NEARBY_LAYERS) {
 			if (map.getLayer(id))
-				map.setLayoutProperty(id, 'visibility', effView === 'stops' ? 'visible' : 'none');
+				map.setLayoutProperty(id, 'visibility', effView !== 'routes' ? 'visible' : 'none');
 		}
 	}
 
@@ -391,7 +406,41 @@
 			return;
 		}
 
-		if (view === 'routes') {
+		if (view === 'starred') {
+			const coords = starred.map(stopCoord).filter((stop) => stop !== undefined);
+			if (coords.length === 0) return;
+			if (coords.length === 1) {
+				const stop = coords[0];
+				const dLat = 100 / 111_000;
+				const dLng = 100 / (111_000 * Math.cos((stop.lat * Math.PI) / 180));
+				map.fitBounds(
+					[
+						[stop.lng - dLng, stop.lat - dLat],
+						[stop.lng + dLng, stop.lat + dLat]
+					],
+					{
+						padding: { top: 44, bottom: Math.round(h * 0.5), left: 40, right: 40 },
+						maxZoom: 16,
+						duration
+					}
+				);
+				return;
+			}
+			map.fitBounds(
+				[
+					[
+						Math.min(...coords.map((stop) => stop.lng)),
+						Math.min(...coords.map((stop) => stop.lat))
+					],
+					[Math.max(...coords.map((stop) => stop.lng)), Math.max(...coords.map((stop) => stop.lat))]
+				],
+				{
+					padding: { top: 44, bottom: Math.round(h * 0.5), left: 40, right: 40 },
+					maxZoom: 16,
+					duration
+				}
+			);
+		} else if (view === 'routes') {
 			const line = routeShape(route);
 			if (!line.length) return;
 			const lngs = line.map((p) => p[0]);
@@ -528,6 +577,7 @@
 	$effect(() => {
 		void view;
 		void route;
+		void starred;
 		void activeStop;
 		void lat;
 		void lng;

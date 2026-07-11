@@ -8,7 +8,8 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import type { Timing, Bookmark } from '$lib/types';
+	import type { Bookmark } from '$lib/types';
+	import { dedupeTerminalVariants, formatArrival, hasArrival } from '$lib/timings';
 
 	let { data }: { data: PageData } = $props();
 
@@ -58,26 +59,14 @@
 	const lastUpdated = $derived(current?.etas.lastUpdated ?? null);
 	const timings = $derived(current?.etas.timings ?? []);
 
-	const terminals = ['KRB', 'OTH', 'UTOWN', 'COM3'];
-	const filteredShuttles = $derived.by<Timing[]>(() => {
-		if (terminals.includes(busStopName)) {
-			return timings.filter(({ busStopCode }) => {
-				if (!busStopCode) return true;
-				const tokens = busStopCode.split('-');
-				return !(tokens.length > 2 && tokens[2] === 'E');
-			});
-		}
-		return timings;
-	});
-
-	const hasTime = (t: string | undefined) => !!t && t !== '-';
+	const filteredShuttles = $derived(dedupeTerminalVariants(timings));
 	const liveShuttles = $derived(
-		filteredShuttles.filter((s) => hasTime(s.arrivalTime) || hasTime(s.nextArrivalTime))
+		filteredShuttles.filter((s) => hasArrival(s.arrivalTime) || hasArrival(s.nextArrivalTime))
 	);
 	const idleRoutes = $derived([
 		...new Set(
 			filteredShuttles
-				.filter((s) => !hasTime(s.arrivalTime) && !hasTime(s.nextArrivalTime))
+				.filter((s) => !hasArrival(s.arrivalTime) && !hasArrival(s.nextArrivalTime))
 				.map((s) => s.name)
 		)
 	]);
@@ -150,26 +139,6 @@
 			document.removeEventListener('visibilitychange', onVisible);
 		};
 	});
-
-	const FAR_MIN = 60;
-	function clock(ts: string) {
-		const m = ts.match(/(\d{1,2}):(\d{2})/);
-		if (!m) return ts;
-		let h = Number(m[1]);
-		const ap = h < 12 ? 'am' : 'pm';
-		h = h % 12 || 12;
-		return `${h}:${m[2]}${ap}`;
-	}
-	function fmt(t: string, ts?: string) {
-		if (!t || t === '-') return { value: '—', unit: '' };
-		const n = Number(t);
-		if (!Number.isNaN(n)) {
-			if (n === 0) return { value: 'Arr', unit: '' };
-			if (n >= FAR_MIN && ts) return { value: clock(ts), unit: '' };
-			return { value: String(n), unit: 'min' };
-		}
-		return { value: t, unit: '' };
-	}
 </script>
 
 <div class="flex h-full w-full flex-col">
@@ -303,8 +272,8 @@
 							<!-- Key includes the index: a route can serve a stop twice per loop
 						     (two timings with the same name), and duplicate keys throw. -->
 							{#each liveShuttles as { name, arrivalTime, nextArrivalTime, arrivalTime_ts, nextArrivalTime_ts, arrivalTime_ridership, arrivalTime_veh_plate, arrivalTime_capacity, nextArrivalTime_capacity, nextArrivalTime_ridership, nextArrivalTime_veh_plate }, i (`${name}|${i}`)}
-								{@const arr = fmt(arrivalTime, arrivalTime_ts)}
-								{@const nxt = fmt(nextArrivalTime, nextArrivalTime_ts)}
+								{@const arr = formatArrival(arrivalTime, arrivalTime_ts)}
+								{@const nxt = formatArrival(nextArrivalTime, nextArrivalTime_ts)}
 								{@const label = isPublic(name) ? name.slice(4) : name}
 								<li
 									class="grid grid-cols-[auto_1fr_1fr] items-center gap-3 rounded-2xl border border-border bg-surface p-3 shadow-card"

@@ -24,7 +24,10 @@ const ROUTE_COLORS: Record<string, { bg: string; fg: string }> = {
 const FALLBACK = { bg: '#5566c4', fg: '#FFFFFF' };
 
 export function baseRoute(name: string): string {
-	return name.replace(/^PUB[: ]/, '').split(':')[0].trim();
+	return name
+		.replace(/^PUB[: ]/, '')
+		.split(':')[0]
+		.trim();
 }
 
 export function routeColor(name: string): string {
@@ -113,14 +116,12 @@ export const NUS_CENTER: [number, number] = [103.7764, 1.2966];
 /** Routes sorted alphabetically — used for the Routes-view chips. */
 export const routeKeysSorted = [...routeKeys].sort();
 
-/**
- * The route's final stop ("destination") label. NUS routes are loops; the
- * `seq: 32767` entry marks the terminus the bus returns to, so the highest-seq
- * stop is the natural destination to surface on a card.
- */
+/** The final regular stop, excluding the seq:32767 loop-back sentinel. */
 export function routeTerminal(route: string): string {
 	const list = routes[route] ?? [];
-	if (list.length === 0) return '';
-	const sorted = [...list].sort((a, b) => a.seq - b.seq);
-	return sorted[sorted.length - 1].stop_name;
+	let terminal: RouteStop | undefined;
+	for (const stop of list) {
+		if (stop.seq !== 32767 && (!terminal || stop.seq > terminal.seq)) terminal = stop;
+	}
+	return terminal?.stop_name ?? '';
 }
