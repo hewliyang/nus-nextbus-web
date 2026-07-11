@@ -18,18 +18,25 @@ function shuttleToTiming(shuttle: FmsShuttle): Timing {
 	};
 }
 
-export async function fetchStopTimings(stop: string): Promise<StopResult> {
+export async function fetchBasicStopTimings(stop: string): Promise<StopResult> {
 	const response = await fmsFetch<ShuttleServiceResponse>('ShuttleService', { busstopname: stop });
 	const result = response.ShuttleServiceResult;
 	if (!result) throw new Error(`ShuttleService error: ${JSON.stringify(response).slice(0, 120)}`);
 
-	const etas: BusStopTiming = {
-		lastUpdated: result.Timestamp ?? result.TimeStamp ?? new Date().toISOString(),
-		busStopName: result.name,
-		busStopCaption: result.caption,
-		timings: (result.shuttles ?? []).map(shuttleToTiming)
+	return {
+		etas: {
+			lastUpdated: result.Timestamp ?? result.TimeStamp ?? new Date().toISOString(),
+			busStopName: result.name,
+			busStopCaption: result.caption,
+			timings: (result.shuttles ?? []).map(shuttleToTiming)
+		},
+		degraded: false
 	};
+}
 
+export async function fetchStopTimings(stop: string): Promise<StopResult> {
+	const basic = await fetchBasicStopTimings(stop);
+	const { etas } = basic;
 	const routes = [...new Set(etas.timings.filter((timing) => !timing.name.startsWith('PUB')).map((timing) => timing.name))];
 	const active = await Promise.all(
 		routes.map(async (route): Promise<ActiveBus[]> => {

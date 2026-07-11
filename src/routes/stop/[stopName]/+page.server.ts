@@ -1,15 +1,15 @@
 import { fail, type Actions } from '@sveltejs/kit';
-import { fetchStopTimings, type StopResult } from '$lib/server/stop-timings';
+import { fetchBasicStopTimings, type StopResult } from '$lib/server/stop-timings';
 import { routesServingStop, stopCoord } from '$lib/routes';
 import { parseBookmarks } from '$lib/parse';
 import type { BusStopTiming, Bookmark } from '$lib/types';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = ({ params }) => {
+export const load: PageServerLoad = async ({ params }) => {
 	const code = params.stopName;
 	const caption = stopCoord(code)?.caption ?? code;
 	const serving = routesServingStop(code);
-	const timings: Promise<StopResult> = fetchStopTimings(code).catch((e) => {
+	const timings: StopResult = await fetchBasicStopTimings(code).catch((e) => {
 		console.error('Failed to load shuttle timings:', e);
 		const etas: BusStopTiming = {
 			lastUpdated: new Date().toISOString(),

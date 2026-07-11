@@ -13,39 +13,15 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// `data.timings` is streamed (a promise): the shell below renders immediately
-	// from the static `data.code` / `data.caption` / `data.serving`, and we resolve
-	// the live payload into `ssr` when it arrives. `polled` then overlays fresher
-	// results from the /api/stop endpoint. `current` is null only during the brief
-	// pre-arrival window, which is when we show the skeleton.
-	type Stop = Awaited<PageData['timings']>;
-	let ssr = $state<Stop | null>(null);
-	let polled = $state<Stop | null>(null);
+	// Core arrivals are awaited during SSR so the first response works without
+	// JavaScript. Client polling overlays capacity details and fresher timings.
+	type Stop = PageData['timings'];
+	let polled = $state<{ code: string; result: Stop } | null>(null);
 	let refreshing = $state(false);
 	let now = $state(Date.now());
 
-	// Resolve the streamed SSR promise into state, resetting on navigation so a
-	// previous stop's data (or overlay) never bleeds into the next. Guarded by
-	// promise identity: targeted invalidations (star/unstar, theme) rebuild the
-	// merged `data` object without re-running this page's load, and resetting
-	// then would flash the skeleton and discard the fresher `polled` overlay.
-	let lastTimings: PageData['timings'] | undefined;
-	$effect(() => {
-		const pending = data.timings;
-		if (pending === lastTimings) return;
-		lastTimings = pending;
-		let cancelled = false;
-		ssr = null;
-		polled = null;
-		pending.then((v) => {
-			if (!cancelled) ssr = v;
-		});
-		return () => {
-			cancelled = true;
-		};
-	});
-
-	const current = $derived(polled ?? ssr);
+	// Associate the client overlay with its stop so it cannot bleed across navigation.
+	const current = $derived(polled?.code === data.code ? polled.result : data.timings);
 	const loading = $derived(current === null);
 	const degraded = $derived(current?.degraded ?? false);
 	const busStopName = $derived(data.code);
@@ -117,8 +93,9 @@
 		if (typeof document !== 'undefined' && document.hidden) return;
 		refreshing = true;
 		try {
-			const res = await fetch(`/api/stop/${encodeURIComponent(busStopName)}`);
-			if (res.ok) polled = await res.json();
+			const code = busStopName;
+			const res = await fetch(`/api/stop/${encodeURIComponent(code)}`);
+			if (res.ok) polled = { code, result: await res.json() };
 		} catch {
 			// keep the last good data on transient failure
 		} finally {
