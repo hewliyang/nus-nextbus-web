@@ -151,6 +151,12 @@
 
 	onMount(() => {
 		mounted = true;
+		try {
+			const savedSheetHeight = Number(localStorage.getItem(SHEET_HEIGHT_KEY));
+			if (savedSheetHeight === PEEK || savedSheetHeight === EXPANDED) sheetH = savedSheetHeight;
+		} catch {
+			// Keep the default height when storage is unavailable.
+		}
 		const media = window.matchMedia('(min-width: 1024px)');
 		const syncDesktop = () => (desktop = media.matches);
 		syncDesktop();
@@ -178,7 +184,16 @@
 	//    that a real drag would otherwise also fire. ──
 	const PEEK = 48;
 	const EXPANDED = 90;
+	const SHEET_HEIGHT_KEY = 'home-drawer-height';
 	let sheetH = $state(PEEK); // height as % of the viewport
+
+	function saveSheetHeight() {
+		try {
+			localStorage.setItem(SHEET_HEIGHT_KEY, String(sheetH));
+		} catch {
+			// Storage may be unavailable in private browsing or restricted contexts.
+		}
+	}
 	let dragging = $state(false);
 	let moved = false;
 	let startY = 0;
@@ -199,7 +214,10 @@
 	function grabEnd(e: PointerEvent) {
 		if (!dragging) return;
 		dragging = false;
-		if (moved) sheetH = sheetH > 64 ? EXPANDED : PEEK; // snap
+		if (moved) {
+			sheetH = sheetH > 64 ? EXPANDED : PEEK; // snap
+			saveSheetHeight();
+		}
 		(e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
 	}
 	// tap / keyboard activation (no drag) toggles between the two snap points
@@ -209,6 +227,7 @@
 			return;
 		}
 		sheetH = sheetH > 64 ? PEEK : EXPANDED;
+		saveSheetHeight();
 	}
 
 	// ── search ──
