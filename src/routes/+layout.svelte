@@ -61,7 +61,7 @@
 				<a href="/" class="shrink-0">
 					<img
 						src="/logo.png"
-						alt="NUS LiveBus"
+						alt="NUS NextBus"
 						class="h-9 w-9 rounded-lg object-cover shadow-sm"
 						width="36"
 						height="36"
@@ -86,7 +86,7 @@
 
 		<footer class="mt-6 flex items-center justify-between py-4 text-xs text-muted">
 			<a
-				href="https://github.com/ianfromdover/nus-livebus"
+				href="https://github.com/hewliyang/nus-betternextbus"
 				class="flex items-center gap-1.5 transition-colors hover:text-ink"
 				aria-label="GitHub repository"
 			>
