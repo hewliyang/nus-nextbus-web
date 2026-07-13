@@ -258,7 +258,7 @@
 	);
 </script>
 
-<div class="relative h-full w-full lg:grid lg:grid-cols-[26rem_minmax(0,1fr)]">
+<div class="relative h-full min-h-0 w-full lg:grid lg:grid-cols-[26rem_minmax(0,1fr)]">
 	<!-- MAP background (full-bleed) — one shared instance; layers + zoom-frame
 	     switch with the view, so toggling Stops/Routes never re-creates the map. -->
 	<div class="absolute inset-0 lg:relative lg:col-start-2 lg:row-start-1">
@@ -324,7 +324,7 @@
 
 	<!-- BOTTOM SHEET (drawer over the map) -->
 	<div
-		class="home-panel absolute inset-x-0 bottom-0 z-10 flex flex-col rounded-t-3xl border-t border-border bg-bg shadow-[0_-10px_40px_-12px_rgba(0,0,0,0.3)] lg:relative lg:inset-auto lg:col-start-1 lg:row-start-1 lg:rounded-none lg:border-r lg:border-t-0 lg:shadow-none {dragging
+		class="home-panel absolute inset-x-0 bottom-0 z-10 flex min-h-0 flex-col rounded-t-3xl border-t border-border bg-bg shadow-[0_-10px_40px_-12px_rgba(0,0,0,0.3)] lg:relative lg:inset-auto lg:col-start-1 lg:row-start-1 lg:h-full lg:rounded-none lg:border-r lg:border-t-0 lg:shadow-none {dragging
 			? ''
 			: 'transition-[height] duration-300 ease-out'}"
 		style="height: {sheetH}%"
@@ -343,7 +343,7 @@
 		</button>
 
 		<div
-			class="flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 pb-[max(1rem,env(safe-area-inset-bottom))] lg:px-4 lg:pt-4"
+			class="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 pb-[max(1rem,env(safe-area-inset-bottom))] lg:px-4 lg:pt-4"
 		>
 			<!-- Search follows the active scope: all stops, saved stops, or routes by stop. -->
 			<div

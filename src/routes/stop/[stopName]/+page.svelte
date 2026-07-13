@@ -3,6 +3,7 @@
 	import HomeMap from '$lib/components/HomeMap.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import { routeColor, routeTextColor, isPublic, stopCoord, NUS_CENTER } from '$lib/routes';
+	import { stopTimingsState } from '$lib/stop-timings.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -14,15 +15,16 @@
 	let { data }: { data: PageData } = $props();
 
 	// Core arrivals are awaited during SSR so the first response works without
-	// JavaScript. Client polling overlays capacity details and fresher timings.
-	type Stop = PageData['timings'];
-	let polled = $state<{ code: string; result: Stop } | null>(null);
-	let refreshing = $state(false);
+	// JavaScript. Client polling overlays capacity details and fresher timings
+	// via the shared stopTimingsState (same store as home StopCards).
+	const arrivals = $derived(stopTimingsState(data.code));
+	$effect(() => arrivals.acquire());
+
 	let now = $state(Date.now());
 
-	// Associate the client overlay with its stop so it cannot bleed across navigation.
-	const current = $derived(polled?.code === data.code ? polled.result : data.timings);
+	const current = $derived(arrivals.data ?? data.timings);
 	const loading = $derived(current === null);
+	const refreshing = $derived(arrivals.refreshing);
 	const degraded = $derived(current?.degraded ?? false);
 	const busStopName = $derived(data.code);
 	const busStopCaption = $derived(current?.etas.busStopCaption ?? data.caption);
@@ -85,36 +87,9 @@
 	}
 	const updatedLabel = $derived(lastUpdated ? relative(new Date(lastUpdated), now) : '');
 
-	// Live polling: refresh timings every 20s (paused while the tab is hidden,
-	// and refreshed immediately when it becomes visible again). Keeps hewliyang's
-	// server lightly loaded; its own response is cached server-side too.
-	const POLL_MS = 20_000;
-	async function refresh() {
-		if (typeof document !== 'undefined' && document.hidden) return;
-		refreshing = true;
-		try {
-			const code = busStopName;
-			const res = await fetch(`/api/stop/${encodeURIComponent(code)}`);
-			if (res.ok) polled = { code, result: await res.json() };
-		} catch {
-			// keep the last good data on transient failure
-		} finally {
-			refreshing = false;
-		}
-	}
-
 	onMount(() => {
-		const poll = setInterval(refresh, POLL_MS);
 		const tick = setInterval(() => (now = Date.now()), 1000);
-		const onVisible = () => {
-			if (!document.hidden) refresh();
-		};
-		document.addEventListener('visibilitychange', onVisible);
-		return () => {
-			clearInterval(poll);
-			clearInterval(tick);
-			document.removeEventListener('visibilitychange', onVisible);
-		};
+		return () => clearInterval(tick);
 	});
 </script>
 
@@ -190,7 +165,7 @@
 							</button>
 						</form>
 						<button
-							onclick={refresh}
+							onclick={() => arrivals.refresh()}
 							class="grid h-10 w-10 place-items-center rounded-xl border border-border bg-surface text-ink-soft shadow-card transition-colors hover:bg-surface-2"
 							aria-label="Refresh now"
 						>
