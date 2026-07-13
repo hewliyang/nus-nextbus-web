@@ -208,12 +208,20 @@
     "longitude": 103.769997
   },
   {
-    "caption": "Raffles Hall",
-    "name": "RAFFLES",
-    "LongName": "Raffles Hall",
-    "ShortName": "Raffles Hall",
-    "latitude": 1.300946,
-    "longitude": 103.772703
+    "caption": "Opp SDE 3",
+    "name": "SDE3-OPP",
+    "LongName": "Opp SDE 3",
+    "ShortName": "Opp SDE 3",
+    "latitude": 1.297799,
+    "longitude": 103.769603
+  },
+  {
+    "caption": "The Japanese Primary School",
+    "name": "JP-SCH-16151",
+    "LongName": "The Japanese Primary School",
+    "ShortName": "Jpn Pr Sch",
+    "latitude": 1.30077,
+    "longitude": 103.769904
   },
   {
     "caption": "Kent Vale",
@@ -222,6 +230,14 @@
     "ShortName": "Kent Vale",
     "latitude": 1.301899,
     "longitude": 103.769455
+  },
+  {
+    "caption": "Raffles Hall",
+    "name": "RAFFLES",
+    "LongName": "Raffles Hall",
+    "ShortName": "Raffles Hall",
+    "latitude": 1.300946,
+    "longitude": 103.772703
   },
   {
     "caption": "College Green",
@@ -246,21 +262,5 @@
     "ShortName": "BG MRT",
     "latitude": 1.322614,
     "longitude": 103.815914
-  },
-  {
-    "caption": "Opp SDE 3",
-    "name": "SDE3-OPP",
-    "LongName": "Opp SDE 3",
-    "ShortName": "Opp SDE 3",
-    "latitude": 1.297799,
-    "longitude": 103.769603
-  },
-  {
-    "caption": "The Japanese Primary School",
-    "name": "JP-SCH-16151",
-    "LongName": "The Japanese Primary School",
-    "ShortName": "Jpn Pr Sch",
-    "latitude": 1.30077,
-    "longitude": 103.769904
   }
 ]

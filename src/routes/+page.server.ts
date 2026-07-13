@@ -1,6 +1,4 @@
-import { fail, redirect, type Actions } from '@sveltejs/kit';
-import { parseBookmarks } from '$lib/parse';
-import type { Bookmark } from '$lib/types';
+import { redirect, type Actions } from '@sveltejs/kit';
 
 export const actions: Actions = {
 	setTheme: async ({ url, cookies }) => {
@@ -15,40 +13,5 @@ export const actions: Actions = {
 		}
 
 		throw redirect(303, redirectTo ?? '/');
-	},
-
-	deleteBookmark: async ({ url, cookies }) => {
-		const id = url.searchParams.get('id');
-		if (!id) {
-			return fail(400, { message: 'Invalid Request' });
-		}
-
-		try {
-			const bookmarksOld = parseBookmarks(cookies.get('bookmarks') || '[]');
-			const bookmarksNew = bookmarksOld.filter(({ name }) => name !== id);
-			cookies.set('bookmarks', JSON.stringify(bookmarksNew), {
-				path: '/',
-				maxAge: 60 * 60 * 24 * 365
-			});
-		} catch (err) {
-			console.error(err);
-			return fail(500, {
-				message: 'Something went wrong'
-			});
-		}
-
-		return {
-			status: 200
-		};
-	},
-	closeAlert: async ({ cookies }) => {
-		try {
-			cookies.set('alert', 'false', { path: '/', maxAge: 60 * 60 * 24 * 365 });
-		} catch (err) {
-			console.error(err);
-			return fail(500, {
-				message: JSON.stringify(err)
-			});
-		}
 	}
 };
