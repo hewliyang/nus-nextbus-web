@@ -1,13 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { routeTerminal } from '$lib/routes';
-import { dedupeTerminalVariants, formatArrival } from '$lib/timings';
+import { dedupeTerminalVariants, formatArrival, formatArrivalPair } from '$lib/timings';
 import type { Timing } from '$lib/types';
 
-const timing = (name: string, busStopCode: string): Timing => ({
+const timing = (
+	name: string,
+	busStopCode: string,
+	arrivalTime = '2',
+	nextArrivalTime = '5',
+	extra: Partial<Timing> = {}
+): Timing => ({
 	name,
 	busStopCode,
-	arrivalTime: '2',
-	nextArrivalTime: '5'
+	arrivalTime,
+	nextArrivalTime,
+	...extra
 });
 
 describe('routeTerminal', () => {
@@ -33,6 +40,24 @@ describe('timing helpers', () => {
 		expect(formatArrival('75', '2026-07-12T13:05:00+08:00')).toEqual({
 			value: '1:05pm',
 			unit: ''
+		});
+	});
+
+	it('shares a trailing min only when both arrivals are minutes', () => {
+		expect(formatArrivalPair(timing('K', 'KV', '24', '35'))).toEqual({
+			value: '24, 35',
+			unit: 'min'
+		});
+		expect(
+			formatArrivalPair(
+				timing('K', 'KV', '24', '75', {
+					nextArrivalTime_ts: '2026-07-13T23:04:00+08:00'
+				})
+			)
+		).toEqual({ value: '24 min, 11:04pm', unit: '' });
+		expect(formatArrivalPair(timing('A1', 'OT', '0', '29'))).toEqual({
+			value: 'Arr, 29',
+			unit: 'min'
 		});
 	});
 });

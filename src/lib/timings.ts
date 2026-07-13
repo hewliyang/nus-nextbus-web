@@ -46,9 +46,28 @@ export function formatArrival(time: string | undefined, timestamp?: string): For
 	return { value: String(minutes), unit: 'min' };
 }
 
-export function formatArrivalPair(timing: Timing): string {
-	const first = formatArrival(timing.arrivalTime, timing.arrivalTime_ts).value;
-	const next = formatArrival(timing.nextArrivalTime, timing.nextArrivalTime_ts).value;
-	if (first !== '—' && next !== '—') return `${first}, ${next}`;
-	return first !== '—' ? first : next;
+/**
+ * Compact first+next display for stop cards. A shared trailing `min` is only
+ * returned when every minute-valued part can share it — otherwise the unit is
+ * inlined (e.g. `24 min, 11:04pm`) so we never render `24, 11:04pm min`.
+ */
+export function formatArrivalPair(timing: Timing): FormattedArrival {
+	const first = formatArrival(timing.arrivalTime, timing.arrivalTime_ts);
+	const next = formatArrival(timing.nextArrivalTime, timing.nextArrivalTime_ts);
+	const hasFirst = first.value !== '—';
+	const hasNext = next.value !== '—';
+
+	if (hasFirst && hasNext) {
+		if (first.unit === 'min' && next.unit === 'min') {
+			return { value: `${first.value}, ${next.value}`, unit: 'min' };
+		}
+		if (first.unit === 'min') {
+			return { value: `${first.value} min, ${next.value}`, unit: '' };
+		}
+		if (next.unit === 'min') {
+			return { value: `${first.value}, ${next.value}`, unit: 'min' };
+		}
+		return { value: `${first.value}, ${next.value}`, unit: '' };
+	}
+	return hasFirst ? first : next;
 }

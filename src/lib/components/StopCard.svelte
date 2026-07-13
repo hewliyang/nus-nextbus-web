@@ -13,7 +13,6 @@
 	import {
 		arrivalMinutes,
 		dedupeTerminalVariants,
-		formatArrival,
 		formatArrivalPair,
 		hasArrival
 	} from '$lib/timings';
@@ -67,6 +66,7 @@
 			{#each live as s, i (`${s.name}|${i}`)}
 				{@const rt = baseRoute(s.name)}
 				{@const label = isPublic(s.name) ? s.name.slice(4) : s.name}
+				{@const pair = formatArrivalPair(s)}
 				<li class="border-b border-border last:border-0">
 					<a
 						href="/?view=routes&route={rt}"
@@ -83,10 +83,10 @@
 						>
 						<span class="shrink-0 whitespace-nowrap text-right">
 							<span class="text-[0.875rem] font-semibold tabular-nums text-ink"
-								>{formatArrivalPair(s)}</span
+								>{pair.value}</span
 							>
-							{#if formatArrival(s.arrivalTime, s.arrivalTime_ts).unit}<span
-									class="ml-1 text-[0.6875rem] font-medium text-muted">min</span
+							{#if pair.unit}<span class="ml-1 text-[0.6875rem] font-medium text-muted"
+									>min</span
 								>{/if}
 						</span>
 					</a>
