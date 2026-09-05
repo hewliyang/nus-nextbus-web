@@ -5,11 +5,13 @@
   NUS NextBus Web 
 </h1>
 
-> [!WARNING]  
-> This project is no longer being maintained but should still work as long as the NUS bus API does not radically change. Additionally, the original [nextbus.me](https://nextbus.me) domain has expired so it's now only accessible via [bus.hewliyang.com](https://bus.hewliyang.com)
+> [!WARNING]
+> **This project is being sunset.** I will not fix the next NUS API / auth scheme change. The app is still up at [bus.hewliyang.com](https://bus.hewliyang.com) until it breaks. The original [nextbus.me](https://nextbus.me) domain has expired.
 
 > [!NOTE]
-> A minimal **PWA** for fetching and displaying NUS Internal Shuttle Bus routes & arrival timings because... too many NUS apps
+> **Looking for a maintainer.** If you want to take stewardship, email [hewliyang@u.nus.edu](mailto:hewliyang@u.nus.edu).
+
+A minimal **PWA** for fetching and displaying NUS Internal Shuttle Bus routes & arrival timings because... too many NUS apps.
 
 ## Features
 - Geolocation 📍
