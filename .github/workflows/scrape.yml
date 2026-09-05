@@ -26,17 +26,19 @@ jobs:
         env:
           # Required - configure these as repository secrets:
           #   Settings -> Secrets and variables -> Actions -> New repository secret
-          # The script aborts if any required value is missing. See docs/secrets.md.
-          NEXTBUS_AUTH_BASE: ${{ secrets.NEXTBUS_AUTH_BASE }}
-          NEXTBUS_FMS_BASE: ${{ secrets.NEXTBUS_FMS_BASE }}
+          # The script aborts if any required value is missing. See .env.example.
+          NEXTBUS_BASE: ${{ secrets.NEXTBUS_BASE }}
+          NEXTBUS_API_KEY: ${{ secrets.NEXTBUS_API_KEY }}
           NEXTBUS_APP_VERSION: ${{ secrets.NEXTBUS_APP_VERSION }}
-          NEXTBUS_HTD_API: ${{ secrets.NEXTBUS_HTD_API }}
-          NEXTBUS_APP_API: ${{ secrets.NEXTBUS_APP_API }}
-          NEXTBUS_FMS_SERVICE_ID: ${{ secrets.NEXTBUS_FMS_SERVICE_ID }}
-          NEXTBUS_FMS_TENANT_CODE: ${{ secrets.NEXTBUS_FMS_TENANT_CODE }}
-          # Optional parity headers (safe to leave unset):
-          NEXTBUS_REQUESTED_BY: ${{ secrets.NEXTBUS_REQUESTED_BY }}
-          NEXTBUS_SECURED_REQUEST: ${{ secrets.NEXTBUS_SECURED_REQUEST }}
+          NEXTBUS_ESB_TOKEN: ${{ secrets.NEXTBUS_ESB_TOKEN }}
+          NEXTBUS_USER_ID: ${{ secrets.NEXTBUS_USER_ID }}
+          NEXTBUS_DEVICE_ID: ${{ secrets.NEXTBUS_DEVICE_ID }}
+          NEXTBUS_DOMAIN: ${{ secrets.NEXTBUS_DOMAIN }}
+          NEXTBUS_USER_AGENT: ${{ secrets.NEXTBUS_USER_AGENT }}
+          NEXTBUS_IP_ADDR: ${{ secrets.NEXTBUS_IP_ADDR }}
+          # Shared with the Vercel app so refreshed guest JWTs survive both.
+          KV_REST_API_URL: ${{ secrets.KV_REST_API_URL }}
+          KV_REST_API_TOKEN: ${{ secrets.KV_REST_API_TOKEN }}
         run: python scripts/scrape.py
 
       - name: Commit and push any changes

@@ -1,148 +1,167 @@
 import { env } from '$env/dynamic/private';
-import { randomUUID } from 'node:crypto';
-import type {
-	AccessTokenData,
-	FmsJson,
-	InitDataPayload,
-	UnivusResponse
-} from '$lib/server/fms-types';
+import { kv } from '$lib/server/kv';
+import type { UnivusResponse } from '$lib/server/fms-types';
+
+const TOKEN_KEY = 'nextbus:esb-token';
+const REFRESH_SKEW_MS = 1000 * 60 * 60 * 6;
 
 type NextbusConfig = {
-	authBase: string;
-	fmsBase: string;
+	base: string;
+	apiKey: string;
 	appVersion: string;
-	keyHeaders: Record<string, string>;
-	serviceId: string;
-	tenantCode: string;
-	fmsHeaders: Record<string, string>;
+	userId: string;
+	deviceId: string;
+	domain: string;
+	seedToken: string;
+	userAgent: string;
+	ipAddr: string;
 };
 
 let _config: NextbusConfig | null = null;
 
+function required(name: string): string {
+	const value = env[name];
+	if (!value) throw new Error(`Missing required env var ${name} (see .env.example)`);
+	return value;
+}
+
 function config(): NextbusConfig {
 	if (_config) return _config;
-	const required = (name: string): string => {
-		const value = env[name];
-		if (!value) throw new Error(`Missing required env var ${name} (see .env.example)`);
-		return value;
-	};
 	_config = {
-		authBase: required('NEXTBUS_AUTH_BASE'),
-		fmsBase: required('NEXTBUS_FMS_BASE'),
+		base: required('NEXTBUS_BASE').replace(/\/$/, ''),
+		apiKey: required('NEXTBUS_API_KEY'),
 		appVersion: required('NEXTBUS_APP_VERSION'),
-		keyHeaders: {
-			'X-HTD-API': required('NEXTBUS_HTD_API'),
-			'X-APP-API': required('NEXTBUS_APP_API'),
-			'Content-Type': 'application/json'
-		},
-		serviceId: required('NEXTBUS_FMS_SERVICE_ID'),
-		tenantCode: required('NEXTBUS_FMS_TENANT_CODE'),
-		fmsHeaders: {
-			accept: 'application/json',
-			...(env.NEXTBUS_REQUESTED_BY ? { 'x-requested-by': env.NEXTBUS_REQUESTED_BY } : {}),
-			...(env.NEXTBUS_SECURED_REQUEST ? { 'x-secured-request': env.NEXTBUS_SECURED_REQUEST } : {})
-		}
+		userId: required('NEXTBUS_USER_ID'),
+		deviceId: required('NEXTBUS_DEVICE_ID'),
+		domain: env.NEXTBUS_DOMAIN || 'PUBLIC',
+		seedToken: required('NEXTBUS_ESB_TOKEN'),
+		userAgent: required('NEXTBUS_USER_AGENT'),
+		ipAddr: required('NEXTBUS_IP_ADDR')
 	};
 	return _config;
 }
 
-const DEVICE_ID = randomUUID().toUpperCase();
-
-export type RouteColor = { BUS: string; COLOR_CODE: string; COLOR_FONT: string };
-
-type Session = { token: string; colors: RouteColor[]; expires: number };
+type Session = { token: string };
 let session: Session | null = null;
 let inflight: Promise<Session> | null = null;
+
+function jwtExpMs(token: string): number {
+	const part = token.split('.')[1];
+	if (!part) return 0;
+	const padded = part + '='.repeat((4 - (part.length % 4)) % 4);
+	const payload = JSON.parse(Buffer.from(padded, 'base64url').toString('utf8')) as { exp?: number };
+	return (payload.exp ?? 0) * 1000;
+}
+
+function isFresh(token: string): boolean {
+	return jwtExpMs(token) - Date.now() > REFRESH_SKEW_MS;
+}
 
 function isUnivusOk<T>(body: unknown): body is UnivusResponse<T> {
 	return typeof body === 'object' && body !== null && (body as UnivusResponse<T>).code === '00000';
 }
 
-async function authenticate(): Promise<Session> {
+function authHeaders(token: string): HeadersInit {
 	const cfg = config();
-	const accessRes = await fetch(`${cfg.authBase}/univus-public/mobile/get-access-token`, {
-		method: 'POST',
-		headers: cfg.keyHeaders,
-		body: JSON.stringify({ deviceid: DEVICE_ID, ipaddr: '0.0.0.0', version: cfg.appVersion })
-	});
-	const access: unknown = await accessRes.json();
-	if (!isUnivusOk<AccessTokenData>(access)) {
-		const code = typeof access === 'object' && access !== null ? (access as UnivusResponse<unknown>).code : undefined;
-		const msg = typeof access === 'object' && access !== null ? (access as UnivusResponse<unknown>).msg : undefined;
-		throw new Error(`get-access-token failed: ${code} ${msg}`);
-	}
-
-	const { token, userid, domain } = access.data;
-	const initRes = await fetch(`${cfg.authBase}/univus/mobile/buswidget/get-init-data`, {
-		method: 'POST',
-		headers: cfg.keyHeaders,
-		body: JSON.stringify({ deviceid: DEVICE_ID, domain, ipaddr: '0.0.0.0', token, userid, version: cfg.appVersion })
-	});
-	const init: unknown = await initRes.json();
-	if (!isUnivusOk<InitDataPayload>(init)) {
-		const code = typeof init === 'object' && init !== null ? (init as UnivusResponse<unknown>).code : undefined;
-		const msg = typeof init === 'object' && init !== null ? (init as UnivusResponse<unknown>).msg : undefined;
-		throw new Error(`get-init-data failed: ${code} ${msg}`);
-	}
-
-	const fmsToken = init.data?.tokens?.nextbus_token2;
-	if (!fmsToken) throw new Error('No nextbus_token2 in init-data');
-
 	return {
-		token: fmsToken,
-		colors: init.data['bus-stop-color'] ?? [],
-		expires: Date.now() + 1000 * 60 * 60 * 12
+		'x-api-key': cfg.apiKey,
+		Authorization: `Bearer ${token}`,
+		'Content-Type': 'application/json; charset=utf-8',
+		'User-Agent': cfg.userAgent
 	};
 }
 
+function esbBody(token: string, extra: Record<string, string> = {}) {
+	const cfg = config();
+	return {
+		token,
+		userid: cfg.userId,
+		domain: cfg.domain,
+		deviceid: cfg.deviceId,
+		ipaddr: cfg.ipAddr,
+		version: cfg.appVersion,
+		...extra
+	};
+}
+
+async function loadStoredToken(): Promise<string> {
+	const store = kv();
+	if (store) {
+		const stored = await store.get<string>(TOKEN_KEY);
+		if (typeof stored === 'string' && stored) return stored;
+	}
+	return config().seedToken;
+}
+
+async function persistToken(token: string): Promise<void> {
+	const store = kv();
+	if (store) await store.set(TOKEN_KEY, token);
+}
+
+async function refreshToken(current: string): Promise<string> {
+	const cfg = config();
+	const res = await fetch(`${cfg.base}/univus/api/univus/refresh-token`, {
+		method: 'POST',
+		headers: authHeaders(current),
+		body: JSON.stringify(esbBody(current))
+	});
+	const json: unknown = await res.json();
+	if (!isUnivusOk<{ token: string }>(json) || !json.data?.token) {
+		const code = typeof json === 'object' && json !== null ? (json as UnivusResponse<unknown>).code : undefined;
+		const msg = typeof json === 'object' && json !== null ? (json as UnivusResponse<unknown>).msg : undefined;
+		throw new Error(`refresh-token failed: HTTP ${res.status} ${code} ${msg}`);
+	}
+	await persistToken(json.data.token);
+	return json.data.token;
+}
+
+async function resolveSession(force = false): Promise<Session> {
+	let token = session?.token ?? (await loadStoredToken());
+	if (force || !isFresh(token)) token = await refreshToken(token);
+	return { token };
+}
+
 async function getSession(force = false): Promise<Session> {
-	if (!force && session && Date.now() < session.expires) return session;
+	if (!force && session && isFresh(session.token)) return session;
 	if (!inflight) {
-		inflight = authenticate()
+		inflight = resolveSession(force)
 			.then((s) => (session = s))
 			.finally(() => (inflight = null));
 	}
 	return inflight;
 }
 
-function isFmsAuthError(body: unknown): body is { result: false; error: number } {
-	return (
-		typeof body === 'object' &&
-		body !== null &&
-		(body as { result?: boolean }).result === false &&
-		[1, 2, 3].includes((body as { error?: number }).error ?? -1)
-	);
+function failureDetail(endpoint: string, status: number, body: unknown): string {
+	const code = typeof body === 'object' && body !== null ? (body as UnivusResponse<unknown>).code : undefined;
+	const msg = typeof body === 'object' && body !== null ? (body as UnivusResponse<unknown>).msg : undefined;
+	return `${endpoint} failed: HTTP ${status} ${code} ${msg}`;
 }
 
-export async function fmsFetch<T extends FmsJson = FmsJson>(
-	endpoint: string,
-	params: Record<string, string> = {}
-): Promise<T> {
+/** POST /univus/api/bus-proxy/{endpoint} and return the unwrapped `data` payload. */
+export async function busProxy<T>(endpoint: string, extra: Record<string, string> = {}): Promise<T> {
 	const cfg = config();
-	const run = async (s: Session): Promise<unknown> => {
-		const url = new URL(`${cfg.fmsBase}/${endpoint.replace(/^\//, '')}`);
-		url.searchParams.set('ServiceID', cfg.serviceId);
-		url.searchParams.set('TenantCode', cfg.tenantCode);
-		for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-		url.searchParams.set('token', s.token);
-		const res = await fetch(url, { headers: cfg.fmsHeaders });
+	const run = async (token: string): Promise<{ status: number; body: unknown }> => {
+		const res = await fetch(`${cfg.base}/univus/api/bus-proxy/${endpoint.replace(/^\//, '')}`, {
+			method: 'POST',
+			headers: authHeaders(token),
+			body: JSON.stringify(esbBody(token, extra))
+		});
 		const text = await res.text();
 		try {
-			return JSON.parse(text) as unknown;
+			return { status: res.status, body: JSON.parse(text) as unknown };
 		} catch {
 			throw new Error(`${endpoint}: non-JSON response (${res.status}): ${text.slice(0, 80)}`);
 		}
 	};
 
 	let s = await getSession();
-	let body = await run(s);
-	if (isFmsAuthError(body)) {
+	let result = await run(s.token);
+	if (!isUnivusOk<T>(result.body)) {
 		s = await getSession(true);
-		body = await run(s);
+		result = await run(s.token);
 	}
-	return body as T;
-}
-
-export async function getRouteColors(): Promise<RouteColor[]> {
-	return (await getSession()).colors;
+	if (!isUnivusOk<T>(result.body)) {
+		throw new Error(failureDetail(endpoint, result.status, result.body));
+	}
+	return result.body.data;
 }

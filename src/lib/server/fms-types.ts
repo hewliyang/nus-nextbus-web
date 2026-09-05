@@ -1,64 +1,54 @@
-export type FmsErrorBody = {
-	result: false;
-	error: number;
-};
-
 export type UnivusResponse<T> = {
 	code: string;
 	msg?: string;
 	data: T;
+	ts?: string;
 };
 
-export type AccessTokenData = {
-	token: string;
-	userid: string;
-	domain: string;
-};
-
-export type InitDataPayload = {
-	tokens?: { nextbus_token2?: string };
-	'bus-stop-color'?: { BUS: string; COLOR_CODE: string; COLOR_FONT: string }[];
-};
-
-export type FmsEta = {
+export type ShuttleEta = {
 	eta: number;
+	eta_s?: number;
 	ts: string;
 	plate?: string;
 };
 
-export type FmsShuttle = {
+export type Shuttle = {
 	name: string;
+	routeid?: number;
+	busstopcode?: string;
+	_etas?: ShuttleEta[];
 	arrivalTime: string;
 	nextArrivalTime: string;
+	passengers?: string;
+	nextPassengers?: string;
 	arrivalTime_veh_plate?: string;
 	nextArrivalTime_veh_plate?: string;
-	busstopcode?: string;
-	_etas?: FmsEta[];
 };
 
-export type ShuttleServiceResult = {
-	Timestamp?: string;
-	TimeStamp?: string;
-	name: string;
+export type ShuttleServiceData = {
+	TimeStamp: string;
 	caption: string;
-	shuttles?: FmsShuttle[];
+	name: string;
+	shuttles?: Shuttle[];
+	hints?: string[];
 };
 
-export type ShuttleServiceResponse = {
-	ShuttleServiceResult?: ShuttleServiceResult;
-} & Partial<FmsErrorBody>;
+export type ActiveBusLoad = {
+	occupancy: number;
+	crowdLevel?: string;
+	capacity: number;
+	ridership: number;
+};
 
-export type FmsActiveBus = {
+export type ActiveBus = {
 	vehplate: string;
-	loadInfo: {
-		occupancy: number;
-		capacity: number;
-		ridership: number;
-	};
+	lat?: number;
+	lng?: number;
+	loadInfo: ActiveBusLoad;
 };
 
-export type ActiveBusResponse = {
-	ActiveBusResult?: { activebus?: FmsActiveBus[] };
-} & Partial<FmsErrorBody>;
-
-export type FmsJson = Record<string, unknown>;
+export type ActiveBusData = {
+	TimeStamp?: string;
+	ActiveBusCount?: string;
+	activebus?: ActiveBus[];
+};

@@ -38,6 +38,7 @@
   "type": "module",
   "dependencies": {
     "@fontsource-variable/inter": "^5.0.16",
+    "@upstash/redis": "^1.38.4",
     "maplibre-gl": "^5.24.0"
   }
 }
