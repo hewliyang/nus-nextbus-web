@@ -4,6 +4,7 @@ import type { UnivusResponse } from '$lib/server/fms-types';
 
 const TOKEN_KEY = 'nextbus:esb-token';
 const REFRESH_SKEW_MS = 1000 * 60 * 60 * 6;
+const UPSTREAM_TIMEOUT_MS = 5_000;
 
 type NextbusConfig = {
 	base: string;
@@ -103,7 +104,8 @@ async function refreshToken(current: string): Promise<string> {
 	const res = await fetch(`${cfg.base}/univus/api/univus/refresh-token`, {
 		method: 'POST',
 		headers: authHeaders(current),
-		body: JSON.stringify(esbBody(current))
+		body: JSON.stringify(esbBody(current)),
+		signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)
 	});
 	const json: unknown = await res.json();
 	if (!isUnivusOk<{ token: string }>(json) || !json.data?.token) {
@@ -144,7 +146,8 @@ export async function busProxy<T>(endpoint: string, extra: Record<string, string
 		const res = await fetch(`${cfg.base}/univus/api/bus-proxy/${endpoint.replace(/^\//, '')}`, {
 			method: 'POST',
 			headers: authHeaders(token),
-			body: JSON.stringify(esbBody(token, extra))
+			body: JSON.stringify(esbBody(token, extra)),
+			signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)
 		});
 		const text = await res.text();
 		try {
