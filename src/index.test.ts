@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { routeTerminal } from '$lib/routes';
 import { dedupeTerminalVariants, formatArrival, formatArrivalPair } from '$lib/timings';
 import type { Timing } from '$lib/types';

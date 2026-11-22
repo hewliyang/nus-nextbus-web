@@ -14,6 +14,7 @@
 A minimal **PWA** for fetching and displaying NUS Internal Shuttle Bus routes & arrival timings because... too many NUS apps.
 
 ## Features
+
 - Geolocation 📍
 - Reactive Search 📑
 - Bookmarking 📒

@@ -28,8 +28,8 @@ function degPerPx(zoom: number): number {
 const CTRL_PX: Record<number, number> = { 13: 24, 14: 16, 15: 10, 16: 6, 17: 3, 18: 3 };
 
 /** Zoom buckets the smoothing is computed at — callers cache per bucket. */
-export const LOD_MIN = 13;
-export const LOD_MAX = 18;
+const LOD_MIN = 13;
+const LOD_MAX = 18;
 
 export function lodBucket(zoom: number): number {
 	return Math.max(LOD_MIN, Math.min(LOD_MAX, Math.round(zoom)));
@@ -57,9 +57,9 @@ function segDist(p: Pt, a: Pt, b: Pt): number {
  * line kept so far. Reducing the control-point count is what lets the spline read
  * smooth rather than tracing every wobble of the raw road trace.
  */
-export function simplify(points: Pt[], tol: number): Pt[] {
+function simplify(points: Pt[], tol: number): Pt[] {
 	if (points.length <= 2) return points.slice();
-	const keep = new Array(points.length).fill(false);
+	const keep = Array.from({ length: points.length }, () => false);
 	keep[0] = keep[points.length - 1] = true;
 	const stack: [number, number][] = [[0, points.length - 1]];
 	while (stack.length) {
@@ -89,7 +89,7 @@ export function simplify(points: Pt[], tol: number): Pt[] {
  * only way a joint can read as a corner is under-sampling — hence the caller
  * passes a fine, zoom-scaled `step`.
  */
-export function catmullRom(points: Pt[], step: number): Pt[] {
+function catmullRom(points: Pt[], step: number): Pt[] {
 	if (points.length <= 2) return points.slice();
 	const out: Pt[] = [points[0]];
 	const alpha = 0.5; // centripetal — no cusps or self-intersections

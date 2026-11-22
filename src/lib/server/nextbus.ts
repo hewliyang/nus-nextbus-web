@@ -75,7 +75,8 @@ let versionInflight: Promise<string> | null = null;
 function jwtExpMs(token: string): number {
 	const part = token.split('.')[1];
 	if (!part) return 0;
-	const padded = part.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (part.length % 4)) % 4);
+	const padded =
+		part.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (part.length % 4)) % 4);
 	const json = decodeURIComponent(
 		Array.from(atob(padded), (c) => '%' + c.charCodeAt(0).toString(16).padStart(2, '0')).join('')
 	);
@@ -92,11 +93,15 @@ function isUnivusOk<T>(body: unknown): body is UnivusResponse<T> {
 }
 
 function univusCode(body: unknown): string | undefined {
-	return typeof body === 'object' && body !== null ? (body as UnivusResponse<unknown>).code : undefined;
+	return typeof body === 'object' && body !== null
+		? (body as UnivusResponse<unknown>).code
+		: undefined;
 }
 
 function univusMsg(body: unknown): string | undefined {
-	return typeof body === 'object' && body !== null ? (body as UnivusResponse<unknown>).msg : undefined;
+	return typeof body === 'object' && body !== null
+		? (body as UnivusResponse<unknown>).msg
+		: undefined;
 }
 
 function isStaleVersion(body: unknown): boolean {
@@ -221,7 +226,9 @@ async function mintToken(allowVersionBump = true): Promise<Session> {
 		return mintToken(false);
 	}
 	if (!isUnivusOk<{ token: string; userid?: string }>(json) || !json.data?.token) {
-		throw new Error(`get-access-token failed: HTTP ${res.status} ${univusCode(json)} ${univusMsg(json)}`);
+		throw new Error(
+			`get-access-token failed: HTTP ${res.status} ${univusCode(json)} ${univusMsg(json)}`
+		);
 	}
 	const userId = json.data.userid || cfg.userId;
 	if (!userId) throw new Error('get-access-token returned no userid');
@@ -288,7 +295,10 @@ function failureDetail(endpoint: string, status: number, body: unknown): string 
 }
 
 /** POST /univus/api/bus-proxy/{endpoint} and return the unwrapped `data` payload. */
-export async function busProxy<T>(endpoint: string, extra: Record<string, string> = {}): Promise<T> {
+export async function busProxy<T>(
+	endpoint: string,
+	extra: Record<string, string> = {}
+): Promise<T> {
 	const cfg = config();
 	const run = async (s: Session): Promise<{ status: number; body: unknown }> => {
 		const res = await fetch(`${cfg.base}/univus/api/bus-proxy/${endpoint.replace(/^\//, '')}`, {

@@ -54,7 +54,8 @@ function shuttleToTiming(shuttle: Shuttle): Timing {
 export async function fetchBasicStopTimings(stop: string): Promise<StopResult> {
 	return cachedBasicTimings(stop, async () => {
 		const result = await busProxy<ShuttleServiceData>('shuttle-service', { busstopname: stop });
-		if (!result?.shuttles) throw new Error(`shuttle-service error: ${JSON.stringify(result).slice(0, 120)}`);
+		if (!result?.shuttles)
+			throw new Error(`shuttle-service error: ${JSON.stringify(result).slice(0, 120)}`);
 
 		return {
 			etas: {
@@ -85,7 +86,9 @@ export async function fetchStopTimings(stop: string): Promise<StopResult> {
 	const basic = await fetchBasicStopTimings(stop);
 	const timings = basic.etas.timings.map((t) => ({ ...t }));
 	const routes = [
-		...new Set(timings.filter((timing) => !timing.name.startsWith('PUB')).map((timing) => timing.name))
+		...new Set(
+			timings.filter((timing) => !timing.name.startsWith('PUB')).map((timing) => timing.name)
+		)
 	];
 	const active = await Promise.all(routes.map((route) => fetchRouteActiveBuses(route)));
 	const loads = new Map(active.flat().map((bus) => [bus.vehplate, bus]));

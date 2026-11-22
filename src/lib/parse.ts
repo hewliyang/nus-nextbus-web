@@ -19,15 +19,6 @@ export function parseBookmarks(raw: string): Bookmark[] {
 	}
 }
 
-export function parseAlert(raw: string | undefined): boolean {
-	if (raw === undefined) return true;
-	try {
-		return JSON.parse(raw) !== false;
-	} catch {
-		return true;
-	}
-}
-
 export function parseTheme(raw: string | undefined): ColorTheme {
 	return raw === 'dark' ? 'dark' : 'light';
 }

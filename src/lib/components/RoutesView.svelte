@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Toggle, ToggleGroup } from '@ui-sdk/svelte/toggle';
 	import Icon from './Icon.svelte';
 	import { routeColor, routeTextColor, routeKeysSorted, routeStops } from '$lib/routes';
 	import { schedules } from '$lib/data';
@@ -48,21 +49,29 @@
 </script>
 
 <div class="space-y-4">
-	<!-- route chips (alphabetical, wrapping) -->
-	<div class="flex flex-wrap gap-2">
-		{#each routeOptions as key}
+	<ToggleGroup
+		aria-label="Bus routes"
+		value={[selected]}
+		deselectable={false}
+		onValueChange={(next) => {
+			if (next[0]) onSelect(next[0]);
+		}}
+		class="flex flex-wrap gap-2 pl-0"
+	>
+		{#each routeOptions as key (key)}
 			{@const active = key === selected}
-			<button
-				onclick={() => onSelect(key)}
-				aria-pressed={active}
-				class="rounded-full px-3.5 py-1.5 font-mono text-sm font-bold transition-all
-					{active ? 'shadow-card' : 'border border-border bg-surface text-ink-soft hover:bg-surface-2'}"
+			<Toggle
+				value={key}
+				class="ml-0 h-auto rounded-full px-3.5 py-1.5 font-mono text-sm font-bold transition-all
+					{active
+					? 'border-transparent shadow-card'
+					: 'border border-border bg-surface text-ink-soft hover:bg-surface-2'}"
 				style={active ? `background: ${routeColor(key)}; color: ${routeTextColor(key)}` : ''}
 			>
 				{key}
-			</button>
+			</Toggle>
 		{/each}
-	</div>
+	</ToggleGroup>
 
 	<!-- stop list (terminal → terminal) threaded by the route-coloured rail -->
 	<div class="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">

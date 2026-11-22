@@ -38,7 +38,7 @@ export function dimColor(): string {
 // length in CSS px, picked to match the diameter of the circle it replaces
 // (radius 5 → 10, radius 6 → 12, radius 8 → 16).
 
-export interface SquareIcon {
+interface SquareIcon {
 	fill: string;
 	stroke: string;
 	strokeWidth?: number;
@@ -82,7 +82,7 @@ export function setSquareIcon(map: MlMap, name: string, opts: SquareIcon): void 
 }
 
 // Edge lengths matching the circle radii they replace.
-export const STOP_SIZE = { normal: 10, active: 16, nearby: 12 } as const;
+export const STOP_SIZE = { normal: 10, active: 16 } as const;
 
 /** A compact bus-stop sign, with an optional star badge for saved stops. */
 export function setStopSignIcon(

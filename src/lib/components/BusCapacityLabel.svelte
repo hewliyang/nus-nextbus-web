@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Meter } from '@ui-sdk/svelte/meter';
 	import Icon from './Icon.svelte';
 
 	interface Props {
@@ -28,17 +29,20 @@
 
 {#if veh_plate && veh_plate !== '-'}
 	<div class="flex items-center gap-2">
-		<div
-			class="flex items-center gap-px rounded-full border border-border bg-surface-2 px-1.5 py-1 leading-none"
-			role="img"
-			aria-label={hasLoad ? labels[status] : 'Capacity unknown'}
+		<Meter
+			value={hasLoad ? Math.round(progress) : 0}
+			min={0}
+			max={100}
+			aria-label="Bus occupancy"
+			getValueLabel={() => (hasLoad ? labels[status] : 'Capacity unknown')}
+			class="flex w-auto min-w-0 flex-row items-center gap-px rounded-full border border-border bg-surface-2 px-1.5 py-1 leading-none"
 		>
-			{#each [0, 1, 2] as i}
+			{#each [0, 1, 2] as i (i)}
 				<span style="color: {hasLoad && i < filledCount ? fillColor : 'var(--border-strong)'}">
 					<Icon name="person" size={12} stroke={0} />
 				</span>
 			{/each}
-		</div>
+		</Meter>
 		<!-- ui-opt: dropped at the two largest UI sizes to keep rows on one line -->
 		<span class="ui-opt font-mono text-[0.625rem] font-medium uppercase tracking-wide text-muted">
 			{veh_plate}
