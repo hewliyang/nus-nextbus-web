@@ -30,6 +30,7 @@ jobs:
           NEXTBUS_BASE: ${{ secrets.NEXTBUS_BASE }}
           NEXTBUS_API_KEY: ${{ secrets.NEXTBUS_API_KEY }}
           NEXTBUS_APP_VERSION: ${{ secrets.NEXTBUS_APP_VERSION }}
+          NEXTBUS_APP_BUILD: ${{ secrets.NEXTBUS_APP_BUILD }}
           NEXTBUS_ESB_TOKEN: ${{ secrets.NEXTBUS_ESB_TOKEN }}
           NEXTBUS_USER_ID: ${{ secrets.NEXTBUS_USER_ID }}
           NEXTBUS_DEVICE_ID: ${{ secrets.NEXTBUS_DEVICE_ID }}
