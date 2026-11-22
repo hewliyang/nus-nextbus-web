@@ -12,6 +12,7 @@
 		routeKeysSorted,
 		routeStops
 	} from '$lib/routes';
+	import { Button } from '@ui-sdk/svelte/button';
 	import { Input, InputClear, InputGroup } from '@ui-sdk/svelte/input';
 	import {
 		SegmentedControl,
@@ -302,13 +303,13 @@
 
 	<!-- recentre on the user — top-right over the map -->
 	{#if view === 'stops'}
-		<button
+		<Button
 			onclick={recenterOnUser}
-			class="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full border border-border bg-surface/90 text-ink-soft shadow-card backdrop-blur-md transition-colors hover:bg-surface"
+			class="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full border border-border bg-surface/90 p-0 text-ink-soft shadow-card backdrop-blur-md transition-colors hover:bg-surface"
 			aria-label="Recentre on your location"
 		>
 			<Icon name="navigation" size={17} />
-		</button>
+		</Button>
 	{/if}
 
 	<!-- location snackbar floats just above the sheet. Past the snap threshold
@@ -464,12 +465,12 @@
 							<p class="max-w-xs text-xs text-muted">
 								Star a stop from its page to keep it here and highlight it on the map.
 							</p>
-							<button
+							<Button
 								onclick={() => setView('stops')}
-								class="mt-2 rounded-lg px-3 py-2 text-sm font-semibold text-accent hover:bg-accent-soft"
+								class="mt-2 h-auto rounded-lg border-0 bg-transparent px-3 py-2 text-sm font-semibold text-accent hover:bg-accent-soft"
 							>
 								Browse nearby stops
-							</button>
+							</Button>
 						{/if}
 					</div>
 				{/if}

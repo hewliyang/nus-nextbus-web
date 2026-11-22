@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button } from '@ui-sdk/svelte/button';
 	import Icon from './Icon.svelte';
 	import {
 		routeColor,
@@ -44,15 +45,15 @@
 		<a href="/stop/{code}" class="min-w-0 flex-1">
 			<span class="block truncate text-[0.875rem] font-semibold text-ink">{caption}</span>
 		</a>
-		<button
+		<Button
 			onclick={() => arrivals.refresh()}
-			class="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted transition-colors hover:bg-surface-2 hover:text-ink {arrivals.refreshing
+			class="grid h-8 w-8 shrink-0 place-items-center rounded-lg border-0 bg-transparent p-0 text-muted transition-colors hover:bg-surface-2 hover:text-ink {arrivals.refreshing
 				? 'opacity-40'
 				: ''}"
 			aria-label="Refresh {caption}"
 		>
 			<Icon name="refresh" size={15} />
-		</button>
+		</Button>
 	</div>
 
 	{#if live.length > 0}

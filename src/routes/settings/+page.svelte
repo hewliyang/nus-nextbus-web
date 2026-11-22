@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button } from '@ui-sdk/svelte/button';
 	import Icon from '$lib/components/Icon.svelte';
 	import { Switch, SwitchThumb } from '@ui-sdk/svelte/switch';
 	import { routeColor, routeTextColor } from '$lib/routes';
@@ -74,7 +75,7 @@
 				onCheckedChange={toggleTheme}
 				class="h-7 w-12 p-0.5"
 			>
-				<SwitchThumb class="h-[1.375rem] w-[1.375rem] bg-surface shadow-card data-checked:bg-surface" />
+				<SwitchThumb class="h-[1.375rem] w-[1.375rem] shadow-card" />
 			</Switch>
 		</label>
 
@@ -82,25 +83,25 @@
 			<div class="flex items-center justify-between gap-3">
 				<span class="text-[0.875rem] font-medium text-ink">UI size</span>
 				<div class="flex items-center gap-2">
-					<button
+					<Button
 						onclick={() => setStep(uiStep - 1)}
 						disabled={uiStep === 0}
-						class="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface text-ink-soft shadow-sm transition-colors hover:bg-surface-2 disabled:opacity-40"
+						class="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface p-0 text-ink-soft shadow-sm transition-colors hover:bg-surface-2 disabled:opacity-40"
 						aria-label="Decrease UI size"
 					>
 						<Icon name="minus" size={16} />
-					</button>
+					</Button>
 					<span class="w-12 text-center text-[0.9375rem] font-semibold tabular-nums text-ink">
 						{UI_SIZES[uiStep]}%
 					</span>
-					<button
+					<Button
 						onclick={() => setStep(uiStep + 1)}
 						disabled={uiStep === UI_SIZES.length - 1}
-						class="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface text-ink-soft shadow-sm transition-colors hover:bg-surface-2 disabled:opacity-40"
+						class="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface p-0 text-ink-soft shadow-sm transition-colors hover:bg-surface-2 disabled:opacity-40"
 						aria-label="Increase UI size"
 					>
 						<Icon name="plus" size={16} />
-					</button>
+					</Button>
 				</div>
 			</div>
 
@@ -152,7 +153,7 @@
 				onCheckedChange={toggleLocation}
 				class="h-7 w-12 p-0.5"
 			>
-				<SwitchThumb class="h-[1.375rem] w-[1.375rem] bg-surface shadow-card data-checked:bg-surface" />
+				<SwitchThumb class="h-[1.375rem] w-[1.375rem] shadow-card" />
 			</Switch>
 		</label>
 		<p class="border-t border-border px-3 py-1.5 text-[0.6875rem] leading-relaxed text-muted">

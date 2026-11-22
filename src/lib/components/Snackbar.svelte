@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button } from '@ui-sdk/svelte/button';
 	import Icon from './Icon.svelte';
 
 	interface Props {
@@ -18,24 +19,24 @@
 	role="status"
 >
 	{#if onClose}
-		<button
+		<Button
 			onclick={onClose}
-			class="-ml-1.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg text-muted transition-colors hover:bg-surface-2 hover:text-ink"
+			class="-ml-1.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg border-0 bg-transparent p-0 text-muted transition-colors hover:bg-surface-2 hover:text-ink"
 			aria-label="Dismiss"
 		>
 			<Icon name="x" size={15} />
-		</button>
+		</Button>
 	{/if}
 	<span class="shrink-0 text-accent {loading ? 'animate-spin' : ''}">
 		<Icon name={loading ? 'refresh' : icon} size={17} />
 	</span>
 	<p class="flex-1 text-[0.8125rem] font-medium leading-snug text-ink-soft">{message}</p>
 	{#if actionLabel}
-		<button
+		<Button
 			onclick={onAction}
-			class="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-[0.8125rem] font-semibold text-accent-fg transition-opacity hover:opacity-90"
+			class="h-auto shrink-0 rounded-lg border-0 bg-accent px-3 py-1.5 text-[0.8125rem] font-semibold text-accent-fg transition-opacity hover:bg-accent hover:opacity-90"
 		>
 			{actionLabel}
-		</button>
+		</Button>
 	{/if}
 </div>

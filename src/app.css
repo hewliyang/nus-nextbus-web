@@ -97,6 +97,13 @@ html {
 	-webkit-tap-highlight-color: transparent;
 }
 
+@layer components {
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+}
+
 /* ─────────────────────────────────────────────
    UI size — root font-size steps driven by the
    data-uisize attribute (cookie-persisted, set

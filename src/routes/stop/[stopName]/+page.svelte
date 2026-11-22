@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button } from '@ui-sdk/svelte/button';
 	import BusCapacityLabel from '$lib/components/BusCapacityLabel.svelte';
 	import HomeMap from '$lib/components/HomeMap.svelte';
 	import Icon from '$lib/components/Icon.svelte';
@@ -155,23 +156,24 @@
 							method="POST"
 							use:enhance={starSubmit}
 						>
-							<button
-								class="grid h-10 w-10 place-items-center rounded-xl border shadow-card transition-colors
+							<Button
+								type="submit"
+								class="grid h-10 w-10 place-items-center rounded-xl border p-0 shadow-card transition-colors
 						{starred
-									? 'border-accent/30 bg-accent-soft text-accent'
+									? 'border-accent/30 bg-accent-soft text-accent hover:bg-accent-soft'
 									: 'border-border bg-surface text-ink-soft hover:bg-surface-2'}"
 								aria-label={starred ? 'Unstar this stop' : 'Star this stop'}
 							>
 								<Icon name={starred ? 'star-fill' : 'star'} size={18} />
-							</button>
+							</Button>
 						</form>
-						<button
+						<Button
 							onclick={() => arrivals.refresh()}
-							class="grid h-10 w-10 place-items-center rounded-xl border border-border bg-surface text-ink-soft shadow-card transition-colors hover:bg-surface-2"
+							class="grid h-10 w-10 place-items-center rounded-xl border border-border bg-surface p-0 text-ink-soft shadow-card transition-colors hover:bg-surface-2"
 							aria-label="Refresh now"
 						>
 							<Icon name="refresh" size={17} />
-						</button>
+						</Button>
 					</div>
 				</div>
 
