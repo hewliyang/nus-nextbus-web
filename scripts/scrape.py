@@ -2,6 +2,7 @@ import os
 import json
 import time
 import base64
+import re
 import requests
 
 from pathlib import Path
@@ -10,8 +11,12 @@ from typing import Dict, List, Set, TypedDict
 BASE_PATH = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_PATH / "src" / "lib" / "data"
 TOKEN_KEY = "nextbus:esb-token"
+USER_KEY = "nextbus:esb-userid"
+VERSION_KEY = "nextbus:app-version"
 REFRESH_SKEW_S = 6 * 60 * 60
 CANDIDATE_ROUTES = ["A1", "A2", "D1", "D2", "BTC", "E", "K", "L", "R1", "R2", "P"]
+PLAY_PACKAGE = "sg.edu.nus.univus"
+VERSION_PREFIX = "univus_android_"
 
 
 def _required(name: str) -> str:
@@ -21,13 +26,34 @@ def _required(name: str) -> str:
     return value
 
 
+def normalize_app_version(raw: str, build: str = "") -> str:
+    """uNivUS ESB expects univus_android_{versionName}_{versionCode}."""
+    trimmed = raw.strip()
+    if not trimmed:
+        return trimmed
+    without_prefix = (
+        trimmed[len(VERSION_PREFIX) :]
+        if trimmed.startswith(VERSION_PREFIX)
+        else re.sub(r"^v", "", trimmed, flags=re.I)
+    )
+    full = re.fullmatch(r"(\d+\.\d+\.\d+)_(\d+)", without_prefix)
+    if full:
+        return f"{VERSION_PREFIX}{full.group(1)}_{full.group(2)}"
+    name_match = re.fullmatch(r"(\d+\.\d+\.\d+)", without_prefix)
+    name = name_match.group(1) if name_match else without_prefix
+    # Bare univus_android_{name} / low versionCodes are rejected with 10009.
+    # When unknown, use a high sentinel the ESB currently accepts.
+    build = (build or os.getenv("NEXTBUS_APP_BUILD") or "").strip() or "999"
+    return f"{VERSION_PREFIX}{name}_{build}"
+
+
 BASE = _required("NEXTBUS_BASE").rstrip("/")
 API_KEY = _required("NEXTBUS_API_KEY")
-APP_VERSION = _required("NEXTBUS_APP_VERSION")
-USER_ID = _required("NEXTBUS_USER_ID")
+APP_VERSION = normalize_app_version(_required("NEXTBUS_APP_VERSION"))
+USER_ID = os.getenv("NEXTBUS_USER_ID") or ""
 DEVICE_ID = _required("NEXTBUS_DEVICE_ID")
 DOMAIN = os.getenv("NEXTBUS_DOMAIN", "PUBLIC")
-SEED_TOKEN = _required("NEXTBUS_ESB_TOKEN")
+SEED_TOKEN = os.getenv("NEXTBUS_ESB_TOKEN") or ""
 USER_AGENT = _required("NEXTBUS_USER_AGENT")
 IP_ADDR = _required("NEXTBUS_IP_ADDR")
 KV_URL = os.getenv("KV_REST_API_URL") or os.getenv("UPSTASH_REDIS_REST_URL")
@@ -69,28 +95,30 @@ def kv_command(command: list) -> object:
     return res.json().get("result")
 
 
-def kv_get_token() -> str | None:
-    result = kv_command(["GET", TOKEN_KEY])
+def kv_get(key: str) -> str | None:
+    result = kv_command(["GET", key])
     return result if isinstance(result, str) and result else None
 
 
-def kv_set_token(token: str) -> None:
-    kv_command(["SET", TOKEN_KEY, token])
+def kv_set(key: str, value: str) -> None:
+    kv_command(["SET", key, value])
 
 
-def auth_headers(token: str) -> dict[str, str]:
-    return {
+def auth_headers(token: str | None = None) -> dict[str, str]:
+    headers = {
         "x-api-key": API_KEY,
-        "Authorization": f"Bearer {token}",
         "Content-Type": "application/json; charset=utf-8",
         "User-Agent": USER_AGENT,
     }
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
 
 
-def esb_body(token: str, extra: dict | None = None) -> dict:
+def esb_body(token: str, user_id: str, extra: dict | None = None) -> dict:
     return {
         "token": token,
-        "userid": USER_ID,
+        "userid": user_id,
         "domain": DOMAIN,
         "deviceid": DEVICE_ID,
         "ipaddr": IP_ADDR,
@@ -99,37 +127,104 @@ def esb_body(token: str, extra: dict | None = None) -> dict:
     }
 
 
+def fetch_play_store_version() -> str | None:
+    res = requests.get(
+        f"https://play.google.com/store/apps/details?id={PLAY_PACKAGE}&hl=en&gl=SG",
+        headers={"User-Agent": "Mozilla/5.0"},
+        timeout=20,
+    )
+    if not res.ok:
+        return None
+    match = re.search(r'\[\[\["(\d+\.\d+\.\d+)"\]\]', res.text)
+    return match.group(1) if match else None
+
+
+def bump_app_version_from_play() -> str:
+    global APP_VERSION
+    cached = kv_get(VERSION_KEY)
+    if cached and cached.startswith(VERSION_PREFIX):
+        APP_VERSION = cached
+        return cached
+
+    play = fetch_play_store_version()
+    if not play:
+        raise RuntimeError("could not resolve uNivUS version from Play Store")
+
+    build_match = re.search(r"_(\d+)$", APP_VERSION)
+    APP_VERSION = normalize_app_version(play, build_match.group(1) if build_match else "")
+    kv_set(VERSION_KEY, APP_VERSION)
+    return APP_VERSION
+
+
 class Session:
-    def __init__(self, token: str):
+    def __init__(self, token: str, user_id: str):
         self.token = token
+        self.user_id = user_id
+
+    def mint(self, allow_version_bump: bool = True) -> None:
+        global USER_ID
+        res = requests.post(
+            f"{BASE}/univus/api/univus-public/mobile/get-access-token",
+            headers=auth_headers(),
+            json={
+                "deviceid": DEVICE_ID,
+                "ipaddr": IP_ADDR,
+                "version": APP_VERSION,
+            },
+            timeout=30,
+        )
+        body = res.json()
+        if body.get("code") == "10009" and allow_version_bump:
+            bump_app_version_from_play()
+            return self.mint(False)
+        token = (body.get("data") or {}).get("token")
+        user_id = (body.get("data") or {}).get("userid") or USER_ID
+        if body.get("code") != "00000" or not token or not user_id:
+            raise RuntimeError(
+                f"get-access-token failed: {body.get('code')} {body.get('msg')}"
+            )
+        self.token = token
+        self.user_id = user_id
+        USER_ID = user_id
+        kv_set(TOKEN_KEY, token)
+        kv_set(USER_KEY, user_id)
 
     def refresh(self) -> None:
         res = requests.post(
             f"{BASE}/univus/api/univus/refresh-token",
             headers=auth_headers(self.token),
-            json=esb_body(self.token),
+            json=esb_body(self.token, self.user_id),
             timeout=30,
         )
         body = res.json()
+        if body.get("code") == "10009":
+            bump_app_version_from_play()
+            return self.mint()
         token = (body.get("data") or {}).get("token")
         if body.get("code") != "00000" or not token:
-            raise RuntimeError(
-                f"refresh-token failed: {body.get('code')} {body.get('msg')}"
-            )
+            return self.mint()
+        user_id = (body.get("data") or {}).get("userid") or self.user_id
         self.token = token
-        kv_set_token(token)
+        self.user_id = user_id
+        kv_set(TOKEN_KEY, token)
+        if user_id:
+            kv_set(USER_KEY, user_id)
 
     def proxy(self, endpoint: str, extra: dict | None = None) -> dict:
         def _post() -> dict:
             return requests.post(
                 f"{BASE}/univus/api/bus-proxy/{endpoint}",
                 headers=auth_headers(self.token),
-                json=esb_body(self.token, extra),
+                json=esb_body(self.token, self.user_id, extra),
                 timeout=30,
             ).json()
 
         body = _post()
-        if body.get("code") != "00000":
+        if body.get("code") == "10009":
+            bump_app_version_from_play()
+            self.mint()
+            body = _post()
+        elif body.get("code") != "00000":
             self.refresh()
             body = _post()
         if body.get("code") != "00000":
@@ -140,10 +235,21 @@ class Session:
 
 
 def resolve_session() -> Session:
-    token = kv_get_token() or SEED_TOKEN
-    session = Session(token)
-    if jwt_exp(session.token) - time.time() < REFRESH_SKEW_S:
+    global APP_VERSION, USER_ID
+    cached_version = kv_get(VERSION_KEY)
+    if cached_version and cached_version.startswith(VERSION_PREFIX):
+        APP_VERSION = cached_version
+
+    token = kv_get(TOKEN_KEY) or SEED_TOKEN
+    user_id = kv_get(USER_KEY) or USER_ID
+    session = Session(token, user_id)
+    if not token:
+        session.mint()
+    elif jwt_exp(session.token) - time.time() < REFRESH_SKEW_S:
         session.refresh()
+    elif not session.user_id:
+        session.mint()
+    USER_ID = session.user_id
     return session
 
 
