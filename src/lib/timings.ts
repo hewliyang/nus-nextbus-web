@@ -1,6 +1,6 @@
 import type { Timing } from '$lib/types';
 
-export const FAR_ARRIVAL_MINUTES = 60;
+const FAR_ARRIVAL_MINUTES = 60;
 
 export function hasArrival(time: string | undefined): boolean {
 	return !!time && time !== '-';
@@ -33,7 +33,7 @@ function clockTime(timestamp: string): string {
 	return `${hour}:${match[2]}${period}`;
 }
 
-export type FormattedArrival = { value: string; unit: '' | 'min' };
+type FormattedArrival = { value: string; unit: '' | 'min' };
 
 export function formatArrival(time: string | undefined, timestamp?: string): FormattedArrival {
 	if (!hasArrival(time)) return { value: '—', unit: '' };

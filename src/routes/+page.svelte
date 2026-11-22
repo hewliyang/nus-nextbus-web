@@ -2,9 +2,8 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { nearestStops } from '$lib/geo';
+	import { getDistance, nearestStops } from '$lib/geo';
 	import { searchBookmarks, searchRoutes, searchStops } from '$lib/search';
-	import { getDistance } from '$lib/stores/utils';
 	import { setPref } from '$lib/prefs';
 	import type { LocPref } from '$lib/parse';
 	import type { Bookmark } from '$lib/types';

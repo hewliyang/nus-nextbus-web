@@ -8,6 +8,7 @@
 	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { PageData } from './$types';
 	import type { Bookmark } from '$lib/types';
 	import { dedupeTerminalVariants, formatArrival, hasArrival } from '$lib/timings';
@@ -59,7 +60,7 @@
 	let starOverride = $state<boolean | null>(null);
 	let starBusy = $state(false);
 	const starred = $derived(starOverride ?? alreadyBookmarked);
-	const starSubmit: import('@sveltejs/kit').SubmitFunction = ({ cancel }) => {
+	const starSubmit: SubmitFunction = ({ cancel }) => {
 		if (starBusy) {
 			cancel();
 			return;

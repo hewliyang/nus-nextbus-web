@@ -1,8 +1,22 @@
 import { stops } from '$lib/data';
-import { getDistance } from '$lib/stores/utils';
 import type { SearchStop } from '$lib/types';
 
-export type NearbyStop = SearchStop & { distanceM: number };
+type NearbyStop = SearchStop & { distanceM: number };
+
+export function getDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+	const R = 6371e3;
+	const φ1 = (lat1 * Math.PI) / 180;
+	const φ2 = (lat2 * Math.PI) / 180;
+	const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+	const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+	const a =
+		Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+		Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+	return R * c;
+}
 
 /**
  * Stops ranked by distance from a given coordinate (nearest first).
@@ -14,10 +28,4 @@ export function nearestStops(lat: number, lng: number, n?: number): NearbyStop[]
 		.map((s) => ({ ...s, distanceM: getDistance(s.latitude, s.longitude, lat, lng) }))
 		.sort((a, b) => a.distanceM - b.distanceM);
 	return typeof n === 'number' ? ranked.slice(0, n) : ranked;
-}
-
-/** Human label for a walking distance, e.g. "120 m" or "1.3 km". */
-export function formatDistance(m: number): string {
-	if (m < 1000) return `${Math.round(m / 10) * 10} m`;
-	return `${(m / 1000).toFixed(1)} km`;
 }

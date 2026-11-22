@@ -50,7 +50,7 @@ export function stopCoord(code: string) {
 	return coordByCode.get(code);
 }
 
-export const routeKeys = Object.keys(routes);
+const routeKeys = Object.keys(routes);
 
 export function routesServingStop(code: string): string[] {
 	const out: string[] = [];
@@ -60,7 +60,7 @@ export function routesServingStop(code: string): string[] {
 	return out;
 }
 
-export function routeLine(route: string): [number, number][] {
+function routeLine(route: string): [number, number][] {
 	const list: RouteStop[] = routes[route] ?? [];
 	const pts: [number, number][] = [];
 	for (const s of list) {
@@ -93,7 +93,7 @@ export function routeShape(route: string, zoom = 16): [number, number][] {
 	return smoothed;
 }
 
-export type MapStop = {
+type MapStop = {
 	code: string;
 	name: string;
 	lng: number;

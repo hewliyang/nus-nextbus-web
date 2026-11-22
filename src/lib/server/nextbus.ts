@@ -49,8 +49,9 @@ let inflight: Promise<Session> | null = null;
 function jwtExpMs(token: string): number {
 	const part = token.split('.')[1];
 	if (!part) return 0;
-	const padded = part + '='.repeat((4 - (part.length % 4)) % 4);
-	const payload = JSON.parse(Buffer.from(padded, 'base64url').toString('utf8')) as { exp?: number };
+	const padded =
+		part.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (part.length % 4)) % 4);
+	const payload = JSON.parse(atob(padded)) as { exp?: number };
 	return (payload.exp ?? 0) * 1000;
 }
 
@@ -109,8 +110,12 @@ async function refreshToken(current: string): Promise<string> {
 	});
 	const json: unknown = await res.json();
 	if (!isUnivusOk<{ token: string }>(json) || !json.data?.token) {
-		const code = typeof json === 'object' && json !== null ? (json as UnivusResponse<unknown>).code : undefined;
-		const msg = typeof json === 'object' && json !== null ? (json as UnivusResponse<unknown>).msg : undefined;
+		const code =
+			typeof json === 'object' && json !== null
+				? (json as UnivusResponse<unknown>).code
+				: undefined;
+		const msg =
+			typeof json === 'object' && json !== null ? (json as UnivusResponse<unknown>).msg : undefined;
 		throw new Error(`refresh-token failed: HTTP ${res.status} ${code} ${msg}`);
 	}
 	await persistToken(json.data.token);
@@ -134,13 +139,18 @@ async function getSession(force = false): Promise<Session> {
 }
 
 function failureDetail(endpoint: string, status: number, body: unknown): string {
-	const code = typeof body === 'object' && body !== null ? (body as UnivusResponse<unknown>).code : undefined;
-	const msg = typeof body === 'object' && body !== null ? (body as UnivusResponse<unknown>).msg : undefined;
+	const code =
+		typeof body === 'object' && body !== null ? (body as UnivusResponse<unknown>).code : undefined;
+	const msg =
+		typeof body === 'object' && body !== null ? (body as UnivusResponse<unknown>).msg : undefined;
 	return `${endpoint} failed: HTTP ${status} ${code} ${msg}`;
 }
 
 /** POST /univus/api/bus-proxy/{endpoint} and return the unwrapped `data` payload. */
-export async function busProxy<T>(endpoint: string, extra: Record<string, string> = {}): Promise<T> {
+export async function busProxy<T>(
+	endpoint: string,
+	extra: Record<string, string> = {}
+): Promise<T> {
 	const cfg = config();
 	const run = async (token: string): Promise<{ status: number; body: unknown }> => {
 		const res = await fetch(`${cfg.base}/univus/api/bus-proxy/${endpoint.replace(/^\//, '')}`, {
