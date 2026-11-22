@@ -12,20 +12,30 @@
 		routeKeysSorted,
 		routeStops
 	} from '$lib/routes';
+	import { Input, InputClear, InputGroup } from '@ui-sdk/svelte/input';
+	import {
+		SegmentedControl,
+		SegmentedControlIndicator,
+		SegmentedControlItem
+	} from '@ui-sdk/svelte/segmented-control';
 	import Icon from '$lib/components/Icon.svelte';
 	import HomeMap from '$lib/components/HomeMap.svelte';
-	import Segmented from '$lib/components/Segmented.svelte';
 	import Snackbar from '$lib/components/Snackbar.svelte';
 	import StopCard from '$lib/components/StopCard.svelte';
 	import RoutesView from '$lib/components/RoutesView.svelte';
 
 	type LocationStatus = 'idle' | 'locating' | 'granted' | 'denied' | 'unavailable';
 
-	// view + selected route are URL-driven: deep-linkable, and survive in-place
-	// navigation from a card's route badge (/?view=routes&route=D2).
-	const view = $derived.by<'stops' | 'starred' | 'routes'>(() => {
+	type ViewMode = 'stops' | 'starred' | 'routes';
+
+	// Local state stays responsive while URL navigation settles, then re-syncs on URL changes.
+	const urlView = $derived.by<ViewMode>(() => {
 		const value = $page.url.searchParams.get('view');
 		return value === 'routes' || value === 'starred' ? value : 'stops';
+	});
+	let view = $state<ViewMode>('stops');
+	$effect(() => {
+		view = urlView;
 	});
 	const rawRoute = $derived($page.url.searchParams.get('route'));
 	const selectedRoute = $derived(rawRoute && routeKeysSorted.includes(rawRoute) ? rawRoute : 'D2');
@@ -37,7 +47,8 @@
 	);
 
 	const navOpts = { replaceState: true, noScroll: true, keepFocus: true };
-	function setView(v: string) {
+	function setView(v: ViewMode) {
+		view = v;
 		const u = new URL($page.url);
 		if (v === 'stops') u.searchParams.delete('view');
 		else u.searchParams.set('view', v);
@@ -344,12 +355,11 @@
 		<div
 			class="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 pb-[max(1rem,env(safe-area-inset-bottom))] lg:px-4 lg:pt-4"
 		>
-			<!-- Search follows the active scope: all stops, saved stops, or routes by stop. -->
-			<div
-				class="flex min-h-10 items-center gap-2.5 rounded-xl border border-border bg-surface px-3 shadow-card focus-within:border-accent"
+			<InputGroup
+				class="flex h-auto min-h-10 items-center gap-2.5 rounded-xl border border-border bg-surface px-3 shadow-card has-[input:focus-visible]:border-accent"
 			>
 				<span class="text-muted"><Icon name="search" size={17} /></span>
-				<input
+				<Input
 					type="search"
 					placeholder={view === 'routes'
 						? 'Search routes or stops'
@@ -362,29 +372,37 @@
 							? 'Search starred stops'
 							: 'Search stops'}
 					bind:value={searchTerm}
-					class="w-full bg-transparent py-2 text-[0.875rem] text-ink placeholder:text-muted focus:outline-none"
+					class="w-full py-2 text-[0.875rem] text-ink placeholder:text-muted"
 				/>
-				{#if searching}
-					<button
-						onclick={() => (searchTerm = '')}
-						class="grid h-7 w-7 shrink-0 place-items-center rounded-md text-muted hover:bg-surface-2 hover:text-ink"
-						aria-label="Clear search"
-					>
-						<Icon name="x" size={14} />
-					</button>
-				{/if}
-			</div>
+				<InputClear
+					class="grid h-7 w-7 shrink-0 place-items-center rounded-md border-0 bg-transparent text-muted hover:bg-surface-2 hover:text-ink"
+					aria-label="Clear search"
+				>
+					<Icon name="x" size={14} />
+				</InputClear>
+			</InputGroup>
 
-			<!-- SEGMENTED -->
-			<Segmented
+			<SegmentedControl
+				aria-label="View"
 				value={view}
-				onSelect={setView}
-				options={[
-					{ value: 'stops', label: 'Nearby' },
-					{ value: 'starred', label: 'Starred' },
-					{ value: 'routes', label: 'Routes' }
-				]}
-			/>
+				onValueChange={(next) => {
+					if (next === 'stops' || next === 'starred' || next === 'routes') setView(next);
+				}}
+				class="grid w-full grid-cols-3 rounded-xl p-0.5"
+			>
+				<SegmentedControlIndicator
+					class="rounded-[0.625rem] border-0 bg-surface shadow-card transition-[top,left,width,height] duration-200 ease-out data-[activation-direction=none]:transition-none"
+				/>
+				<SegmentedControlItem value="stops" class="h-10 text-[0.8125rem] font-semibold">
+					Nearby
+				</SegmentedControlItem>
+				<SegmentedControlItem value="starred" class="h-10 text-[0.8125rem] font-semibold">
+					Starred
+				</SegmentedControlItem>
+				<SegmentedControlItem value="routes" class="h-10 text-[0.8125rem] font-semibold">
+					Routes
+				</SegmentedControlItem>
+			</SegmentedControl>
 
 			<!-- CONTENT -->
 			{#if view === 'stops'}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
-	import Switch from '$lib/components/Switch.svelte';
+	import { Switch, SwitchThumb } from '@ui-sdk/svelte/switch';
 	import { routeColor, routeTextColor } from '$lib/routes';
 	import { setPref, applyUiSize, UI_SIZES } from '$lib/prefs';
 	import { invalidate } from '$app/navigation';
@@ -12,8 +12,8 @@
 	let uiStep = $state<number>($page.data.uiSize ?? 0);
 	let locOn = $state($page.data.locPref === 'on');
 
-	async function toggleTheme() {
-		themeDark = !themeDark;
+	async function toggleTheme(checked: boolean) {
+		themeDark = checked;
 		const next = themeDark ? 'dark' : 'light';
 		document.documentElement.setAttribute('data-theme', next);
 		setPref('colortheme', next);
@@ -26,8 +26,8 @@
 		void invalidate('app:prefs');
 	}
 
-	async function toggleLocation() {
-		locOn = !locOn;
+	async function toggleLocation(checked: boolean) {
+		locOn = checked;
 		setPref('locpref', locOn ? 'on' : 'off');
 		if (locOn && navigator.geolocation) {
 			// Surface the browser permission prompt right away so the choice is
@@ -64,13 +64,19 @@
 			Appearance
 		</h2>
 
-		<div class="flex min-h-10 items-center justify-between gap-3 border-b border-border px-3 py-1.5">
+		<label class="flex min-h-10 cursor-pointer items-center justify-between gap-3 border-b border-border px-3 py-1.5">
 			<span class="flex items-center gap-2.5 text-[0.875rem] font-medium text-ink">
 				<span class="text-muted"><Icon name={themeDark ? 'moon' : 'sun'} size={17} /></span>
 				Dark mode
 			</span>
-			<Switch checked={themeDark} label="Dark mode" onToggle={toggleTheme} />
-		</div>
+			<Switch
+				checked={themeDark}
+				onCheckedChange={toggleTheme}
+				class="h-7 w-12 p-0.5"
+			>
+				<SwitchThumb class="h-[1.375rem] w-[1.375rem] bg-surface shadow-card data-checked:bg-surface" />
+			</Switch>
+		</label>
 
 		<div class="space-y-2.5 px-3 py-2.5">
 			<div class="flex items-center justify-between gap-3">
@@ -136,13 +142,19 @@
 		>
 			Location
 		</h2>
-		<div class="flex min-h-10 items-center justify-between gap-3 px-3 py-1.5">
+		<label class="flex min-h-10 cursor-pointer items-center justify-between gap-3 px-3 py-1.5">
 			<span class="flex items-center gap-2.5 text-[0.875rem] font-medium text-ink">
 				<span class="text-muted"><Icon name="pin" size={17} /></span>
 				Enable location
 			</span>
-			<Switch checked={locOn} label="Enable location" onToggle={toggleLocation} />
-		</div>
+			<Switch
+				checked={locOn}
+				onCheckedChange={toggleLocation}
+				class="h-7 w-12 p-0.5"
+			>
+				<SwitchThumb class="h-[1.375rem] w-[1.375rem] bg-surface shadow-card data-checked:bg-surface" />
+			</Switch>
+		</label>
 		<p class="border-t border-border px-3 py-1.5 text-[0.6875rem] leading-relaxed text-muted">
 			Sorts the home screen by the stops nearest to you. Remembered on this device; your browser may
 			still ask for permission.

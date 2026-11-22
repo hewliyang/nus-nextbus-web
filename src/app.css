@@ -32,6 +32,7 @@
    daylight checking arrivals. Light by default.
    ───────────────────────────────────────────── */
 :root {
+	color-scheme: light;
 	--bg: oklch(0.985 0.004 255);
 	--surface: oklch(1 0 0);
 	--surface-2: oklch(0.975 0.006 255);
@@ -50,9 +51,26 @@
 
 	--shadow: 0 1px 2px oklch(0.4 0.03 262 / 0.06), 0 8px 24px -12px oklch(0.4 0.03 262 / 0.18);
 	--map-style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
+
+	--ui-background: var(--surface);
+	--ui-foreground: var(--ink);
+	--ui-muted: var(--surface-2);
+	--ui-muted-foreground: var(--muted);
+	--ui-border: var(--border);
+	--ui-input: var(--border-strong);
+	--ui-primary: var(--accent);
+	--ui-primary-foreground: var(--accent-fg);
+	--ui-destructive: var(--bad);
+	--ui-ring: var(--accent);
+	--ui-ring-border: var(--accent);
+	--ui-shadow: var(--shadow);
+	--ui-radius: 0.75rem;
+	--ui-font-sans: 'Inter Variable', 'Inter', system-ui, sans-serif;
+	--ui-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 [data-theme='dark'] {
+	color-scheme: dark;
 	--bg: oklch(0.19 0.014 262);
 	--surface: oklch(0.235 0.016 262);
 	--surface-2: oklch(0.275 0.018 262);
