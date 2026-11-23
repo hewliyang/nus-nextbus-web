@@ -208,6 +208,14 @@
     "longitude": 103.77
   },
   {
+    "caption": "Raffles Hall",
+    "name": "RAFFLES",
+    "LongName": "Raffles Hall",
+    "ShortName": "Raffles Hall",
+    "latitude": 1.300946,
+    "longitude": 103.772703
+  },
+  {
     "caption": "Kent Vale",
     "name": "KV",
     "LongName": "Kent Vale",
@@ -238,14 +246,6 @@
     "ShortName": "BG MRT",
     "latitude": 1.322614,
     "longitude": 103.815914
-  },
-  {
-    "caption": "Raffles Hall",
-    "name": "RAFFLES",
-    "LongName": "Raffles Hall",
-    "ShortName": "Raffles Hall",
-    "latitude": 1.300946,
-    "longitude": 103.772703
   },
   {
     "caption": "Opp SDE 3",
